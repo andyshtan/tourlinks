@@ -71,10 +71,14 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
                 <span>{t.roleSelection.changeRoleBtn}</span>
               </button>
             </div>
-            <div className="flex items-center gap-2 text-xs text-on-surface-variant truncate">
-              <span className="font-medium text-primary">{tour.code}</span>
-              <span>•</span>
-              <span className="truncate">{tour.name}</span>
+            <div className="flex items-center gap-1.5 text-xs text-on-surface-variant truncate">
+              <span className="font-mono font-extrabold text-[11px] px-1.5 py-0.5 rounded-m3-xs bg-primary-container text-on-primary-container">
+                {tour.code}
+              </span>
+              <span className="truncate font-semibold text-on-surface flex items-center gap-1">
+                <span>🇯🇵</span>
+                <span>{tour.name}</span>
+              </span>
             </div>
           </div>
         </div>

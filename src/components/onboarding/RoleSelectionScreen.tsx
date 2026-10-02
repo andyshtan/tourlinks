@@ -115,12 +115,36 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
             {t.roleSelection.heroSubtitle}
           </p>
 
-          <div className="flex items-center justify-center gap-3 pt-1 text-xs text-on-surface-variant">
-            <span className="font-semibold text-primary">{tour.code}</span>
-            <span>•</span>
-            <span className="font-bold text-on-surface">{tour.name}</span>
-            <span>•</span>
-            <span className="font-mono">{tour.dates}</span>
+          {/* Standout Active Tour Showcase Capsule */}
+          <div className="pt-2 flex justify-center">
+            <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 p-1.5 sm:p-2 sm:pr-4 rounded-m3-full bg-surface-container-lowest m3-elevation-2 border border-primary/20 shadow-md hover:m3-elevation-3 transition-all duration-300">
+              {/* Tour Code Badge with Live Pulse */}
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-m3-full bg-primary text-on-primary font-mono font-extrabold text-xs tracking-wider shadow-xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse inline-block" />
+                <M3Icon name="confirmation_number" size={14} />
+                <span>{tour.code}</span>
+              </div>
+
+              {/* Tour Name with Destination Flag */}
+              <div className="flex items-center gap-1.5 font-black text-xs sm:text-sm text-on-surface tracking-tight px-1">
+                <span className="text-base" role="img" aria-label="Japan">🇯🇵</span>
+                <span className="text-on-surface hover:text-primary transition-colors">
+                  {tour.name}
+                </span>
+              </div>
+
+              {/* Date & Duration Pill */}
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-m3-full bg-secondary-container text-on-secondary-container text-xs font-bold font-roboto">
+                <M3Icon name="calendar_month" size={14} className="text-secondary" />
+                <span>{tour.dates}</span>
+              </div>
+
+              {/* Live Flight & Ground Radar Badge */}
+              <div className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-m3-full bg-[#D4F7DC] text-[#0A6324] text-[11px] font-extrabold font-roboto border border-[#A1E8B2]">
+                <M3Icon name="flight_land" size={14} />
+                <span>JL720 • Landed at NRT T1</span>
+              </div>
+            </div>
           </div>
         </div>
 
