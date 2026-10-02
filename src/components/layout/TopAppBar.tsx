@@ -224,11 +224,17 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
-              className="bg-transparent font-medium text-xs text-on-surface focus:outline-none cursor-pointer pr-1"
+              className="bg-transparent font-bold text-xs text-on-surface focus:outline-none cursor-pointer pr-1"
             >
               <option value="en">🇺🇸 EN</option>
               <option value="id">🇮🇩 ID</option>
               <option value="ja">🇯🇵 JA</option>
+              <option value="th">🇹🇭 TH</option>
+              <option value="zh">🇨🇳 ZH</option>
+              <option value="ko">🇰🇷 KO</option>
+              <option value="es">🇪🇸 ES</option>
+              <option value="hi">🇮🇳 HI</option>
+              <option value="ar">🇸🇦 AR</option>
             </select>
           </div>
         </div>

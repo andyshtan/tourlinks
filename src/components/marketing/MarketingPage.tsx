@@ -23,42 +23,14 @@ export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) =>
 
   return (
     <div className="min-h-screen bg-surface text-on-surface font-roboto selection:bg-primary-container selection:text-on-primary-container">
-      {/* Navigation Header */}
+      {/* Navigation Header - Clean 1-Pager */}
       <header className="sticky top-0 z-50 bg-surface/90 backdrop-blur-md border-b border-outline-variant/40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-m3-md bg-primary flex items-center justify-center text-on-primary shadow-xs">
-              <M3Icon name="flight_takeoff" filled size={24} />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-xl tracking-tight text-on-surface">
-                  TravelFlow
-                </span>
-                <span className="px-2 py-0.5 rounded-m3-full text-[10px] font-extrabold uppercase bg-primary-container text-on-primary-container">
-                  Outbound OS
-                </span>
-              </div>
-              <p className="text-[11px] text-on-surface-variant hidden sm:block">
-                by NeraLab • Tri-Party Outbound Tour Workflow
-              </p>
-            </div>
+          <div className="flex items-center">
+            <span className="font-black text-2xl sm:text-3xl tracking-tighter text-on-surface select-none">
+              Travelflow
+            </span>
           </div>
-
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-on-surface-variant">
-            <a href="#problem" className="hover:text-primary transition-colors">
-              The Outbound Problem
-            </a>
-            <a href="#ecosystem" className="hover:text-primary transition-colors">
-              Tri-Party Architecture
-            </a>
-            <a href="#features" className="hover:text-primary transition-colors">
-              Core Capabilities
-            </a>
-            <a href="#multilingual" className="hover:text-primary transition-colors">
-              Multi-Lingual Sync
-            </a>
-          </nav>
 
           <div className="flex items-center gap-3">
             <a
@@ -66,7 +38,7 @@ export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) =>
               onClick={handleDemoClick}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-m3-full bg-primary text-on-primary font-bold text-xs sm:text-sm shadow-md hover:bg-[#004FAF] active:scale-98 transition-all cursor-pointer"
             >
-              <span>Launch Live Demo</span>
+              <span>Demo</span>
               <M3Icon name="arrow_forward" size={16} />
             </a>
           </div>
@@ -90,7 +62,7 @@ export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) =>
             Zero immigration delays. Zero missing passport validity. Instant arrival handshakes.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+          <div className="flex items-center justify-center pt-4">
             <a
               href={demoUrl}
               onClick={handleDemoClick}
@@ -98,14 +70,6 @@ export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) =>
             >
               <M3Icon name="play_circle" filled size={22} />
               <span>Experience Live Interactive Demo</span>
-            </a>
-
-            <a
-              href="#ecosystem"
-              className="w-full sm:w-auto px-6 py-4 rounded-m3-full bg-surface-container text-on-surface font-bold text-base border border-outline-variant/60 hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2"
-            >
-              <span>Explore Tri-Party Workflow</span>
-              <M3Icon name="arrow_downward" size={18} />
             </a>
           </div>
 
@@ -409,18 +373,42 @@ export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) =>
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-bold">
-            <div className="px-5 py-2.5 rounded-m3-full bg-surface-container-lowest border border-outline-variant/60 shadow-xs flex items-center gap-2">
-              <span className="text-base">🇮🇩</span>
-              <span>Bahasa Indonesia (HQ Agent Default)</span>
-            </div>
-            <div className="px-5 py-2.5 rounded-m3-full bg-surface-container-lowest border border-outline-variant/60 shadow-xs flex items-center gap-2">
-              <span className="text-base">🇯🇵</span>
-              <span>日本語 (Destination DMC Default)</span>
-            </div>
-            <div className="px-5 py-2.5 rounded-m3-full bg-surface-container-lowest border border-outline-variant/60 shadow-xs flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-bold max-w-4xl mx-auto">
+            <div className="px-4 py-2 rounded-m3-full bg-surface-container-lowest border border-outline-variant/60 shadow-xs flex items-center gap-2">
               <span className="text-base">🇺🇸</span>
-              <span>English (Traveler Pass Default)</span>
+              <span>English (Universal)</span>
+            </div>
+            <div className="px-4 py-2 rounded-m3-full bg-surface-container-lowest border border-outline-variant/60 shadow-xs flex items-center gap-2">
+              <span className="text-base">🇮🇩</span>
+              <span>Bahasa Indonesia (HQ Agent)</span>
+            </div>
+            <div className="px-4 py-2 rounded-m3-full bg-surface-container-lowest border border-outline-variant/60 shadow-xs flex items-center gap-2">
+              <span className="text-base">🇯🇵</span>
+              <span>日本語 (Japan DMC)</span>
+            </div>
+            <div className="px-4 py-2 rounded-m3-full bg-surface-container-lowest border border-outline-variant/60 shadow-xs flex items-center gap-2">
+              <span className="text-base">🇹🇭</span>
+              <span>ภาษาไทย (Thai)</span>
+            </div>
+            <div className="px-4 py-2 rounded-m3-full bg-surface-container-lowest border border-outline-variant/60 shadow-xs flex items-center gap-2">
+              <span className="text-base">🇨🇳</span>
+              <span>简体中文 (Chinese)</span>
+            </div>
+            <div className="px-4 py-2 rounded-m3-full bg-surface-container-lowest border border-outline-variant/60 shadow-xs flex items-center gap-2">
+              <span className="text-base">🇰🇷</span>
+              <span>한국어 (Korean)</span>
+            </div>
+            <div className="px-4 py-2 rounded-m3-full bg-surface-container-lowest border border-outline-variant/60 shadow-xs flex items-center gap-2">
+              <span className="text-base">🇪🇸</span>
+              <span>Español (Spanish)</span>
+            </div>
+            <div className="px-4 py-2 rounded-m3-full bg-surface-container-lowest border border-outline-variant/60 shadow-xs flex items-center gap-2">
+              <span className="text-base">🇮🇳</span>
+              <span>हिन्दी (Indian / Hindi)</span>
+            </div>
+            <div className="px-4 py-2 rounded-m3-full bg-surface-container-lowest border border-outline-variant/60 shadow-xs flex items-center gap-2">
+              <span className="text-base">🇸🇦</span>
+              <span>العربية (Arabic)</span>
             </div>
           </div>
         </div>
@@ -458,10 +446,9 @@ export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) =>
       <footer className="py-8 bg-surface-container border-t border-outline-variant/30 text-xs text-on-surface-variant">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <M3Icon name="flight_takeoff" filled size={18} className="text-primary" />
-            <span className="font-extrabold text-on-surface">TravelFlow Outbound OS</span>
+            <span className="font-black text-base text-on-surface">Travelflow</span>
             <span>•</span>
-            <span>by NeraLab</span>
+            <span>Tri-Party Outbound Tour Workflow</span>
           </div>
 
           <div className="flex items-center gap-6">

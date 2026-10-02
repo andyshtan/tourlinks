@@ -134,21 +134,20 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
                 onBackToMarketing();
               }
             }}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-m3-full bg-surface-container border border-outline-variant/60 text-xs font-bold text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-m3-full bg-surface-container border border-outline-variant/60 text-xs font-bold text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
           >
             <M3Icon name="arrow_back" size={16} />
-            <span>TravelFlow Marketing Website</span>
+            <span className="font-black text-sm">Travelflow</span>
           </a>
 
-          <span className="text-[11px] font-mono font-semibold text-primary px-2.5 py-0.5 rounded-m3-full bg-primary-container text-on-primary-container hidden sm:inline">
+          <span className="text-[11px] font-mono font-bold text-primary px-3 py-1 rounded-m3-full bg-primary-container text-on-primary-container hidden sm:inline">
             demo.travelflow.neralab.id
           </span>
         </div>
 
         {/* Brand & Hero Banner */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-m3-full bg-primary-container text-on-primary-container text-xs font-bold tracking-wide uppercase shadow-xs">
-            <M3Icon name="flight_takeoff" filled size={16} />
+          <div className="inline-flex items-center px-4 py-1.5 rounded-m3-full bg-primary-container text-on-primary-container text-xs font-extrabold tracking-wide uppercase shadow-xs">
             <span>Interactive Outbound Tour Workflow Demo</span>
           </div>
 
@@ -193,21 +192,47 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
           </div>
         </div>
 
-        {/* Respected Language Overview Banner */}
-        <div className="max-w-2xl mx-auto p-2.5 rounded-m3-full bg-surface-container border border-outline-variant/60 flex flex-wrap items-center justify-center gap-3 text-xs shadow-xs">
-          <span className="font-semibold text-on-surface-variant text-[11px] uppercase tracking-wider flex items-center gap-1.5">
-            <M3Icon name="translate" size={16} className="text-primary" />
-            <span>Native Stakeholder Languages:</span>
-          </span>
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-m3-full bg-primary-container text-on-primary-container font-bold text-[11px]">
-            🇮🇩 Agent: ID
-          </span>
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-m3-full bg-secondary-container text-on-secondary-container font-bold text-[11px]">
-            🇯🇵 Operator: JA
-          </span>
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-m3-full bg-tertiary-container text-on-tertiary-container font-bold text-[11px]">
-            🇺🇸 Traveller: EN
-          </span>
+        {/* Interactive 9-Language Selector Ribbon */}
+        <div className="max-w-4xl mx-auto p-3 rounded-m3-xl bg-surface-container border border-outline-variant/60 space-y-2 shadow-xs">
+          <div className="flex items-center justify-between text-xs px-1">
+            <span className="font-bold text-on-surface flex items-center gap-1.5">
+              <M3Icon name="translate" size={16} className="text-primary" />
+              <span>Choose Demo Language (9 Supported Languages):</span>
+            </span>
+            <span className="text-[11px] text-primary font-mono font-bold bg-primary-container px-2 py-0.5 rounded-full">
+              Active: {t.common.language}
+            </span>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-1.5">
+            {[
+              { code: 'en' as SupportedLanguage, label: 'English', flag: '🇺🇸' },
+              { code: 'id' as SupportedLanguage, label: 'Indonesia', flag: '🇮🇩' },
+              { code: 'ja' as SupportedLanguage, label: '日本語', flag: '🇯🇵' },
+              { code: 'th' as SupportedLanguage, label: 'ไทย', flag: '🇹🇭' },
+              { code: 'zh' as SupportedLanguage, label: '中文', flag: '🇨🇳' },
+              { code: 'ko' as SupportedLanguage, label: '한국어', flag: '🇰🇷' },
+              { code: 'es' as SupportedLanguage, label: 'Español', flag: '🇪🇸' },
+              { code: 'hi' as SupportedLanguage, label: 'हिन्दी', flag: '🇮🇳' },
+              { code: 'ar' as SupportedLanguage, label: 'العربية', flag: '🇸🇦' },
+            ].map((l) => {
+              const isActive = (t as any) && translations[l.code]?.appName === t.appName && translations[l.code]?.common?.origin === t.common?.origin;
+              return (
+                <button
+                  key={l.code}
+                  onClick={() => setLanguage(l.code)}
+                  className={`px-3 py-1.5 rounded-m3-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    isActive
+                      ? 'bg-primary text-on-primary shadow-xs ring-2 ring-primary/30 scale-105'
+                      : 'bg-surface-container-lowest text-on-surface hover:bg-surface-container-high border border-outline-variant/50'
+                  }`}
+                >
+                  <span>{l.flag}</span>
+                  <span>{l.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* 3 Role Selection Cards — Each Showing Its Respected Language */}
