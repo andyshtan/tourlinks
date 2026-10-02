@@ -22,6 +22,7 @@ export const TravellerView: React.FC = () => {
 
   // Pick lead traveller (Budi Santoso)
   const currentTraveller = passengers[0];
+  const familyCompanions = passengers.filter((p) => p.groupId === currentTraveller.groupId);
   const [taxiCardOpen, setTaxiCardOpen] = useState(false);
   const [sosModalOpen, setSosModalOpen] = useState(false);
   const [customsClicked, setCustomsClicked] = useState(currentTraveller.hasClearedCustoms);
@@ -65,12 +66,21 @@ export const TravellerView: React.FC = () => {
         <h2 className="text-xl font-extrabold tracking-tight text-white mb-1">
           {tour.name}
         </h2>
+        
         <div className="flex items-center justify-between text-xs text-white/90">
           <p>
             Guest: <span className="font-bold text-white">{currentTraveller.name}</span> • Room {currentTraveller.roomNumber}
           </p>
           <span className="font-mono text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-bold">
             Seat {currentTraveller.seatNumber || '14K'}
+          </span>
+        </div>
+
+        {/* Dual Product Cross-Reference */}
+        <div className="mt-2 pt-2 border-t border-white/15 text-[11px] text-white/80 flex items-center justify-between flex-wrap gap-1">
+          <span>Ground Partner: <strong className="text-white">{tour.operatorName}</strong></span>
+          <span className="font-mono text-[10px] bg-white/15 px-1.5 py-0.5 rounded text-white font-medium">
+            Land: {tour.dmcProductCode || 'TYO-PVT-07D'}
           </span>
         </div>
 
@@ -101,6 +111,75 @@ export const TravellerView: React.FC = () => {
           <div className="font-mono font-bold text-white bg-black/20 px-2.5 py-1 rounded-m3-full">
             16:15 JST (Local)
           </div>
+        </div>
+      </div>
+
+      {/* My Travel Party / Booking Group Unit */}
+      <div className="p-3.5 rounded-m3-lg bg-surface-container border border-outline-variant/40 space-y-2.5 shadow-xs">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <M3Icon name="family_restroom" size={18} className="text-secondary" />
+            <div>
+              <h4 className="font-bold text-xs text-on-surface uppercase tracking-wider">
+                My Travel Party ({familyCompanions.length} Guests)
+              </h4>
+              <p className="text-[10px] text-on-surface-variant">
+                {currentTraveller.groupName} • Booking Ref: <span className="font-mono font-bold text-secondary">{currentTraveller.bookingRef}</span>
+              </p>
+            </div>
+          </div>
+          <span className="text-[10px] font-bold text-secondary bg-secondary-container/60 px-2 py-0.5 rounded-full">
+            Room {currentTraveller.roomNumber}
+          </span>
+        </div>
+
+        <div className="space-y-1.5">
+          {familyCompanions.map((comp) => {
+            const isMe = comp.id === currentTraveller.id;
+            return (
+              <button
+                key={comp.id}
+                onClick={() => setSelectedPassenger(comp)}
+                className={`w-full p-2.5 rounded-m3-md border text-left flex items-center justify-between transition-all cursor-pointer ${
+                  isMe
+                    ? 'bg-surface border-primary/40 shadow-xs'
+                    : 'bg-surface border-outline-variant/50 hover:bg-surface-container-high'
+                }`}
+                title={`Inspect ${comp.name}'s document copies & dossier`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                    isMe ? 'bg-primary-container text-on-primary-container ring-1 ring-primary/30' : 'bg-surface-container-high text-on-surface'
+                  }`}>
+                    {comp.gender === 'F' ? '👩' : '👨'}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold text-xs text-on-surface">{comp.name}</span>
+                      {comp.isGroupLead && (
+                        <span className="text-[9px] font-bold uppercase bg-primary text-on-primary px-1.5 py-0.2 rounded-full">
+                          Lead
+                        </span>
+                      )}
+                      {isMe && (
+                        <span className="text-[9px] font-bold text-on-surface-variant font-mono">
+                          (You)
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-on-surface-variant font-mono">
+                      Seat {comp.seatNumber || '14K'} • Pass: {comp.passportNumber}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1 text-[11px] font-medium text-primary">
+                  <span>Dossier</span>
+                  <M3Icon name="chevron_right" size={14} />
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
 

@@ -79,12 +79,46 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           </span>
 
           <div className="hidden sm:flex items-center gap-2 text-xs text-on-surface-variant truncate">
-            <span className="font-mono font-bold text-[11px] px-1.5 py-0.5 rounded-xs bg-surface-container-highest text-on-surface">
-              {tour.code}
-            </span>
-            <span className="truncate text-on-surface-variant hidden md:inline">
-              {tour.name}
-            </span>
+            {role === 'agent' ? (
+              <>
+                <span className="font-mono font-bold text-[11px] px-1.5 py-0.5 rounded-xs bg-primary-container text-on-primary-container">
+                  {tour.agentPackageCode}
+                </span>
+                <span className="truncate text-on-surface font-semibold hidden md:inline">
+                  {tour.agentProductName}
+                </span>
+                <span
+                  className="text-[10px] text-on-surface-variant font-mono hidden lg:inline bg-surface-container-highest px-1.5 py-0.5 rounded"
+                  title="Destination DMC Contract Service Code"
+                >
+                  ⇄ DMC: {tour.dmcProductCode}
+                </span>
+              </>
+            ) : role === 'operator' ? (
+              <>
+                <span className="font-mono font-bold text-[11px] px-1.5 py-0.5 rounded-xs bg-secondary-container text-on-secondary-container">
+                  {tour.dmcProductCode}
+                </span>
+                <span className="truncate text-on-surface font-semibold hidden md:inline">
+                  {tour.dmcProductName}
+                </span>
+                <span
+                  className="text-[10px] text-on-surface-variant font-mono hidden lg:inline bg-surface-container-highest px-1.5 py-0.5 rounded"
+                  title="Origin Agent Retail Package Reference"
+                >
+                  ⇄ Agent: {tour.agentPackageCode}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="font-mono font-bold text-[11px] px-1.5 py-0.5 rounded-xs bg-surface-container-highest text-on-surface">
+                  {tour.agentPackageCode}
+                </span>
+                <span className="truncate text-on-surface-variant hidden md:inline font-medium">
+                  {tour.agentProductName}
+                </span>
+              </>
+            )}
           </div>
         </div>
 

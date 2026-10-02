@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import type {
   TourPackage,
   Passenger,
+  BookingGroup,
   ArrivalCheckpoint,
   ItineraryItem,
   GatheringPin,
@@ -15,6 +16,7 @@ interface TourContextType {
   setRole: (role: StakeholderRole) => void;
   tour: TourPackage;
   passengers: Passenger[];
+  bookingGroups: BookingGroup[];
   checkpoints: ArrivalCheckpoint[];
   itinerary: ItineraryItem[];
   gatheringPin: GatheringPin;
@@ -27,6 +29,7 @@ interface TourContextType {
   // Actions
   advanceCheckpoint: () => void;
   updateRollCall: (id: string, status: 'present' | 'missing') => void;
+  updateGroupRollCall: (groupId: string, status: 'present' | 'missing') => void;
   passengerClearedCustoms: (id: string) => void;
   shiftSchedule: (minutes: number) => void;
   toggleGatheringPin: () => void;
@@ -41,11 +44,21 @@ interface TourContextType {
 const initialTour: TourPackage = {
   id: 'TK-2026-B4',
   code: 'TK-OUT-889',
-  name: 'Tokyo Autumn Discovery & Mt. Fuji 6D5N',
+  name: 'Tokyo Autumn Wonder & Mt. Fuji Discovery',
+
+  // Agent (Retail Outbound Package)
+  agentPackageCode: 'PKG-JKT-889',
+  agentProductName: '7D6N Tokyo Autumn Wonder & Mt. Fuji Discovery',
+  agentName: 'Nusantara Odyssey Travel (Jakarta HQ)',
+
+  // DMC / Ground Operator (Land Arrangement Service)
+  dmcProductCode: 'TYO-PVT-07D',
+  dmcProductName: 'Kanto Golden Route 7D - Private Coach & Bilingual Guide',
+  dmcProductNameJa: '関東ゴールデンルート7日間 専用車・ガイド手配',
+  operatorName: 'Sakura Nippon DMC & Ground Transport (Tokyo)',
+
   destination: 'Tokyo & Yamanashi, Japan',
   dates: 'Oct 2 - Oct 7, 2026',
-  agentName: 'Nusantara Odyssey Travel (Jakarta HQ)',
-  operatorName: 'Sakura Nippon DMC & Ground Transport (Tokyo)',
   flight: {
     number: 'JL720',
     carrier: 'Japan Airlines',
@@ -85,9 +98,10 @@ const initialTour: TourPackage = {
 };
 
 const initialPassengers: Passenger[] = [
+  // Group 1: Santoso Family (BKG-SAN-881)
   {
     id: 'p1',
-    name: 'Budi Santoso (Lead Guest)',
+    name: 'Budi Santoso',
     gender: 'M',
     passportNumber: 'A8892104',
     passportExpiry: '2029-08-14',
@@ -100,6 +114,13 @@ const initialPassengers: Passenger[] = [
     phone: '+628119876543',
     rollCallStatus: 'present',
     hasClearedCustoms: true,
+    seatNumber: '14A',
+    baggageTag: 'JL-88901',
+    groupId: 'grp-1',
+    groupName: 'Santoso Family',
+    bookingRef: 'BKG-SAN-881',
+    groupRole: 'Lead Guest',
+    isGroupLead: true,
   },
   {
     id: 'p2',
@@ -115,7 +136,16 @@ const initialPassengers: Passenger[] = [
     phone: '+628119876544',
     rollCallStatus: 'present',
     hasClearedCustoms: true,
+    seatNumber: '14B',
+    baggageTag: 'JL-88902',
+    groupId: 'grp-1',
+    groupName: 'Santoso Family',
+    bookingRef: 'BKG-SAN-881',
+    groupRole: 'Spouse',
+    isGroupLead: false,
   },
+
+  // Group 2: Wijaya - Tan Couple (BKG-WIJ-882)
   {
     id: 'p3',
     name: 'Kevin Wijaya',
@@ -124,12 +154,19 @@ const initialPassengers: Passenger[] = [
     passportExpiry: '2026-11-20', // LESS THAN 6 MONTHS!
     isPassportValid: false,
     visaStatus: 'flagged',
-    roomType: 'Single',
+    roomType: 'Double',
     roomNumber: '814',
     dietary: 'Standard',
     phone: '+628123344556',
     rollCallStatus: 'present',
     hasClearedCustoms: false,
+    seatNumber: '15C',
+    baggageTag: 'JL-88903',
+    groupId: 'grp-2',
+    groupName: 'Wijaya & Tan Couple',
+    bookingRef: 'BKG-WIJ-882',
+    groupRole: 'Lead Guest',
+    isGroupLead: true,
   },
   {
     id: 'p4',
@@ -140,13 +177,22 @@ const initialPassengers: Passenger[] = [
     isPassportValid: true,
     visaStatus: 'approved',
     roomType: 'Double',
-    roomNumber: '815',
+    roomNumber: '814',
     dietary: 'Vegetarian',
     dietaryNotes: 'Lacto-ovo vegetarian',
     phone: '+628139988776',
     rollCallStatus: 'present',
     hasClearedCustoms: true,
+    seatNumber: '15D',
+    baggageTag: 'JL-88904',
+    groupId: 'grp-2',
+    groupName: 'Wijaya & Tan Couple',
+    bookingRef: 'BKG-WIJ-882',
+    groupRole: 'Spouse',
+    isGroupLead: false,
   },
+
+  // Group 3: Tan & Salim Duo (BKG-TAN-883)
   {
     id: 'p5',
     name: 'Michael Tan',
@@ -155,72 +201,19 @@ const initialPassengers: Passenger[] = [
     passportExpiry: '2028-04-10',
     isPassportValid: true,
     visaStatus: 'approved',
-    roomType: 'Double',
+    roomType: 'Single',
     roomNumber: '815',
     dietary: 'No Beef',
     phone: '+628139988777',
     rollCallStatus: 'present',
     hasClearedCustoms: true,
-  },
-  {
-    id: 'p6',
-    name: 'Siti Rahmawati',
-    gender: 'F',
-    passportNumber: 'A9912033',
-    passportExpiry: '2026-12-05', // ALSO < 6 MONTHS!
-    isPassportValid: false,
-    visaStatus: 'pending',
-    roomType: 'Twin',
-    roomNumber: '816',
-    dietary: 'Halal',
-    phone: '+628178822991',
-    rollCallStatus: 'missing',
-    hasClearedCustoms: false,
-  },
-  {
-    id: 'p7',
-    name: 'Nurul Hidayah',
-    gender: 'F',
-    passportNumber: 'A9912034',
-    passportExpiry: '2030-01-22',
-    isPassportValid: true,
-    visaStatus: 'approved',
-    roomType: 'Twin',
-    roomNumber: '816',
-    dietary: 'Halal',
-    phone: '+628178822992',
-    rollCallStatus: 'present',
-    hasClearedCustoms: true,
-  },
-  {
-    id: 'p8',
-    name: 'Hendro Kusuma',
-    gender: 'M',
-    passportNumber: 'D4401928',
-    passportExpiry: '2029-05-18',
-    isPassportValid: true,
-    visaStatus: 'approved',
-    roomType: 'Twin',
-    roomNumber: '817',
-    dietary: 'Standard',
-    phone: '+628155533112',
-    rollCallStatus: 'present',
-    hasClearedCustoms: true,
-  },
-  {
-    id: 'p9',
-    name: 'Agus Pratama',
-    gender: 'M',
-    passportNumber: 'D4401929',
-    passportExpiry: '2029-05-18',
-    isPassportValid: true,
-    visaStatus: 'approved',
-    roomType: 'Twin',
-    roomNumber: '817',
-    dietary: 'Standard',
-    phone: '+628155533113',
-    rollCallStatus: 'present',
-    hasClearedCustoms: true,
+    seatNumber: '16A',
+    baggageTag: 'JL-88905',
+    groupId: 'grp-3',
+    groupName: 'Tan & Salim Duo',
+    bookingRef: 'BKG-TAN-883',
+    groupRole: 'Lead Guest',
+    isGroupLead: true,
   },
   {
     id: 'p10',
@@ -237,7 +230,108 @@ const initialPassengers: Passenger[] = [
     phone: '+628190011223',
     rollCallStatus: 'present',
     hasClearedCustoms: true,
+    seatNumber: '16B',
+    baggageTag: 'JL-88910',
+    groupId: 'grp-3',
+    groupName: 'Tan & Salim Duo',
+    bookingRef: 'BKG-TAN-883',
+    groupRole: 'Colleague',
+    isGroupLead: false,
   },
+
+  // Group 4: Rahmawati Family (BKG-RAH-884)
+  {
+    id: 'p6',
+    name: 'Siti Rahmawati',
+    gender: 'F',
+    passportNumber: 'A9912033',
+    passportExpiry: '2026-12-05', // ALSO < 6 MONTHS!
+    isPassportValid: false,
+    visaStatus: 'pending',
+    roomType: 'Twin',
+    roomNumber: '816',
+    dietary: 'Halal',
+    phone: '+628178822991',
+    rollCallStatus: 'missing',
+    hasClearedCustoms: false,
+    seatNumber: '17C',
+    baggageTag: 'JL-88906',
+    groupId: 'grp-4',
+    groupName: 'Rahmawati Family',
+    bookingRef: 'BKG-RAH-884',
+    groupRole: 'Lead Guest',
+    isGroupLead: true,
+  },
+  {
+    id: 'p7',
+    name: 'Nurul Hidayah',
+    gender: 'F',
+    passportNumber: 'A9912034',
+    passportExpiry: '2030-01-22',
+    isPassportValid: true,
+    visaStatus: 'approved',
+    roomType: 'Twin',
+    roomNumber: '816',
+    dietary: 'Halal',
+    phone: '+628178822992',
+    rollCallStatus: 'present',
+    hasClearedCustoms: true,
+    seatNumber: '17D',
+    baggageTag: 'JL-88907',
+    groupId: 'grp-4',
+    groupName: 'Rahmawati Family',
+    bookingRef: 'BKG-RAH-884',
+    groupRole: 'Spouse',
+    isGroupLead: false,
+  },
+
+  // Group 5: Kusuma & Pratama (BKG-KUS-885)
+  {
+    id: 'p8',
+    name: 'Hendro Kusuma',
+    gender: 'M',
+    passportNumber: 'D4401928',
+    passportExpiry: '2029-05-18',
+    isPassportValid: true,
+    visaStatus: 'approved',
+    roomType: 'Twin',
+    roomNumber: '817',
+    dietary: 'Standard',
+    phone: '+628155533112',
+    rollCallStatus: 'present',
+    hasClearedCustoms: true,
+    seatNumber: '18A',
+    baggageTag: 'JL-88908',
+    groupId: 'grp-5',
+    groupName: 'Kusuma & Pratama',
+    bookingRef: 'BKG-KUS-885',
+    groupRole: 'Lead Guest',
+    isGroupLead: true,
+  },
+  {
+    id: 'p9',
+    name: 'Agus Pratama',
+    gender: 'M',
+    passportNumber: 'D4401929',
+    passportExpiry: '2029-05-18',
+    isPassportValid: true,
+    visaStatus: 'approved',
+    roomType: 'Twin',
+    roomNumber: '817',
+    dietary: 'Standard',
+    phone: '+628155533113',
+    rollCallStatus: 'present',
+    hasClearedCustoms: true,
+    seatNumber: '18B',
+    baggageTag: 'JL-88909',
+    groupId: 'grp-5',
+    groupName: 'Kusuma & Pratama',
+    bookingRef: 'BKG-KUS-885',
+    groupRole: 'Friend',
+    isGroupLead: false,
+  },
+
+  // Group 6: Kurniawan & Basri (BKG-KUR-886)
   {
     id: 'p11',
     name: 'Rian Kurniawan',
@@ -252,6 +346,13 @@ const initialPassengers: Passenger[] = [
     phone: '+628127788441',
     rollCallStatus: 'present',
     hasClearedCustoms: true,
+    seatNumber: '19C',
+    baggageTag: 'JL-88911',
+    groupId: 'grp-6',
+    groupName: 'Kurniawan & Basri',
+    bookingRef: 'BKG-KUR-886',
+    groupRole: 'Lead Guest',
+    isGroupLead: true,
   },
   {
     id: 'p12',
@@ -267,7 +368,16 @@ const initialPassengers: Passenger[] = [
     phone: '+628127788442',
     rollCallStatus: 'present',
     hasClearedCustoms: true,
+    seatNumber: '19D',
+    baggageTag: 'JL-88912',
+    groupId: 'grp-6',
+    groupName: 'Kurniawan & Basri',
+    bookingRef: 'BKG-KUR-886',
+    groupRole: 'Friend',
+    isGroupLead: false,
   },
+
+  // Group 7: Wardhana Couple (BKG-WAR-887)
   {
     id: 'p13',
     name: 'Anita Wardhana',
@@ -282,6 +392,13 @@ const initialPassengers: Passenger[] = [
     phone: '+628131100998',
     rollCallStatus: 'present',
     hasClearedCustoms: true,
+    seatNumber: '20A',
+    baggageTag: 'JL-88913',
+    groupId: 'grp-7',
+    groupName: 'Wardhana Couple',
+    bookingRef: 'BKG-WAR-887',
+    groupRole: 'Lead Guest',
+    isGroupLead: true,
   },
   {
     id: 'p14',
@@ -297,6 +414,13 @@ const initialPassengers: Passenger[] = [
     phone: '+628131100999',
     rollCallStatus: 'present',
     hasClearedCustoms: true,
+    seatNumber: '20B',
+    baggageTag: 'JL-88914',
+    groupId: 'grp-7',
+    groupName: 'Wardhana Couple',
+    bookingRef: 'BKG-WAR-887',
+    groupRole: 'Spouse',
+    isGroupLead: false,
   },
 ];
 
@@ -304,30 +428,30 @@ const initialCheckpoints: ArrivalCheckpoint[] = [
   {
     id: 'standby',
     labelKey: 'stepStandby',
-    time: '15:10 JST',
+    time: '15:15 JST',
     status: 'completed',
-    updatedBy: 'Kenji Tanaka (Driver)',
+    updatedBy: 'Kenji Tanaka (Chauffeur)',
   },
   {
     id: 'landed',
     labelKey: 'stepLanded',
     time: '15:55 JST',
     status: 'completed',
-    updatedBy: 'Narita Flight Radar (JL720)',
+    updatedBy: 'Auto Flight Radar (JL720)',
   },
   {
     id: 'customs_meet',
     labelKey: 'stepCustoms',
-    time: '16:45 JST',
+    time: '16:25 JST',
     status: 'in_progress',
-    updatedBy: 'Yumi Sato (Guide) - 12/14 Guests Met',
+    updatedBy: 'Yumi Sato (Guide)',
   },
   {
     id: 'boarded_enroute',
     labelKey: 'stepBoarded',
     time: '17:15 JST (Est)',
     status: 'pending',
-    updatedBy: 'Pending Roll Call completion',
+    updatedBy: 'System',
   },
 ];
 
@@ -336,10 +460,10 @@ const initialItinerary: ItineraryItem[] = [
     id: 'it-1',
     day: 1,
     time: '15:55',
-    title: 'Touch Down at Narita Airport T1',
-    titleJa: '成田空港第1ターミナル到着',
-    location: 'Narita Airport (NRT)',
-    description: 'Immigration clearance, luggage retrieval at belt #3, guide meet-up at Pillar 17.',
+    title: 'JL720 Flight Landed at NRT T1',
+    titleJa: 'JL720便 成田空港第1ターミナル到着',
+    location: 'Narita International Airport',
+    description: 'Passengers disembark, clear immigration, collect baggage, pass customs.',
     category: 'flight',
     status: 'completed',
     delayMinutes: 0,
@@ -347,63 +471,48 @@ const initialItinerary: ItineraryItem[] = [
   {
     id: 'it-2',
     day: 1,
-    time: '17:15',
-    adjustedTime: '17:35',
-    title: 'Executive Coach Transfer to Shinjuku',
-    titleJa: '貸切バスにて新宿ホテルへ移動',
-    location: 'Metropolitan Expressway',
-    description: 'Scenic transfer across Rainbow Bridge. Water and Wi-Fi onboard.',
+    time: '16:30',
+    title: 'Arrival Handshake & Boarding Coach',
+    titleJa: '到着ミーティング＆専用バス乗車',
+    location: 'NRT T1 South Wing Pillar #17',
+    description: 'Meet Guide Yumi Sato and board Toyota Coaster #4 driven by Kenji Tanaka.',
     category: 'transfer',
     status: 'current',
-    delayMinutes: 20,
+    delayMinutes: 10,
   },
   {
     id: 'it-3',
     day: 1,
-    time: '19:00',
-    adjustedTime: '19:20',
-    title: 'Hotel Check-In & Room Keycard Distribution',
-    titleJa: 'ホテルチェックイン・部屋割り案内',
+    time: '18:15',
+    title: 'Hotel Check-in & Room Key Distribution',
+    titleJa: 'ホテルチェックイン・ルームキー配布',
     location: 'Shinjuku Granbell Hotel',
-    description: 'Baggage delivery to rooms, 30-min freshen up rest.',
+    description: 'Rooms pre-blocked on 8th floor. Handshake room keys, brief breakfast vouchers.',
     category: 'hotel',
-    status: 'upcoming',
-    delayMinutes: 20,
-  },
-  {
-    id: 'it-4',
-    day: 1,
-    time: '20:00',
-    adjustedTime: '20:20',
-    title: 'Welcome Dinner: Halal/Wagyu Sukiyaki Set',
-    titleJa: '歓迎夕食：ハラール和牛すき焼き御膳',
-    location: 'Shinjuku Halal Dining Roppongi',
-    description: 'Certified Halal authentic Sukiyaki dinner. Special vegetarian menu prepared.',
-    category: 'meal',
-    status: 'upcoming',
-    delayMinutes: 20,
-  },
-  {
-    id: 'it-5',
-    day: 2,
-    time: '09:00',
-    title: 'Tokyo City Highlights: Meiji Jingu & Harajuku',
-    titleJa: '明治神宮・原宿竹下通り観光',
-    location: 'Shibuya City',
-    description: 'Morning walk in cedar forest, visit main shrine sanctuary.',
-    category: 'sightseeing',
     status: 'upcoming',
     delayMinutes: 0,
   },
   {
-    id: 'it-6',
+    id: 'it-4',
+    day: 1,
+    time: '19:30',
+    title: 'Welcome Dinner: Halal & Washoku Banquet',
+    titleJa: 'ウェルカムディナー（ハラール対応和食宴会）',
+    location: 'Shinjuku Kappo Nakajima (Private Room)',
+    description: 'Pre-ordered Halal set menus for 8 guests, 1 vegetarian, standard for 5 guests.',
+    category: 'meal',
+    status: 'upcoming',
+    delayMinutes: 0,
+  },
+  {
+    id: 'it-5',
     day: 2,
-    time: '14:30',
-    title: 'Shibuya Crossing & Free Shopping Time',
-    titleJa: '渋谷スクランブル交差点・自由散策',
-    location: 'Shibuya Station Hachiko Square',
-    description: 'Guided scramble crossing walk followed by 2 hours free shopping radar.',
-    category: 'free_time',
+    time: '08:30',
+    title: 'Mt. Fuji 5th Station & Lake Kawaguchiko Excursion',
+    titleJa: '富士山五合目＆河口湖日帰り観光',
+    location: 'Fuji-Hakone-Izu National Park',
+    description: 'Private coach departs hotel prompt 08:30. Gathering pin armed at station.',
+    category: 'sightseeing',
     status: 'upcoming',
     delayMinutes: 0,
   },
@@ -411,66 +520,72 @@ const initialItinerary: ItineraryItem[] = [
 
 const initialGatheringPin: GatheringPin = {
   isActive: true,
-  locationName: 'Shibuya Hachiko Plaza & Scramble Crossing',
-  targetTime: '16:30 JST',
-  totalMinutes: 90,
-  remainingMinutes: 42,
-  latitude: 35.6591,
-  longitude: 139.7006,
-  notes: 'Look for Tour Leader Yumi holding the yellow Nusantara flag in front of Hachiko bronze statue.',
+  locationName: 'Narita T1 South Wing • Pillar #17 Meeting Point',
+  targetTime: '17:00 JST',
+  totalMinutes: 35,
+  remainingMinutes: 24,
+  latitude: 35.7647,
+  longitude: 140.3863,
+  notes: 'Guide holding digital "NUSANTARA ODYSSEY" sign near Starbucks entrance.',
 };
 
 const initialIncidents: Incident[] = [
   {
-    id: 'INC-201',
-    title: 'Luggage Delayed on Carousel 3 (Kevin Wijaya)',
+    id: 'INC-101',
+    title: 'Passport Expiry <6mo Warning (Kevin Wijaya)',
     passengerName: 'Kevin Wijaya',
-    reportedBy: 'Operator',
-    severity: 'medium',
-    status: 'resolved',
-    timestamp: '16:15 JST',
-    notes: [
-      'Baggage was held for oversized tag inspection.',
-      'Guide retrieved bag with JAL ground crew at 16:35 JST. Bag secured in bus.',
-    ],
-  },
-  {
-    id: 'INC-202',
-    title: 'Passport Validity Warning (< 6 months) for 2 Guests',
     reportedBy: 'Agent',
     severity: 'high',
     status: 'investigating',
-    timestamp: '10:00 WIB',
+    timestamp: '14:20 JST',
     notes: [
-      'Kevin Wijaya & Siti Rahmawati passports expire within 60 days.',
-      'Agent sent emergency WhatsApp reminders; Japanese border immigration cleared with return ticket inspection.',
+      'Origin Agent alerted of expiry 2026-11-20.',
+      'Agent provided confirmed return ticket JL729 on Oct 7 & hotel voucher to Japanese immigration liaison.',
+    ],
+  },
+  {
+    id: 'INC-102',
+    title: 'Severe Shellfish & Peanut Allergy Alert (Clarissa Salim)',
+    passengerName: 'Clarissa Salim',
+    reportedBy: 'Operator',
+    severity: 'medium',
+    status: 'investigating',
+    timestamp: '14:35 JST',
+    notes: [
+      'Japanese allergy emergency card translated and issued to guide Yumi Sato.',
+      'Dinner restaurant Kappo Nakajima briefed: zero cross-contamination.',
     ],
   },
 ];
 
 const initialSettlement: SettlementLedger = {
-  baseNetRate: 14800,
-  currency: 'USD',
+  baseNetRate: 1450000, // JPY for 14 pax 6D5N
+  currency: 'JPY',
   extraCharges: [
     {
       id: 'ex-1',
-      description: 'Coach Overtime Standby (+1.5 hrs due to highway congestion)',
-      amount: 220,
+      description: 'Highway Toll Narita Sky Access & Shinjuku Ramp Overtime',
+      amount: 8600,
       approved: true,
     },
     {
       id: 'ex-2',
-      description: 'Pre-ordered Halal Certified Lunch Boxes (Mt Fuji Day)',
-      amount: 350,
-      approved: true,
+      description: 'Halal Certified Bento Supplement (Day 2 Fuji Trip, 8 Pax)',
+      amount: 14400,
+      approved: false,
+    },
+    {
+      id: 'ex-3',
+      description: 'Late Night Chauffeur Standby Fee (>21:00)',
+      amount: 12000,
+      approved: false,
     },
   ],
   proofImages: [
-    'https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&w=400&q=80',
-    'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=400&q=80',
+    'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=400&q=80',
+    'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=400&q=80',
   ],
-  operatorSignedAt: '2026-10-02 16:50 JST by Sakura DMC Lead',
-  agentApprovedAt: undefined,
+  operatorSignedAt: '2026-10-02 16:15 JST',
   isSettled: false,
 };
 
@@ -490,40 +605,79 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
     time: string;
     location: string;
   } | null>(null);
+
   const [selectedPassenger, setSelectedPassenger] = useState<Passenger | null>(null);
+
+  // Compute Booking Groups dynamically from passengers
+  const bookingGroups: BookingGroup[] = useMemo(() => {
+    const groupMap = new Map<string, Passenger[]>();
+    passengers.forEach((p) => {
+      const list = groupMap.get(p.groupId) || [];
+      list.push(p);
+      groupMap.set(p.groupId, list);
+    });
+
+    return Array.from(groupMap.entries()).map(([groupId, members]) => {
+      const lead = members.find((m) => m.isGroupLead) || members[0];
+      const rooms = Array.from(new Set(members.map((m) => `Room ${m.roomNumber}`)));
+
+      return {
+        id: groupId,
+        bookingRef: lead.bookingRef,
+        groupName: lead.groupName,
+        groupType:
+          members.length > 2
+            ? 'Family'
+            : lead.groupRole === 'Spouse' || members.some((m) => m.groupRole === 'Spouse')
+            ? 'Couple'
+            : lead.groupRole === 'Colleague'
+            ? 'Corporate'
+            : 'Friends',
+        leadPassengerId: lead.id,
+        leadPassengerName: lead.name,
+        leadPhone: lead.phone,
+        paxCount: members.length,
+        roomNumbers: rooms,
+      };
+    });
+  }, [passengers]);
 
   const openPassengerDetailById = (id: string) => {
     const p = passengers.find((x) => x.id === id);
     if (p) setSelectedPassenger(p);
   };
 
-  // Active countdown timer for gathering pin
+  // 1-Click Roll Call by entire Travel Group
+  const updateGroupRollCall = (groupId: string, status: 'present' | 'missing') => {
+    setPassengers((prev) =>
+      prev.map((p) => (p.groupId === groupId ? { ...p, rollCallStatus: status } : p))
+    );
+  };
+
+  // Interval timer for Gathering Pin countdown
   useEffect(() => {
     if (!gatheringPin.isActive) return;
     const interval = setInterval(() => {
-      setGatheringPin((prev) => ({
-        ...prev,
-        remainingMinutes: Math.max(0, prev.remainingMinutes - 1),
-      }));
-    }, 60000); // 1 minute
+      setGatheringPin((prev) => {
+        if (prev.remainingMinutes <= 0) return prev;
+        return { ...prev, remainingMinutes: prev.remainingMinutes - 1 };
+      });
+    }, 60000);
     return () => clearInterval(interval);
   }, [gatheringPin.isActive]);
 
   const advanceCheckpoint = () => {
     setCheckpoints((prev) => {
-      const inProgressIndex = prev.findIndex((cp) => cp.status === 'in_progress');
-      if (inProgressIndex === -1) {
-        return prev;
+      const next = [...prev];
+      const inProgIdx = next.findIndex((c) => c.status === 'in_progress');
+      if (inProgIdx !== -1) {
+        next[inProgIdx].status = 'completed';
+        if (inProgIdx + 1 < next.length) {
+          next[inProgIdx + 1].status = 'in_progress';
+          next[inProgIdx + 1].time = 'Just now';
+        }
       }
-      return prev.map((cp, idx) => {
-        if (idx === inProgressIndex) {
-          return { ...cp, status: 'completed' as const, time: '17:10 JST (Now)' };
-        }
-        if (idx === inProgressIndex + 1) {
-          return { ...cp, status: 'in_progress' as const, time: '17:15 JST (Active)' };
-        }
-        return cp;
-      });
+      return next;
     });
   };
 
@@ -546,7 +700,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return {
           ...item,
           delayMinutes: item.delayMinutes + minutes,
-          adjustedTime: '17:55',
+          adjustedTime: `+${minutes}m delay`,
         };
       })
     );
@@ -556,15 +710,15 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setGatheringPin((prev) => ({
       ...prev,
       isActive: !prev.isActive,
-      remainingMinutes: prev.isActive ? 0 : 45,
+      remainingMinutes: prev.isActive ? 0 : prev.totalMinutes,
     }));
   };
 
   const triggerSOS = () => {
     setActiveSosAlert({
-      passengerName: 'Budi Santoso',
-      time: new Date().toLocaleTimeString(),
-      location: 'Shinjuku Kabukicho East Exit (Near Don Quijote)',
+      passengerName: 'Kevin Wijaya',
+      time: '16:42 JST',
+      location: 'Narita Terminal 1 Immigration South Gate',
     });
   };
 
@@ -575,8 +729,9 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const approveSettlement = () => {
     setSettlement((prev) => ({
       ...prev,
-      agentApprovedAt: 'Signed & Released by Outbound Finance Director',
       isSettled: true,
+      agentApprovedAt: '2026-10-02 16:50 JST (Approved by Agent HQ)',
+      extraCharges: prev.extraCharges.map((e) => ({ ...e, approved: true })),
     }));
   };
 
@@ -613,6 +768,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setRole,
         tour,
         passengers,
+        bookingGroups,
         checkpoints,
         itinerary,
         gatheringPin,
@@ -624,6 +780,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
         openPassengerDetailById,
         advanceCheckpoint,
         updateRollCall,
+        updateGroupRollCall,
         passengerClearedCustoms,
         shiftSchedule,
         toggleGatheringPin,

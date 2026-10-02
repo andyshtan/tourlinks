@@ -13,6 +13,7 @@ export const AgentView: React.FC = () => {
   const {
     tour,
     passengers,
+    bookingGroups,
     checkpoints,
     incidents,
     settlement,
@@ -24,6 +25,7 @@ export const AgentView: React.FC = () => {
   } = useTour();
   const { t } = useTranslation();
 
+  const [viewMode, setViewMode] = useState<'groups' | 'individuals'>('groups');
   const [filter, setFilter] = useState<'all' | 'flagged' | 'halal' | 'vegetarian'>('all');
   const [search, setSearch] = useState('');
   const [incidentModalOpen, setIncidentModalOpen] = useState(false);
@@ -99,6 +101,36 @@ export const AgentView: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Bi-Directional Product Cross-Reference Banner */}
+      <div className="p-4 rounded-m3-lg bg-surface-container border border-outline-variant/40 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-m3-md bg-primary-container text-on-primary-container flex items-center justify-center shrink-0">
+            <M3Icon name="sync_alt" size={22} />
+          </div>
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-extrabold uppercase px-2.5 py-0.5 rounded-m3-full bg-primary text-on-primary font-mono">
+                Retail Package: {tour.agentPackageCode}
+              </span>
+              <span className="text-sm font-extrabold text-on-surface">
+                {tour.agentProductName}
+              </span>
+            </div>
+            <p className="text-xs text-on-surface-variant mt-1 flex flex-wrap items-center gap-1.5 font-roboto">
+              <span>Operating DMC: <strong className="text-on-surface">{tour.operatorName}</strong></span>
+              <span>•</span>
+              <span>Ground Land Product: <strong className="text-secondary font-mono">{tour.dmcProductCode}</strong> ({tour.dmcProductName})</span>
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-xs font-mono font-bold text-on-surface-variant bg-surface px-3 py-1.5 rounded-m3-full border border-outline-variant/50">
+            {bookingGroups.length} Booking Parties • {passengers.length} Guests
+          </span>
+        </div>
+      </div>
 
       {/* Flight & Arrival Execution Radar */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -321,20 +353,46 @@ export const AgentView: React.FC = () => {
               <h3 className="font-bold text-lg font-roboto text-on-surface">
                 {t.agent.manifestTitle}
               </h3>
-              <M3Badge label={`${passengers.length} Travellers`} variant="primary" />
+              <M3Badge label={`${bookingGroups.length} Groups • ${passengers.length} Travellers`} variant="primary" />
             </div>
             <p className="text-xs text-on-surface-variant">{t.agent.manifestDesc}</p>
           </div>
 
-          {/* Search & Quick Filter Chips */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* View Mode Toggle: Groups vs Individuals */}
+            <div className="flex items-center bg-surface-container-high rounded-m3-full p-1 border border-outline-variant/60">
+              <button
+                onClick={() => setViewMode('groups')}
+                className={`px-3 py-1 rounded-m3-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                  viewMode === 'groups'
+                    ? 'bg-primary text-on-primary shadow-xs'
+                    : 'text-on-surface-variant hover:text-on-surface'
+                }`}
+              >
+                <M3Icon name="groups" size={15} />
+                <span>By Group ({bookingGroups.length})</span>
+              </button>
+              <button
+                onClick={() => setViewMode('individuals')}
+                className={`px-3 py-1 rounded-m3-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                  viewMode === 'individuals'
+                    ? 'bg-primary text-on-primary shadow-xs'
+                    : 'text-on-surface-variant hover:text-on-surface'
+                }`}
+              >
+                <M3Icon name="person" size={15} />
+                <span>All Guests ({passengers.length})</span>
+              </button>
+            </div>
+
+            {/* Search & Quick Filter Chips */}
             <div className="relative">
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search name / passport..."
-                className="h-8 pl-8 pr-3 text-xs rounded-m3-full bg-surface-container border border-outline-variant text-on-surface focus:outline-none focus:border-primary w-48 sm:w-56"
+                placeholder="Search..."
+                className="h-8 pl-8 pr-3 text-xs rounded-m3-full bg-surface-container border border-outline-variant text-on-surface focus:outline-none focus:border-primary w-36 sm:w-44"
               />
               <span className="absolute left-2.5 top-2 text-on-surface-variant">
                 <M3Icon name="search" size={16} />
@@ -342,7 +400,7 @@ export const AgentView: React.FC = () => {
             </div>
 
             <M3Chip
-              label="All (14)"
+              label="All"
               selected={filter === 'all'}
               onClick={() => setFilter('all')}
             />
@@ -353,33 +411,151 @@ export const AgentView: React.FC = () => {
               className={flaggedCount > 0 ? 'text-error border-error/50' : ''}
             />
             <M3Chip
-              label="Halal Diet (8)"
+              label="Halal (8)"
               selected={filter === 'halal'}
               onClick={() => setFilter('halal')}
-            />
-            <M3Chip
-              label="Vegetarian (2)"
-              selected={filter === 'vegetarian'}
-              onClick={() => setFilter('vegetarian')}
             />
           </div>
         </div>
 
-        {/* Passenger Table */}
-        <div className="overflow-x-auto rounded-m3-md border border-outline-variant/40">
-          <table className="w-full text-left text-xs font-roboto">
-            <thead className="bg-surface-container text-on-surface-variant uppercase font-bold text-[10px] tracking-wider border-b border-outline-variant/40">
-              <tr>
-                <th className="px-4 py-3">Guest Name</th>
-                <th className="px-3 py-3">Passport & Validity</th>
-                <th className="px-3 py-3">Japan Visa Status</th>
-                <th className="px-3 py-3">Room Assignment</th>
-                <th className="px-3 py-3">Dietary Requirements</th>
-                <th className="px-3 py-3 text-center">Customs Status</th>
-                <th className="px-3 py-3 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-outline-variant/30">
+        {/* 1. Group / Family Parties View */}
+        {viewMode === 'groups' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {bookingGroups.map((group) => {
+              const members = passengers.filter((p) => p.groupId === group.id);
+              const groupHasFlagged = members.some((p) => !p.isPassportValid);
+              const allPresent = members.every((p) => p.rollCallStatus === 'present');
+              const leadGuest = members.find((p) => p.isGroupLead) || members[0];
+
+              return (
+                <div
+                  key={group.id}
+                  className={`rounded-m3-lg border p-4 transition-all shadow-xs flex flex-col justify-between gap-3 ${
+                    groupHasFlagged
+                      ? 'bg-tertiary-container/15 border-tertiary/40'
+                      : 'bg-surface-container-low border-outline-variant/50 hover:border-primary/50'
+                  }`}
+                >
+                  <div>
+                    {/* Group Header */}
+                    <div className="flex items-start justify-between gap-2 pb-2.5 border-b border-outline-variant/30">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-extrabold text-sm sm:text-base text-on-surface flex items-center gap-1.5">
+                            <M3Icon name="family_restroom" size={18} className="text-primary" />
+                            <span>{group.groupName}</span>
+                          </h4>
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                            {group.bookingRef}
+                          </span>
+                        </div>
+                        <p className="text-xs text-on-surface-variant mt-0.5">
+                          Lead: <strong className="text-on-surface">{leadGuest.name}</strong> • {group.roomNumbers.join(', ')}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-surface-container-highest text-on-surface">
+                          {group.paxCount} Pax
+                        </span>
+                        {groupHasFlagged && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-error text-on-error flex items-center gap-0.5">
+                            <M3Icon name="warning" size={11} filled />
+                            Flagged
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Member Rows */}
+                    <div className="divide-y divide-outline-variant/20 pt-2 space-y-1">
+                      {members.map((m) => {
+                        const mExpiring = !m.isPassportValid;
+                        return (
+                          <div
+                            key={m.id}
+                            onClick={() => setSelectedPassenger(m)}
+                            className="py-1.5 px-2 rounded-m3-xs hover:bg-surface-container transition-colors flex items-center justify-between cursor-pointer group/m"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="text-xs">{m.gender === 'F' ? '👩' : '👨'}</span>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="font-bold text-xs text-on-surface group-hover/m:text-primary transition-colors truncate">
+                                    {m.name}
+                                  </span>
+                                  <span className="text-[9px] font-mono px-1 rounded-xs bg-surface-container-high text-on-surface-variant">
+                                    {m.groupRole}
+                                  </span>
+                                  {mExpiring && (
+                                    <span className="text-[9px] font-bold text-error bg-error-container px-1 rounded-xs">
+                                      &lt;6mo
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="text-[10px] text-on-surface-variant font-mono block truncate">
+                                  Pass: {m.passportNumber} • Seat {m.seatNumber || '14K'} • {m.dietary}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                              <button
+                                onClick={() => {
+                                  const url = getDocumentDirectUrl(m.id, 'passport');
+                                  if (navigator.clipboard) {
+                                    navigator.clipboard.writeText(url);
+                                    setCopiedPassportId(m.id);
+                                    setTimeout(() => setCopiedPassportId(null), 2000);
+                                  }
+                                }}
+                                className="px-2 py-0.5 rounded-m3-full text-[10px] font-bold bg-surface border border-outline-variant/60 hover:bg-surface-container text-on-surface cursor-pointer"
+                                title="Copy passenger document copy link"
+                              >
+                                {copiedPassportId === m.id ? '✓' : 'Doc ↗'}
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Group Action Footer */}
+                  <div className="pt-2 border-t border-outline-variant/30 flex items-center justify-between text-xs">
+                    <span className="text-[11px] text-on-surface-variant font-mono">
+                      {allPresent ? '✓ All Members Present' : 'Roll call in progress'}
+                    </span>
+                    <button
+                      onClick={() => nudgePassengerWhatsApp(leadGuest.phone, leadGuest.name)}
+                      className="px-2.5 py-1 rounded-m3-full bg-primary/10 hover:bg-primary/20 text-primary font-bold text-[11px] flex items-center gap-1 cursor-pointer transition-colors"
+                      title="Send WhatsApp update to Group Leader"
+                    >
+                      <M3Icon name="chat" size={13} />
+                      <span>WhatsApp Leader</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          /* 2. Individual Passenger Table View */
+          <div className="overflow-x-auto rounded-m3-md border border-outline-variant/40">
+            <table className="w-full text-left text-xs font-roboto">
+              <thead className="bg-surface-container text-on-surface-variant uppercase font-bold text-[10px] tracking-wider border-b border-outline-variant/40">
+                <tr>
+                  <th className="px-4 py-3">Guest Name</th>
+                  <th className="px-3 py-3">Booking Group (Ref)</th>
+                  <th className="px-3 py-3">Passport & Validity</th>
+                  <th className="px-3 py-3">Japan Visa Status</th>
+                  <th className="px-3 py-3">Room Assignment</th>
+                  <th className="px-3 py-3">Dietary Requirements</th>
+                  <th className="px-3 py-3 text-center">Customs Status</th>
+                  <th className="px-3 py-3 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-outline-variant/30">
               {filteredPassengers.map((p) => {
                 const isExpiringSoon = !p.isPassportValid;
 
@@ -407,6 +583,10 @@ export const AgentView: React.FC = () => {
                           </span>
                         </div>
                       </div>
+                    </td>
+                    <td className="px-3 py-3">
+                      <span className="font-bold text-on-surface block truncate max-w-[130px]">{p.groupName}</span>
+                      <span className="font-mono text-[10px] text-primary font-bold">{p.bookingRef}</span>
                     </td>
                     <td className="px-3 py-3">
                       <div className="flex items-center gap-1.5">
@@ -566,7 +746,8 @@ export const AgentView: React.FC = () => {
             </tbody>
           </table>
         </div>
-      </M3Card>
+      )}
+    </M3Card>
 
       {/* Lower Row: Cross-Border Incident Hub & Financial Settlement Ledger */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">

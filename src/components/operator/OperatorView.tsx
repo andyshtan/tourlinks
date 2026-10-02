@@ -12,11 +12,13 @@ export const OperatorView: React.FC = () => {
   const {
     tour,
     passengers,
+    bookingGroups,
     checkpoints,
     itinerary,
     gatheringPin,
     advanceCheckpoint,
     updateRollCall,
+    updateGroupRollCall,
     shiftSchedule,
     toggleGatheringPin,
     setSelectedPassenger,
@@ -25,6 +27,7 @@ export const OperatorView: React.FC = () => {
 
   const [signboardModalOpen, setSignboardModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'arrival' | 'itinerary' | 'rollcall' | 'proof'>('arrival');
+  const [rollCallMode, setRollCallMode] = useState<'groups' | 'individuals'>('groups');
   const [copiedOpDocId, setCopiedOpDocId] = useState<string | null>(null);
 
   const presentCount = passengers.filter((p) => p.rollCallStatus === 'present').length;
@@ -73,6 +76,39 @@ export const OperatorView: React.FC = () => {
           >
             {t.operator.pushSchedule}
           </M3Button>
+        </div>
+      </div>
+
+      {/* DMC Land Operator ⇄ Origin Travel Agent Dual Product Cross-Reference Banner */}
+      <div className="p-3.5 rounded-m3-lg bg-surface-container border border-outline-variant/60 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs shadow-xs">
+        <div className="flex items-center gap-2.5">
+          <span className="p-2 rounded-m3-sm bg-secondary-container text-on-secondary-container">
+            <M3Icon name="sync_alt" size={20} />
+          </span>
+          <div>
+            <div className="flex items-center gap-1.5 font-bold text-on-surface flex-wrap">
+              <span>Ground Land Product:</span>
+              <span className="font-mono text-secondary bg-secondary-container/50 px-1.5 py-0.5 rounded text-[11px]">
+                {tour.dmcProductCode || 'TYO-PVT-07D'}
+              </span>
+              <span>• {tour.dmcProductName || 'Kanto Golden Route 7D - Private Coach & Bilingual Guide'}</span>
+              {tour.dmcProductNameJa && (
+                <span className="text-[11px] text-on-surface-variant font-normal">({tour.dmcProductNameJa})</span>
+              )}
+            </div>
+            <p className="text-[11px] text-on-surface-variant mt-0.5">
+              Origin Retail Package: <span className="font-semibold text-primary">{tour.agentPackageCode || 'PKG-JKT-889'} • {tour.agentProductName || tour.name}</span> ({tour.agentName})
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 self-start md:self-auto shrink-0">
+          <span className="px-2 py-0.5 rounded-m3-full bg-surface text-[10px] font-mono font-bold text-on-surface-variant border border-outline-variant/50">
+            Contract: DMC-TYO-994
+          </span>
+          <span className="px-2 py-0.5 rounded-m3-full bg-secondary text-on-secondary text-[10px] font-bold">
+            {bookingGroups.length} Booking Groups • {passengers.length} Pax
+          </span>
         </div>
       </div>
 
@@ -488,120 +524,256 @@ export const OperatorView: React.FC = () => {
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="px-3 py-1 rounded-m3-full text-xs font-bold bg-green-100 text-green-800">
-                {t.operator.present}: {presentCount}
-              </span>
-              <span className="px-3 py-1 rounded-m3-full text-xs font-bold bg-red-100 text-red-800">
-                {t.operator.missing}: {missingCount}
-              </span>
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Roll Call Mode: By Group vs All Guests */}
+              <div className="flex items-center bg-surface-container-high rounded-m3-full p-1 border border-outline-variant/60">
+                <button
+                  onClick={() => setRollCallMode('groups')}
+                  className={`px-3 py-1 rounded-m3-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    rollCallMode === 'groups'
+                      ? 'bg-secondary text-on-secondary shadow-xs'
+                      : 'text-on-surface-variant hover:text-on-surface'
+                  }`}
+                >
+                  <M3Icon name="groups" size={15} />
+                  <span>By Group ({bookingGroups.length})</span>
+                </button>
+                <button
+                  onClick={() => setRollCallMode('individuals')}
+                  className={`px-3 py-1 rounded-m3-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    rollCallMode === 'individuals'
+                      ? 'bg-secondary text-on-secondary shadow-xs'
+                      : 'text-on-surface-variant hover:text-on-surface'
+                  }`}
+                >
+                  <M3Icon name="person" size={15} />
+                  <span>All Guests ({passengers.length})</span>
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 rounded-m3-full text-xs font-bold bg-green-100 text-green-800">
+                  {t.operator.present}: {presentCount}
+                </span>
+                <span className="px-3 py-1 rounded-m3-full text-xs font-bold bg-red-100 text-red-800">
+                  {t.operator.missing}: {missingCount}
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {passengers.map((p) => {
-              const isPresent = p.rollCallStatus === 'present';
+          {rollCallMode === 'groups' ? (
+            /* 1. Group / Party Roll Call Mode */
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {bookingGroups.map((group) => {
+                const members = passengers.filter((p) => p.groupId === group.id);
+                const presentMembers = members.filter((p) => p.rollCallStatus === 'present');
+                const allPresent = members.length > 0 && presentMembers.length === members.length;
+                const leadGuest = members.find((p) => p.isGroupLead) || members[0];
 
-              return (
-                <div
-                  key={p.id}
-                  className={`p-3 rounded-m3-md border flex items-center justify-between transition-all ${
-                    isPresent
-                      ? 'bg-surface-container-low border-outline-variant/40 hover:border-secondary/50'
-                      : 'bg-error-container/20 border-error hover:border-error/80'
-                  }`}
-                >
+                return (
                   <div
-                    onClick={() => setSelectedPassenger(p)}
-                    className="flex items-center gap-3 cursor-pointer group/item flex-1 min-w-0"
-                    title="Click to view full passenger dossier"
+                    key={group.id}
+                    className={`p-4 rounded-m3-lg border transition-all ${
+                      allPresent
+                        ? 'bg-surface-container-low border-outline-variant/50 hover:border-secondary/60'
+                        : 'bg-error-container/15 border-error/70'
+                    }`}
                   >
-                    <span
-                      className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${
-                        isPresent
-                          ? 'bg-green-600 text-white'
-                          : 'bg-error text-on-error animate-pulse'
-                      }`}
-                    >
-                      {isPresent ? <M3Icon name="check" size={16} /> : '!'}
-                    </span>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <p className="font-bold text-sm text-on-surface group-hover/item:text-secondary transition-colors truncate">
-                          {p.name}
+                    <div className="flex items-start justify-between gap-3 mb-2.5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-bold text-sm text-on-surface">{group.groupName}</h4>
+                          <span className="font-mono text-[10px] font-bold text-secondary bg-secondary-container/60 px-1.5 py-0.5 rounded">
+                            {group.bookingRef}
+                          </span>
+                        </div>
+                        <p className="text-xs text-on-surface-variant mt-0.5">
+                          Lead: <span className="font-semibold text-on-surface">{leadGuest?.name}</span> • Room {group.roomNumbers.join(', ')}
                         </p>
-                        <M3Icon
-                          name="visibility"
-                          size={14}
-                          className="text-secondary opacity-0 group-hover/item:opacity-100 transition-opacity"
-                        />
                       </div>
-                      <p className="text-xs text-on-surface-variant truncate">
-                        Room {p.roomNumber} • {p.dietary} • Seat {p.seatNumber || '14A'}
-                      </p>
+
+                      <span
+                        className={`px-2.5 py-1 rounded-m3-full text-xs font-bold shrink-0 ${
+                          allPresent
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800 animate-pulse'
+                        }`}
+                      >
+                        {presentMembers.length}/{members.length} Present
+                      </span>
+                    </div>
+
+                    {/* Member chips with status */}
+                    <div className="space-y-1.5 mb-3 bg-surface p-2.5 rounded-m3-md border border-outline-variant/30">
+                      {members.map((m) => {
+                        const mPresent = m.rollCallStatus === 'present';
+                        return (
+                          <div
+                            key={m.id}
+                            onClick={() => setSelectedPassenger(m)}
+                            className="flex items-center justify-between text-xs py-1 px-1.5 rounded hover:bg-surface-container cursor-pointer transition-colors"
+                            title="Inspect passenger dossier"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold ${
+                                  mPresent ? 'bg-green-600 text-white' : 'bg-error text-on-error'
+                                }`}
+                              >
+                                {mPresent ? '✓' : '!'}
+                              </span>
+                              <span className="font-medium text-on-surface">{m.name}</span>
+                              {m.isGroupLead && (
+                                <span className="text-[9px] uppercase font-bold text-primary bg-primary-container px-1 rounded">
+                                  Lead
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[11px] text-on-surface-variant font-mono">
+                              Seat {m.seatNumber || '14A'}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Actions: Batch Check-in & WhatsApp Lead */}
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-outline-variant/30">
+                      <button
+                        onClick={() => updateGroupRollCall(group.id, allPresent ? 'missing' : 'present')}
+                        className={`px-3 py-1.5 rounded-m3-full text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5 ${
+                          allPresent
+                            ? 'bg-surface-container text-on-surface hover:bg-surface-container-high border border-outline-variant'
+                            : 'bg-green-600 text-white hover:bg-green-700 shadow-xs'
+                        }`}
+                      >
+                        <M3Icon name={allPresent ? 'close' : 'done_all'} size={15} />
+                        <span>{allPresent ? 'Mark Group Missing' : `Check In Group (${members.length}/${members.length})`}</span>
+                      </button>
+
+                      {leadGuest && (
+                        <button
+                          onClick={() => window.open(`https://wa.me/${leadGuest.phone}`, '_blank')}
+                          className="px-2.5 py-1.5 rounded-m3-full bg-secondary-container text-on-secondary-container hover:bg-secondary-container/80 text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                          title="WhatsApp Group Leader"
+                        >
+                          <M3Icon name="chat" size={14} />
+                          <span>WhatsApp Leader</span>
+                        </button>
+                      )}
                     </div>
                   </div>
+                );
+              })}
+            </div>
+          ) : (
+            /* 2. Individual Passenger Roll Call Mode */
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {passengers.map((p) => {
+                const isPresent = p.rollCallStatus === 'present';
 
-                  <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-                    <button
-                      onClick={() => {
-                        const url = getDocumentDirectUrl(p.id, 'passport');
-                        if (navigator.clipboard) {
-                          navigator.clipboard.writeText(url);
-                          setCopiedOpDocId(p.id);
-                          setTimeout(() => setCopiedOpDocId(null), 2000);
-                        }
-                      }}
-                      className={`h-7 px-2 rounded-m3-full text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer transition-all border shadow-xs ${
-                        copiedOpDocId === p.id
-                          ? 'bg-green-600 text-white border-green-600'
-                          : 'bg-surface-container hover:bg-surface-container-high text-on-surface border-outline-variant/60'
-                      }`}
-                      title="Copy passenger document copy link"
-                    >
-                      <M3Icon
-                        name={copiedOpDocId === p.id ? 'done' : 'link'}
-                        size={12}
-                        className={copiedOpDocId === p.id ? 'text-white' : 'text-secondary'}
-                      />
-                      <span className="hidden sm:inline">
-                        {copiedOpDocId === p.id ? 'Copied' : 'Doc Link'}
-                      </span>
-                    </button>
-
-                    <button
+                return (
+                  <div
+                    key={p.id}
+                    className={`p-3 rounded-m3-md border flex items-center justify-between transition-all ${
+                      isPresent
+                        ? 'bg-surface-container-low border-outline-variant/40 hover:border-secondary/50'
+                        : 'bg-error-container/20 border-error hover:border-error/80'
+                    }`}
+                  >
+                    <div
                       onClick={() => setSelectedPassenger(p)}
-                      className="p-1.5 rounded-full text-secondary hover:bg-secondary/15 transition-colors cursor-pointer"
-                      title="Inspect passenger dossier (passport, visa, hotel, baggage)"
+                      className="flex items-center gap-3 cursor-pointer group/item flex-1 min-w-0"
+                      title="Click to view full passenger dossier"
                     >
-                      <M3Icon name="badge" size={18} />
-                    </button>
+                      <span
+                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${
+                          isPresent
+                            ? 'bg-green-600 text-white'
+                            : 'bg-error text-on-error animate-pulse'
+                        }`}
+                      >
+                        {isPresent ? <M3Icon name="check" size={16} /> : '!'}
+                      </span>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <p className="font-bold text-sm text-on-surface group-hover/item:text-secondary transition-colors truncate">
+                            {p.name}
+                          </p>
+                          <M3Icon
+                            name="visibility"
+                            size={14}
+                            className="text-secondary opacity-0 group-hover/item:opacity-100 transition-opacity"
+                          />
+                        </div>
+                        <p className="text-xs text-on-surface-variant truncate">
+                          <span className="font-semibold text-secondary">{p.groupName}</span> • Room {p.roomNumber} • {p.dietary} • Seat {p.seatNumber || '14A'}
+                        </p>
+                      </div>
+                    </div>
 
-                    <button
-                      onClick={() =>
-                        updateRollCall(p.id, isPresent ? 'missing' : 'present')
-                      }
-                      className={`px-3 py-1 rounded-m3-full text-xs font-bold cursor-pointer transition-all ${
-                        isPresent
-                          ? 'bg-surface-container text-on-surface hover:bg-surface-container-high'
-                          : 'bg-green-600 text-white hover:bg-green-700'
-                      }`}
-                    >
-                      {isPresent ? 'Mark Missing' : 'Mark Present'}
-                    </button>
+                    <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={() => {
+                          const url = getDocumentDirectUrl(p.id, 'passport');
+                          if (navigator.clipboard) {
+                            navigator.clipboard.writeText(url);
+                            setCopiedOpDocId(p.id);
+                            setTimeout(() => setCopiedOpDocId(null), 2000);
+                          }
+                        }}
+                        className={`h-7 px-2 rounded-m3-full text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer transition-all border shadow-xs ${
+                          copiedOpDocId === p.id
+                            ? 'bg-green-600 text-white border-green-600'
+                            : 'bg-surface-container hover:bg-surface-container-high text-on-surface border-outline-variant/60'
+                        }`}
+                        title="Copy passenger document copy link"
+                      >
+                        <M3Icon
+                          name={copiedOpDocId === p.id ? 'done' : 'link'}
+                          size={12}
+                          className={copiedOpDocId === p.id ? 'text-white' : 'text-secondary'}
+                        />
+                        <span className="hidden sm:inline">
+                          {copiedOpDocId === p.id ? 'Copied' : 'Doc Link'}
+                        </span>
+                      </button>
 
-                    <button
-                      onClick={() => window.open(`https://wa.me/${p.phone}`, '_blank')}
-                      className="p-1.5 rounded-full text-primary hover:bg-primary/10 transition-colors cursor-pointer"
-                      title="Call guest"
-                    >
-                      <M3Icon name="chat" size={18} />
-                    </button>
+                      <button
+                        onClick={() => setSelectedPassenger(p)}
+                        className="p-1.5 rounded-full text-secondary hover:bg-secondary/15 transition-colors cursor-pointer"
+                        title="Inspect passenger dossier (passport, visa, hotel, baggage)"
+                      >
+                        <M3Icon name="badge" size={18} />
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          updateRollCall(p.id, isPresent ? 'missing' : 'present')
+                        }
+                        className={`px-3 py-1 rounded-m3-full text-xs font-bold cursor-pointer transition-all ${
+                          isPresent
+                            ? 'bg-surface-container text-on-surface hover:bg-surface-container-high'
+                            : 'bg-green-600 text-white hover:bg-green-700'
+                        }`}
+                      >
+                        {isPresent ? 'Mark Missing' : 'Mark Present'}
+                      </button>
+
+                      <button
+                        onClick={() => window.open(`https://wa.me/${p.phone}`, '_blank')}
+                        className="p-1.5 rounded-full text-primary hover:bg-primary/10 transition-colors cursor-pointer"
+                        title="Call guest"
+                      >
+                        <M3Icon name="chat" size={18} />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </M3Card>
       )}
 

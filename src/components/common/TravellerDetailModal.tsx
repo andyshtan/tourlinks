@@ -18,6 +18,7 @@ export const TravellerDetailModal: React.FC = () => {
     nudgePassengerWhatsApp,
     passengerClearedCustoms,
     tour,
+    passengers,
   } = useTour();
 
   const [viewingDocType, setViewingDocType] = useState<DocumentType | null>(null);
@@ -29,6 +30,7 @@ export const TravellerDetailModal: React.FC = () => {
   const isExpiringSoon = !p.isPassportValid;
   const isPresent = p.rollCallStatus === 'present';
   const docs = getPassengerDocuments(p);
+  const companions = passengers.filter((m) => m.groupId === p.groupId && m.id !== p.id);
 
   const handleCopyDocLink = (passengerId: string, docType: DocumentType, docId: string) => {
     const url = getDocumentDirectUrl(passengerId, docType);
@@ -64,7 +66,17 @@ export const TravellerDetailModal: React.FC = () => {
                     {p.gender === 'M' ? 'Male' : 'Female'}
                   </span>
                 </div>
-                <p className="text-xs font-mono text-on-surface-variant mt-0.5">
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-m3-full bg-primary/10 text-primary flex items-center gap-1">
+                    <M3Icon name="groups" size={13} />
+                    <span>{p.groupName}</span>
+                    <span className="font-mono opacity-75">({p.bookingRef})</span>
+                  </span>
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant">
+                    {p.groupRole}
+                  </span>
+                </div>
+                <p className="text-xs font-mono text-on-surface-variant mt-1">
                   {p.phone}
                 </p>
               </div>
@@ -304,7 +316,62 @@ export const TravellerDetailModal: React.FC = () => {
                 </div>
                 <M3Badge label={`Keycard Active`} variant="secondary" />
               </div>
+
+              {/* Bi-directional Product Name Reference */}
+              <div className="pt-2 border-t border-outline-variant/30 flex flex-wrap items-center justify-between text-[11px] text-on-surface-variant gap-1">
+                <span>Agent Retail: <strong className="text-on-surface font-mono">{tour.agentPackageCode}</strong></span>
+                <span className="text-outline-variant">⇄</span>
+                <span>DMC Ground: <strong className="text-on-surface font-mono">{tour.dmcProductCode}</strong></span>
+              </div>
             </div>
+
+            {/* Travel Group Party Members (if traveling as a group/family) */}
+            {companions.length > 0 && (
+              <div className="p-3.5 rounded-m3-md bg-surface-container border border-outline-variant/40 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold uppercase tracking-wider text-[10px] text-on-surface-variant flex items-center gap-1.5">
+                    <M3Icon name="groups" size={16} className="text-primary" />
+                    <span>Travel Group Party ({p.groupName})</span>
+                  </span>
+                  <span className="font-mono text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                    PNR: {p.bookingRef}
+                  </span>
+                </div>
+
+                <div className="space-y-1.5 pt-1">
+                  {companions.map((comp) => (
+                    <div
+                      key={comp.id}
+                      onClick={() => setSelectedPassenger(comp)}
+                      className="p-2.5 rounded-m3-sm bg-surface hover:bg-primary-container/20 border border-outline-variant/60 flex items-center justify-between transition-colors cursor-pointer group"
+                      title={`Switch to ${comp.name}'s dossier`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-base">{comp.gender === 'F' ? '👩' : '👨'}</span>
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <p className="font-bold text-xs text-on-surface group-hover:text-primary transition-colors">
+                              {comp.name}
+                            </p>
+                            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-xs bg-surface-container-high text-on-surface-variant">
+                              {comp.groupRole}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-on-surface-variant font-mono">
+                            Room {comp.roomNumber} ({comp.roomType}) • Seat {comp.seatNumber || '14K'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 text-[11px] font-bold text-primary">
+                        <span>View</span>
+                        <M3Icon name="chevron_right" size={14} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Dietary & Medical */}
             <div className="p-3.5 rounded-m3-md bg-surface-container border border-outline-variant/40 space-y-2">

@@ -1,5 +1,17 @@
 export type StakeholderRole = 'agent' | 'operator' | 'traveller';
 
+export interface BookingGroup {
+  id: string;
+  bookingRef: string;
+  groupName: string;
+  groupType: 'Family' | 'Couple' | 'Friends' | 'Corporate';
+  leadPassengerId: string;
+  leadPassengerName: string;
+  leadPhone: string;
+  paxCount: number;
+  roomNumbers: string[];
+}
+
 export interface Passenger {
   id: string;
   name: string;
@@ -22,6 +34,13 @@ export interface Passenger {
   emergencyContactPhone?: string;
   roommateName?: string;
   avatarUrl?: string;
+
+  // Group / Family Party Information
+  groupId: string;
+  groupName: string;
+  bookingRef: string;
+  groupRole: 'Lead Guest' | 'Spouse' | 'Child' | 'Friend' | 'Colleague';
+  isGroupLead: boolean;
 }
 
 export type ArrivalStepId = 'standby' | 'landed' | 'customs_meet' | 'boarded_enroute';
@@ -87,12 +106,22 @@ export interface SettlementLedger {
 
 export interface TourPackage {
   id: string;
-  code: string;
-  name: string;
+  code: string; // Universal Tour Reference
+  name: string; // Master Friendly Name
+
+  // Agent (Retail Outbound Package)
+  agentPackageCode: string; // 'PKG-JKT-889'
+  agentProductName: string; // '7D6N Tokyo Autumn Wonder & Mt. Fuji Discovery'
+  agentName: string; // 'Nusantara Tour & Travel HQ'
+
+  // DMC / Ground Operator (Land Arrangement Service)
+  dmcProductCode: string; // 'TYO-PVT-07D'
+  dmcProductName: string; // 'Kanto Golden Route 7D - Private Coach & Bilingual Guide'
+  dmcProductNameJa: string; // '関東ゴールデンルート7日間 専用車・ガイド手配'
+  operatorName: string; // 'Japan Land DMC Tokyo'
+
   destination: string;
   dates: string;
-  agentName: string;
-  operatorName: string;
   flight: {
     number: string;
     carrier: string;
