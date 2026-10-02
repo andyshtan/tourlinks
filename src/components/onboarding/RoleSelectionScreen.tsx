@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTour } from '../../context/TourContext';
 import { useTranslation } from '../../i18n/LanguageContext';
 import type { SupportedLanguage } from '../../i18n/translations';
+import { translations } from '../../i18n/translations';
 import type { StakeholderRole } from '../../types/tour';
 import { M3Icon } from '../m3/M3Icon';
 
@@ -13,85 +14,100 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
   onEnterDashboard,
 }) => {
   const { tour } = useTour();
-  const { language, setLanguage, t } = useTranslation();
+  const { setLanguage, t } = useTranslation();
 
   const [selectedRole, setSelectedRole] = useState<StakeholderRole>('agent');
-  const [selectedLang, setSelectedLang] = useState<SupportedLanguage>(language);
 
+  // Each card strictly configured with its respected language
   const roleConfigs: {
     id: StakeholderRole;
     icon: string;
+    respectedLang: SupportedLanguage;
+    langBadge: string;
+    flag: string;
     title: string;
     badge: string;
     summary: string;
-    recommendedLang: SupportedLanguage;
-    recommendedLangLabel: string;
+    responsibilitiesLabel: string;
+    features: string[];
+    buttonText: string;
     colorAccent: string;
     bgAccent: string;
-    features: string[];
+    borderActive: string;
   }[] = [
     {
       id: 'agent',
       icon: 'corporate_fare',
-      title: t.roles.agent,
-      badge: t.roleSelection.agentBadge,
-      summary: t.roleSelection.agentSummary,
-      recommendedLang: 'id',
-      recommendedLangLabel: '🇮🇩 Bahasa Indonesia',
+      respectedLang: 'id',
+      langBadge: 'Bahasa Indonesia',
+      flag: '🇮🇩',
+      title: translations.id.roles.agent, // 'Agen Outbound (Penjual)'
+      badge: translations.id.roleSelection.agentBadge, // 'Kantor Pusat Asal • Jakarta'
+      summary: translations.id.roleSelection.agentSummary,
+      responsibilitiesLabel: 'Tanggung Jawab Alur Kerja:',
+      features: [
+        'Pengawal Paspor (<6 bulan) dengan 1-Klik Nudge WhatsApp',
+        'Manifes Digital 14 Tamu & Alokasi Kamar Hotel',
+        'Radar Penerbangan Langsung (JL720 CGK ➔ NRT)',
+        'Tanda Tangan & Pelunasan Net Rate DMC ($14.800)',
+      ],
+      buttonText: 'Masuk Dashboard sebagai Agen',
       colorAccent: 'text-primary',
       bgAccent: 'bg-primary-container text-on-primary-container',
-      features: [
-        'Passport Expiry Guard (<6 months) with 1-Click WhatsApp Nudge',
-        'Standardized 14-Pax Manifest & Rooming Allocation',
-        'Live In-Transit Flight Radar (JL720 CGK ➔ NRT)',
-        'DMC Contract & Net-Rate Ledger Sign-Off ($14,800)',
-      ],
+      borderActive: 'border-primary ring-primary/15',
     },
     {
       id: 'operator',
       icon: 'commute',
-      title: t.roles.operator,
-      badge: t.roleSelection.operatorBadge,
-      summary: t.roleSelection.operatorSummary,
-      recommendedLang: 'ja',
-      recommendedLangLabel: '🇯🇵 日本語 (Japanese)',
+      respectedLang: 'ja',
+      langBadge: '日本語 (Japanese)',
+      flag: '🇯🇵',
+      title: translations.ja.roles.operator, // '現地手配会社 (DMC / Operator)'
+      badge: translations.ja.roleSelection.operatorBadge, // '着地運用オペレーター • 東京'
+      summary: translations.ja.roleSelection.operatorSummary,
+      responsibilitiesLabel: '現地オペレーション業務:',
+      features: [
+        '専属ドライバー（田中）＆ガイド（佐藤）の配車手配',
+        'iPad用 フルスクリーン空港ミート看板',
+        '空港到着ハンドシェイク（待機 ➔ 乗車完了）',
+        '首都高渋滞による動的遅延調整（+20分）＆集合ピン',
+      ],
+      buttonText: 'DMCダッシュボードへ入る',
       colorAccent: 'text-secondary',
       bgAccent: 'bg-secondary-container text-on-secondary-container',
-      features: [
-        'Dedicated Chauffeur (Kenji) & Guide (Yumi) Dispatch',
-        'Full-Screen iPad Digital Arrival Paging Signboard',
-        '1-Tap Airport Arrival Handshake (Standby ➔ Boarded)',
-        'Dynamic Schedule Delay (+20m) & Shibuya Gathering Pin',
-      ],
+      borderActive: 'border-secondary ring-secondary/15',
     },
     {
       id: 'traveller',
       icon: 'badge',
-      title: t.roles.traveller,
-      badge: t.roleSelection.travellerBadge,
-      summary: t.roleSelection.travellerSummary,
-      recommendedLang: 'en',
-      recommendedLangLabel: '🇺🇸 English',
+      respectedLang: 'en',
+      langBadge: 'English (Universal)',
+      flag: '🇺🇸',
+      title: translations.en.roles.traveller, // 'Traveller Pass'
+      badge: translations.en.roleSelection.travellerBadge, // 'End User • Guest Mobile Pass'
+      summary: translations.en.roleSelection.travellerSummary,
+      responsibilitiesLabel: 'Guest Experience Features:',
       features: [
         'Offline-Ready Mobile Web Pass (Cached Vouchers & Wi-Fi)',
         'Narita T1 Meeting Point Photo (Pillar #17 Near Starbucks)',
         '1-Tap "I Have Cleared Customs! Heading to Exit"',
         'Japanese Taxi Address Card & Emergency SOS Radar',
       ],
+      buttonText: 'Enter Dashboard as Traveller',
       colorAccent: 'text-tertiary',
       bgAccent: 'bg-tertiary-container text-on-tertiary-container',
+      borderActive: 'border-tertiary ring-tertiary/15',
     },
   ];
 
-  const handleRoleSelect = (roleId: StakeholderRole, defaultLang: SupportedLanguage) => {
+  const handleRoleSelect = (roleId: StakeholderRole, roleLang: SupportedLanguage) => {
     setSelectedRole(roleId);
-    setSelectedLang(defaultLang);
-    setLanguage(defaultLang);
+    setLanguage(roleLang);
   };
 
-  const handleLanguageChange = (lang: SupportedLanguage) => {
-    setSelectedLang(lang);
-    setLanguage(lang);
+  const handleLaunch = (roleId: StakeholderRole, roleLang: SupportedLanguage) => {
+    setLanguage(roleLang);
+    onEnterDashboard(roleId, roleLang);
   };
 
   return (
@@ -145,58 +161,47 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
           </div>
         </div>
 
-        {/* Global Language Selector Pills */}
-        <div className="max-w-md mx-auto p-2 rounded-m3-full bg-surface-container border border-outline-variant/60 flex items-center justify-between text-xs">
-          <span className="pl-3 font-semibold text-on-surface-variant text-[11px] uppercase tracking-wider">
-            {t.roleSelection.languagePrompt}:
+        {/* Respected Language Overview Banner */}
+        <div className="max-w-2xl mx-auto p-2.5 rounded-m3-full bg-surface-container border border-outline-variant/60 flex flex-wrap items-center justify-center gap-3 text-xs shadow-xs">
+          <span className="font-semibold text-on-surface-variant text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+            <M3Icon name="translate" size={16} className="text-primary" />
+            <span>Native Stakeholder Languages:</span>
           </span>
-          <div className="flex items-center gap-1">
-            {(
-              [
-                { id: 'en', label: '🇺🇸 English' },
-                { id: 'id', label: '🇮🇩 Indonesia' },
-                { id: 'ja', label: '🇯🇵 日本語' },
-              ] as const
-            ).map((l) => (
-              <button
-                key={l.id}
-                type="button"
-                onClick={() => handleLanguageChange(l.id)}
-                className={`px-3 py-1.5 rounded-m3-full text-xs font-bold transition-all cursor-pointer ${
-                  selectedLang === l.id
-                    ? 'bg-primary text-on-primary shadow-xs'
-                    : 'text-on-surface hover:bg-surface-container-high'
-                }`}
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-m3-full bg-primary-container text-on-primary-container font-bold text-[11px]">
+            🇮🇩 Agent: ID
+          </span>
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-m3-full bg-secondary-container text-on-secondary-container font-bold text-[11px]">
+            🇯🇵 Operator: JA
+          </span>
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-m3-full bg-tertiary-container text-on-tertiary-container font-bold text-[11px]">
+            🇺🇸 Traveller: EN
+          </span>
         </div>
 
-        {/* 3 Role Selection Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* 3 Role Selection Cards — Each Showing Its Respected Language */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
           {roleConfigs.map((cfg) => {
             const isSelected = selectedRole === cfg.id;
 
             return (
               <div
                 key={cfg.id}
-                onClick={() => handleRoleSelect(cfg.id, cfg.recommendedLang)}
-                className={`group relative rounded-m3-xl p-6 transition-all duration-200 cursor-pointer flex flex-col justify-between border-2 ${
+                onClick={() => handleRoleSelect(cfg.id, cfg.respectedLang)}
+                className={`group relative rounded-m3-xl p-6 transition-all duration-300 cursor-pointer flex flex-col justify-between border-2 ${
                   isSelected
-                    ? 'bg-surface-container-lowest border-primary shadow-xl ring-4 ring-primary/10 scale-[1.02]'
+                    ? `bg-surface-container-lowest ${cfg.borderActive} shadow-xl ring-4 scale-[1.02]`
                     : 'bg-surface-container-low border-outline-variant/50 hover:border-outline hover:bg-surface-container shadow-xs'
                 }`}
               >
-                <div>
-                  {/* Top Badge & Radio Indicator */}
-                  <div className="flex items-center justify-between mb-4">
-                    <span
-                      className={`text-[10px] font-bold px-2.5 py-1 rounded-m3-full uppercase tracking-wider ${cfg.bgAccent}`}
-                    >
-                      {cfg.badge}
+                <div className="space-y-4">
+                  {/* Respected Language Tag Badge */}
+                  <div className="flex items-center justify-between pb-3 border-b border-outline-variant/30">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-m3-full bg-surface-container-highest text-on-surface font-extrabold text-xs tracking-wide shadow-xs border border-outline-variant/40">
+                      <span>{cfg.flag}</span>
+                      <span>{cfg.langBadge}</span>
                     </span>
+
+                    {/* Radio Select Ring */}
                     <div
                       className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
                         isSelected
@@ -208,10 +213,19 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
                     </div>
                   </div>
 
-                  {/* Icon & Title */}
-                  <div className="flex items-center gap-3 mb-3">
+                  {/* Origin Badge */}
+                  <div>
+                    <span
+                      className={`text-[10px] font-bold px-2.5 py-1 rounded-m3-full uppercase tracking-wider inline-block ${cfg.bgAccent}`}
+                    >
+                      {cfg.badge}
+                    </span>
+                  </div>
+
+                  {/* Icon & Title in Respected Language */}
+                  <div className="flex items-center gap-3">
                     <div
-                      className={`w-12 h-12 rounded-m3-lg flex items-center justify-center ${cfg.bgAccent} shadow-xs`}
+                      className={`w-12 h-12 rounded-m3-lg flex items-center justify-center ${cfg.bgAccent} shadow-xs shrink-0`}
                     >
                       <M3Icon name={cfg.icon} filled size={28} />
                     </div>
@@ -222,14 +236,15 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
                     </div>
                   </div>
 
-                  <p className="text-xs text-on-surface-variant leading-relaxed mb-4">
+                  {/* Summary in Respected Language */}
+                  <p className="text-xs text-on-surface-variant leading-relaxed min-h-[48px]">
                     {cfg.summary}
                   </p>
 
-                  {/* Feature Highlights */}
+                  {/* Workflow Responsibilities in Respected Language */}
                   <div className="space-y-2 pt-3 border-t border-outline-variant/30">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/80 block">
-                      Workflow Responsibilities:
+                      {cfg.responsibilitiesLabel}
                     </span>
                     {cfg.features.map((feat, idx) => (
                       <div
@@ -245,22 +260,13 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
                   </div>
                 </div>
 
-                {/* Bottom Quick Language Preset */}
-                <div className="mt-6 pt-4 border-t border-outline-variant/40 space-y-3">
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-on-surface-variant font-medium">
-                      Default Language:
-                    </span>
-                    <span className="font-bold text-on-surface">
-                      {cfg.recommendedLangLabel}
-                    </span>
-                  </div>
-
+                {/* Bottom Launch Button in Respected Language */}
+                <div className="mt-6 pt-4 border-t border-outline-variant/40">
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onEnterDashboard(cfg.id, selectedLang);
+                      handleLaunch(cfg.id, cfg.respectedLang);
                     }}
                     className={`w-full py-3 px-4 rounded-m3-full text-xs font-bold font-roboto transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-98 ${
                       isSelected
@@ -268,9 +274,7 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
                         : 'bg-surface-container-highest text-on-surface hover:bg-outline-variant/40'
                     }`}
                   >
-                    <span>
-                      {t.roleSelection.launchBtn} {cfg.title.split(' ')[0]}
-                    </span>
+                    <span>{cfg.buttonText}</span>
                     <M3Icon name="arrow_forward" size={16} />
                   </button>
                 </div>
