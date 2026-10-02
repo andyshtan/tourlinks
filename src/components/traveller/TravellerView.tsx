@@ -104,6 +104,45 @@ export const TravellerView: React.FC = () => {
         </div>
       </div>
 
+      {/* Quick Travel Document Copies Card */}
+      <div className="p-3.5 rounded-m3-lg bg-surface-container border border-outline-variant/40 space-y-2.5 shadow-xs">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <M3Icon name="folder_shared" size={18} className="text-primary" />
+            <h4 className="font-bold text-xs text-on-surface uppercase tracking-wider">
+              My Travel Document Copies
+            </h4>
+          </div>
+          <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+            Ready & Offline Cached
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <button
+            onClick={() => setSelectedPassenger(currentTraveller)}
+            className="p-2.5 rounded-m3-md bg-surface border border-outline-variant/60 hover:bg-surface-container-high transition-all flex items-center justify-between cursor-pointer text-left shadow-xs active:scale-98"
+          >
+            <div>
+              <p className="font-bold text-[11px] text-on-surface">Passport Scan</p>
+              <p className="text-[10px] font-mono text-on-surface-variant">{currentTraveller.passportNumber}</p>
+            </div>
+            <M3Icon name="badge" size={16} className="text-primary" />
+          </button>
+
+          <button
+            onClick={() => setSelectedPassenger(currentTraveller)}
+            className="p-2.5 rounded-m3-md bg-surface border border-outline-variant/60 hover:bg-surface-container-high transition-all flex items-center justify-between cursor-pointer text-left shadow-xs active:scale-98"
+          >
+            <div>
+              <p className="font-bold text-[11px] text-on-surface">Japan e-Visa</p>
+              <p className="text-[10px] font-mono text-on-surface-variant">Single Entry</p>
+            </div>
+            <M3Icon name="verified_user" size={16} className="text-secondary" />
+          </button>
+        </div>
+      </div>
+
       {/* Stage 2: Airport Arrival Assistance Card */}
       <M3Card variant="elevated" className="p-4 space-y-3.5 border-l-4 border-l-primary">
         <div className="flex items-center justify-between">

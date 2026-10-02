@@ -6,6 +6,7 @@ import { M3Button } from '../m3/M3Button';
 import { M3Badge } from '../m3/M3Badge';
 import { M3Icon } from '../m3/M3Icon';
 import { M3Dialog } from '../m3/M3Dialog';
+import { getDocumentDirectUrl } from '../../utils/documentUtils';
 
 export const OperatorView: React.FC = () => {
   const {
@@ -24,6 +25,7 @@ export const OperatorView: React.FC = () => {
 
   const [signboardModalOpen, setSignboardModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'arrival' | 'itinerary' | 'rollcall' | 'proof'>('arrival');
+  const [copiedOpDocId, setCopiedOpDocId] = useState<string | null>(null);
 
   const presentCount = passengers.filter((p) => p.rollCallStatus === 'present').length;
   const missingCount = passengers.filter((p) => p.rollCallStatus === 'missing').length;
@@ -541,6 +543,32 @@ export const OperatorView: React.FC = () => {
                   </div>
 
                   <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      onClick={() => {
+                        const url = getDocumentDirectUrl(p.id, 'passport');
+                        if (navigator.clipboard) {
+                          navigator.clipboard.writeText(url);
+                          setCopiedOpDocId(p.id);
+                          setTimeout(() => setCopiedOpDocId(null), 2000);
+                        }
+                      }}
+                      className={`h-7 px-2 rounded-m3-full text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer transition-all border shadow-xs ${
+                        copiedOpDocId === p.id
+                          ? 'bg-green-600 text-white border-green-600'
+                          : 'bg-surface-container hover:bg-surface-container-high text-on-surface border-outline-variant/60'
+                      }`}
+                      title="Copy passenger document copy link"
+                    >
+                      <M3Icon
+                        name={copiedOpDocId === p.id ? 'done' : 'link'}
+                        size={12}
+                        className={copiedOpDocId === p.id ? 'text-white' : 'text-secondary'}
+                      />
+                      <span className="hidden sm:inline">
+                        {copiedOpDocId === p.id ? 'Copied' : 'Doc Link'}
+                      </span>
+                    </button>
+
                     <button
                       onClick={() => setSelectedPassenger(p)}
                       className="p-1.5 rounded-full text-secondary hover:bg-secondary/15 transition-colors cursor-pointer"

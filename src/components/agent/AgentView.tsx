@@ -7,6 +7,7 @@ import { M3Chip } from '../m3/M3Chip';
 import { M3Badge } from '../m3/M3Badge';
 import { M3Icon } from '../m3/M3Icon';
 import { M3Dialog } from '../m3/M3Dialog';
+import { getDocumentDirectUrl } from '../../utils/documentUtils';
 
 export const AgentView: React.FC = () => {
   const {
@@ -28,6 +29,7 @@ export const AgentView: React.FC = () => {
   const [incidentModalOpen, setIncidentModalOpen] = useState(false);
   const [incidentTitle, setIncidentTitle] = useState('');
   const [incidentSeverity, setIncidentSeverity] = useState<'low' | 'medium' | 'high' | 'critical'>('medium');
+  const [copiedPassportId, setCopiedPassportId] = useState<string | null>(null);
 
   // Filter passengers
   const filteredPassengers = passengers.filter((p) => {
@@ -407,8 +409,21 @@ export const AgentView: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-3 py-3">
-                      <div className="font-mono font-medium text-on-surface">
-                        {p.passportNumber}
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono font-medium text-on-surface">
+                          {p.passportNumber}
+                        </span>
+                        <a
+                          href={getDocumentDirectUrl(p.id, 'passport')}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-[10px] font-bold text-primary hover:underline inline-flex items-center gap-0.5 bg-primary/10 px-1.5 py-0.5 rounded cursor-pointer"
+                          title="Open official passport scan link"
+                        >
+                          <M3Icon name="description" size={11} />
+                          <span>Copy ↗</span>
+                        </a>
                       </div>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         <span
@@ -493,6 +508,30 @@ export const AgentView: React.FC = () => {
                         className="flex items-center justify-end gap-1.5"
                         onClick={(e) => e.stopPropagation()}
                       >
+                        <button
+                          onClick={() => {
+                            const url = getDocumentDirectUrl(p.id, 'passport');
+                            if (navigator.clipboard) {
+                              navigator.clipboard.writeText(url);
+                              setCopiedPassportId(p.id);
+                              setTimeout(() => setCopiedPassportId(null), 2000);
+                            }
+                          }}
+                          className={`px-2 py-1 rounded-m3-full text-[11px] font-bold inline-flex items-center gap-1 cursor-pointer transition-all border shadow-xs ${
+                            copiedPassportId === p.id
+                              ? 'bg-green-600 text-white border-green-600'
+                              : 'bg-surface-container hover:bg-surface-container-high text-on-surface border-outline-variant/60'
+                          }`}
+                          title="Copy direct shareable document link"
+                        >
+                          <M3Icon
+                            name={copiedPassportId === p.id ? 'done' : 'link'}
+                            size={12}
+                            className={copiedPassportId === p.id ? 'text-white' : 'text-primary'}
+                          />
+                          <span>{copiedPassportId === p.id ? 'Copied' : 'Doc Link'}</span>
+                        </button>
+
                         <button
                           onClick={() => setSelectedPassenger(p)}
                           className="px-2.5 py-1 rounded-m3-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface font-bold text-[11px] inline-flex items-center gap-1 cursor-pointer transition-all border border-outline-variant/60"

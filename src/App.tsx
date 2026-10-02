@@ -10,12 +10,23 @@ import { TravellerView } from './components/traveller/TravellerView';
 import { RoleSelectionScreen } from './components/onboarding/RoleSelectionScreen';
 import { MarketingPage } from './components/marketing/MarketingPage';
 import { TravellerDetailModal } from './components/common/TravellerDetailModal';
+import { DocumentViewerModal } from './components/common/DocumentViewerModal';
+import type { DocumentType } from './utils/documentUtils';
 
-const detectInitialView = (): 'marketing' | 'demo' => {
+const detectInitialView = (): 'marketing' | 'demo' | 'document' => {
   if (typeof window === 'undefined') return 'marketing';
   const hostname = window.location.hostname;
   const pathname = window.location.pathname;
   const search = window.location.search;
+
+  // Direct document copy link detection (e.g. /docs?passenger=p1&type=passport)
+  if (
+    pathname.startsWith('/docs') ||
+    search.includes('view=doc') ||
+    (search.includes('passenger=') && search.includes('type='))
+  ) {
+    return 'document';
+  }
 
   // If on demo subdomain, /demo path, or ?view=demo
   if (
@@ -29,10 +40,10 @@ const detectInitialView = (): 'marketing' | 'demo' => {
 };
 
 const MainContent: React.FC = () => {
-  const { role, setRole } = useTour();
+  const { role, setRole, passengers } = useTour();
   const { setLanguage } = useTranslation();
 
-  const [view, setView] = useState<'marketing' | 'demo'>(detectInitialView);
+  const [view, setView] = useState<'marketing' | 'demo' | 'document'>(detectInitialView);
   const [screen, setScreen] = useState<'role_select' | 'dashboard'>('role_select');
 
   // Sync browser URL or popstate if needed
@@ -77,12 +88,71 @@ const MainContent: React.FC = () => {
     setLanguage('en');
   };
 
-  // 1. If on Marketing Website (travelflow.neralab.id)
+  // 1. Direct Shareable Document Viewer (when opening a copied document link)
+  if (view === 'document') {
+    const params =
+      typeof window !== 'undefined'
+        ? new URLSearchParams(window.location.search)
+        : new URLSearchParams();
+    const passengerId = params.get('passenger') || 'p1';
+    const docType = (params.get('type') as DocumentType) || 'passport';
+    const targetPassenger =
+      passengers.find((p) => p.id === passengerId) || passengers[0];
+
+    return (
+      <div className="min-h-screen bg-surface-container-lowest">
+        {/* Navigation Bar */}
+        <header className="bg-surface border-b border-outline-variant/40 px-4 py-3 flex items-center justify-between shadow-xs">
+          <button
+            onClick={() => {
+              setView('demo');
+              setScreen('dashboard');
+              if (window.history && window.history.pushState) {
+                window.history.pushState({}, '', '/demo');
+              }
+            }}
+            className="font-black text-2xl tracking-tighter text-on-surface hover:opacity-80 transition-opacity cursor-pointer flex items-center gap-2"
+          >
+            <span>Travelflow</span>
+            <span className="text-xs font-mono font-normal text-on-surface-variant">
+              / Document Archive
+            </span>
+          </button>
+
+          <button
+            onClick={() => {
+              setView('demo');
+              setScreen('dashboard');
+              if (window.history && window.history.pushState) {
+                window.history.pushState({}, '', '/demo');
+              }
+            }}
+            className="px-4 py-2 rounded-m3-full bg-primary text-on-primary text-xs font-bold hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
+          >
+            ← Back to Travelflow Operations
+          </button>
+        </header>
+
+        <DocumentViewerModal
+          passenger={targetPassenger}
+          initialType={docType}
+          isOpen={true}
+          isStandalone={true}
+          onClose={() => {
+            setView('demo');
+            setScreen('dashboard');
+          }}
+        />
+      </div>
+    );
+  }
+
+  // 2. If on Marketing Website (travelflow.neralab.id)
   if (view === 'marketing') {
     return <MarketingPage onLaunchDemo={handleLaunchDemoFromMarketing} />;
   }
 
-  // 2. If on Demo App: Welcome Role Selection Screen (demo.travelflow.neralab.id)
+  // 3. If on Demo App: Welcome Role Selection Screen (demo.travelflow.neralab.id)
   if (screen === 'role_select') {
     return (
       <RoleSelectionScreen
@@ -92,7 +162,7 @@ const MainContent: React.FC = () => {
     );
   }
 
-  // 3. If on Demo App: Role-Specific Dashboard Screen
+  // 4. If on Demo App: Role-Specific Dashboard Screen
   return (
     <div className="min-h-screen flex flex-col bg-surface animate-in fade-in duration-200">
       <TopAppBar
