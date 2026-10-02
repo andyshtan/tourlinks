@@ -502,7 +502,7 @@ export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) =>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Logo className="text-xl" />
-            <span className="pl-1">Shared Outbound Tour Workflow</span>
+            <span className="pl-1">by Nera</span>
           </div>
 
           <div className="flex items-center gap-6">
