@@ -93,11 +93,11 @@ export const TravellerView: React.FC = () => {
           <button
             onClick={() => setSelectedPassenger(currentTraveller)}
             className="w-full py-2 px-3 rounded-m3-md bg-white/15 hover:bg-white/25 text-white text-xs font-bold flex items-center justify-between transition-all cursor-pointer border border-white/20 active:scale-98"
-            title="Inspect passport, visa waiver, baggage tag, and room details"
+            title="Inspect passport, visa, baggage tag, and room details"
           >
             <div className="flex items-center gap-2">
               <M3Icon name="badge" size={16} />
-              <span>My Passport, Visa Waiver & Baggage Tag</span>
+              <span>My Passport, Visa & Baggage Tag</span>
             </div>
             <span className="flex items-center gap-1 text-[11px] opacity-90 font-medium">
               <span>View Dossier</span>
@@ -110,10 +110,10 @@ export const TravellerView: React.FC = () => {
         <div className="mt-3 pt-3 border-t border-white/20 flex items-center justify-between text-xs">
           <div className="flex items-center gap-1.5">
             <M3Icon name="partly_cloudy_day" size={18} />
-            <span>Tokyo: 19°C Crisp Autumn</span>
+            <span>{tour.copy.weather}</span>
           </div>
           <div className="font-mono font-bold text-white bg-black/20 px-2.5 py-1 rounded-m3-full">
-            16:15 JST (Local)
+            {tour.copy.nowLocal} (Local)
           </div>
         </div>
       </div>
@@ -125,7 +125,7 @@ export const TravellerView: React.FC = () => {
             <M3Icon name="family_restroom" size={18} className="text-secondary" />
             <div>
               <h4 className="font-bold text-xs text-on-surface uppercase tracking-wider">
-                My Travel Party ({familyCompanions.length} Guests)
+                My Travel Party ({familyCompanions.length} {tour.copy.paxNoun})
               </h4>
               <p className="text-[10px] text-on-surface-variant">
                 {currentTraveller.groupName} • Booking Ref: <span className="font-mono font-bold text-secondary">{currentTraveller.bookingRef}</span>
@@ -218,8 +218,8 @@ export const TravellerView: React.FC = () => {
             className="p-2.5 rounded-m3-md bg-surface border border-outline-variant/60 hover:bg-surface-container-high transition-all flex items-center justify-between cursor-pointer text-left shadow-xs active:scale-98"
           >
             <div>
-              <p className="font-bold text-[11px] text-on-surface">Japan Visa Waiver</p>
-              <p className="text-[10px] font-mono text-on-surface-variant">e-passport registration</p>
+              <p className="font-bold text-[11px] text-on-surface">{tour.copy.visaLabel}</p>
+              <p className="text-[10px] font-mono text-on-surface-variant">{tour.copy.visaSubLabel}</p>
             </div>
             <M3Icon name="verified_user" size={16} className="text-secondary" />
           </button>
@@ -242,7 +242,7 @@ export const TravellerView: React.FC = () => {
               </p>
             </div>
           </div>
-          <M3Badge label="Pillar #17" variant="primary" />
+          <M3Badge label={tour.copy.meetingPointShort} variant="primary" />
         </div>
 
         {/* Meeting point map */}
@@ -306,7 +306,7 @@ export const TravellerView: React.FC = () => {
           <div className="flex items-center gap-2.5">
             <M3Avatar name={tour.staff.guideName} size={40} />
             <div className="text-xs">
-              <p className="font-bold text-on-surface">{tour.staff.guideName} <span className="font-normal text-on-surface-variant">• local guide</span></p>
+              <p className="font-bold text-on-surface">{tour.staff.guideName} <span className="font-normal text-on-surface-variant">• {tour.copy.guideRole.toLowerCase()}</span></p>
               <p className="text-on-surface-variant text-[11px]">
                 {tour.staff.vehicleModel} • {tour.staff.vehiclePlate}
               </p>
@@ -376,7 +376,7 @@ export const TravellerView: React.FC = () => {
           <h3 className="font-bold text-sm text-on-surface">
             {t.traveller.todaySchedule} (Day 1)
           </h3>
-          <span className="text-[11px] font-bold text-primary">Updated by guide & tour leader</span>
+          <span className="text-[11px] font-bold text-primary">Updated by {tour.copy.guideRole.toLowerCase()} & tour leader</span>
         </div>
 
         <div className="space-y-2.5">
@@ -393,7 +393,7 @@ export const TravellerView: React.FC = () => {
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="font-mono font-bold text-primary">
-                  {item.adjustedTime || item.time} JST
+                  {item.adjustedTime || item.time} {tour.copy.tz}
                 </span>
                 {item.delayMinutes > 0 && (
                   <span className="text-[10px] font-bold text-error bg-error-container px-1.5 py-0.2 rounded-xs">
@@ -471,12 +471,12 @@ export const TravellerView: React.FC = () => {
             </span>
             <div>
               <h3 className="font-bold text-sm text-on-surface">
-                My Travel Group ({passengers.length} Guests)
+                My Travel Group ({passengers.length} {tour.copy.paxNoun})
               </h3>
               <p className="text-[11px] text-on-surface-variant">Tap any guest to view details</p>
             </div>
           </div>
-          <M3Badge label="Tokyo Cohort" variant="primary" />
+          <M3Badge label={tour.copy.cohortLabel} variant="primary" />
         </div>
 
         <div className="grid grid-cols-2 gap-2">
@@ -514,7 +514,7 @@ export const TravellerView: React.FC = () => {
             <M3Icon name="emergency" size={32} />
             <h4 className="font-bold text-base">{t.traveller.sosTriggered}</h4>
             <p className="text-xs text-white/90">
-              Tour leader {tour.staff.tourLeaderName}, guide {tour.staff.guideName} and Agent HQ have been alerted.
+              Tour leader {tour.staff.tourLeaderName}, {tour.copy.guideRole.toLowerCase()} {tour.staff.guideName} and Agent HQ have been alerted.
             </p>
           </div>
         ) : (
@@ -535,7 +535,7 @@ export const TravellerView: React.FC = () => {
       <M3Dialog
         open={taxiCardOpen}
         onClose={() => setTaxiCardOpen(false)}
-        headline="Show to Taxi Driver (タクシー運転手様へ)"
+        headline={tour.copy.taxiCardHeadline}
         maxWidth="md"
         actions={
           <M3Button variant="filled" onClick={() => setTaxiCardOpen(false)}>
@@ -549,10 +549,10 @@ export const TravellerView: React.FC = () => {
           </p>
           <div className="space-y-1">
             <h2 className="text-2xl font-black font-roboto text-on-surface tracking-tight">
-              新宿グランベルホテル
+              {tour.hotel.nameLocal}
             </h2>
             <p className="text-base font-bold text-primary">
-              {tour.hotel.addressJapanese}
+              {tour.hotel.addressLocal}
             </p>
           </div>
           <div className="pt-3 border-t border-outline-variant/40 text-xs text-on-surface-variant font-mono">
@@ -567,7 +567,7 @@ export const TravellerView: React.FC = () => {
         onClose={() => setSosModalOpen(false)}
         icon="emergency"
         headline="Broadcast Emergency SOS?"
-        supportingText={`This alerts tour leader ${tour.staff.tourLeaderName}, local guide ${tour.staff.guideName} and Nusantara Odyssey HQ in Jakarta.`}
+        supportingText={`This alerts tour leader ${tour.staff.tourLeaderName}, ${tour.copy.guideRole.toLowerCase()} ${tour.staff.guideName} and ${tour.copy.agentHqLine}.`}
         actions={
           <>
             <M3Button variant="text" onClick={() => setSosModalOpen(false)}>

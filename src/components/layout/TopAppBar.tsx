@@ -2,6 +2,7 @@ import React from 'react';
 import { useTour } from '../../context/TourContext';
 import { useTranslation } from '../../i18n/LanguageContext';
 import { M3Icon } from '../m3/M3Icon';
+import { Logo } from '../common/Logo';
 
 interface TopAppBarProps {
   onBackToRoleSelect: () => void;
@@ -69,10 +70,10 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={onBackToMarketing || onBackToRoleSelect}
-            className="font-black text-2xl tracking-tighter text-on-surface hover:opacity-80 transition-opacity cursor-pointer shrink-0"
+            className="text-on-surface hover:opacity-80 transition-opacity cursor-pointer shrink-0"
             title="Return to Tourlinks"
           >
-            Tourlinks
+            <Logo className="text-[26px]" />
           </button>
 
           <span className="text-outline-variant font-light text-lg">/</span>

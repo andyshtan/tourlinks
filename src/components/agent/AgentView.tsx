@@ -9,6 +9,7 @@ import { M3Icon } from '../m3/M3Icon';
 import { M3Dialog } from '../m3/M3Dialog';
 import { M3Avatar } from '../m3/M3Avatar';
 import { getDocumentDirectUrl } from '../../utils/documentUtils';
+import { formatMoney } from '../../utils/format';
 
 export const AgentView: React.FC = () => {
   const {
@@ -27,7 +28,7 @@ export const AgentView: React.FC = () => {
   const { t } = useTranslation();
 
   const [viewMode, setViewMode] = useState<'groups' | 'individuals'>('groups');
-  const [filter, setFilter] = useState<'all' | 'flagged' | 'halal' | 'vegetarian'>('all');
+  const [filter, setFilter] = useState<'all' | 'flagged' | 'care'>('all');
   const [search, setSearch] = useState('');
   const [incidentModalOpen, setIncidentModalOpen] = useState(false);
   const [incidentTitle, setIncidentTitle] = useState('');
@@ -41,14 +42,13 @@ export const AgentView: React.FC = () => {
       p.passportNumber.toLowerCase().includes(search.toLowerCase());
     if (!matchesSearch) return false;
     if (filter === 'flagged') return !p.isPassportValid || p.visaStatus === 'flagged';
-    if (filter === 'halal') return p.dietary === 'Halal';
-    if (filter === 'vegetarian') return p.dietary === 'Vegetarian';
+    if (filter === 'care') return p.dietary === tour.copy.careHighlight;
     return true;
   });
 
   const flaggedCount = passengers.filter((p) => !p.isPassportValid).length;
   const customsClearedCount = passengers.filter((p) => p.hasClearedCustoms).length;
-  const halalCount = passengers.filter((p) => p.dietary === 'Halal').length;
+  const careCount = passengers.filter((p) => p.dietary === tour.copy.careHighlight).length;
   const sellingAgents = Array.from(new Set(passengers.map((p) => p.sellingAgent)));
   const currentStep =
     checkpoints.filter((c) => c.status === 'completed').length +
@@ -73,7 +73,7 @@ export const AgentView: React.FC = () => {
             </div>
             <div>
               <h4 className="font-bold text-sm sm:text-base font-roboto">
-                {t.agent.passportGuard}: {flaggedCount} Passengers Flagged
+                {t.agent.passportGuard}: {flaggedCount} Flagged
               </h4>
               <p className="text-xs sm:text-sm text-on-tertiary-container/90">
                 {t.agent.passportAlert}
@@ -91,7 +91,7 @@ export const AgentView: React.FC = () => {
               }}
               className="border-tertiary text-on-surface hover:bg-surface-container bg-surface cursor-pointer"
             >
-              Inspect Flagged Guest
+              Inspect Flagged Passport
             </M3Button>
             <M3Button
               variant="filled"
@@ -125,7 +125,7 @@ export const AgentView: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-on-surface-variant mt-1 flex flex-wrap items-center gap-1.5 font-roboto">
-              <span>Operating DMC: <strong className="text-on-surface">{tour.operatorName}</strong></span>
+              <span>Operating {tour.copy.operatorNoun}: <strong className="text-on-surface">{tour.operatorName}</strong></span>
               <span>•</span>
               <span>Ground Land Product: <strong className="text-secondary font-mono">{tour.dmcProductCode}</strong> ({tour.dmcProductName})</span>
             </p>
@@ -137,7 +137,7 @@ export const AgentView: React.FC = () => {
             className="text-xs font-mono font-bold text-on-surface-variant bg-surface px-3 py-1.5 rounded-m3-full border border-outline-variant/50"
             title={`Consortium departure — sold by: ${sellingAgents.join(', ')}`}
           >
-            {bookingGroups.length} Booking Parties • {passengers.length} Guests • {sellingAgents.length} Selling Agents
+            {bookingGroups.length} Booking Parties • {passengers.length} {tour.copy.paxNoun} • {sellingAgents.length} Selling Agents
           </span>
         </div>
       </div>
@@ -176,7 +176,7 @@ export const AgentView: React.FC = () => {
                 <div className="w-16 h-0.5 bg-primary relative my-1">
                   <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary" />
                 </div>
-                <span className="text-[10px] text-primary font-bold">7h 20m</span>
+                <span className="text-[10px] text-primary font-bold">{tour.copy.flightDuration}</span>
               </div>
               <div className="text-right">
                 <p className="text-on-surface-variant">{tour.flight.destination}</p>
@@ -203,7 +203,7 @@ export const AgentView: React.FC = () => {
           <div className="mt-4 pt-3 border-t border-outline-variant/30 flex items-center justify-between text-xs">
             <span className="text-on-surface-variant">Arrival Clearance:</span>
             <span className="font-bold text-primary">
-              {customsClearedCount} of {passengers.length} Guests Cleared Customs
+              {customsClearedCount} of {passengers.length} {tour.copy.paxNoun} Cleared Customs
             </span>
           </div>
         </M3Card>
@@ -218,14 +218,14 @@ export const AgentView: React.FC = () => {
                 </span>
                 <div>
                   <span className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-                    Authorized Overseas DMC
+                    Overseas {tour.copy.operatorNoun}
                   </span>
                   <h3 className="font-bold text-base text-on-surface truncate">
                     {tour.operatorName}
                   </h3>
                 </div>
               </div>
-              <M3Badge label="Tokyo HQ" variant="secondary" />
+              <M3Badge label={tour.copy.operatorBase} variant="secondary" />
             </div>
 
             <div className="space-y-3 mt-4 text-xs">
@@ -234,7 +234,7 @@ export const AgentView: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-on-surface text-sm">{tour.staff.guideName}</p>
                   <p className="text-on-surface-variant text-[11px]">
-                    Local Guide ({tour.staff.guideLanguages.join(', ')})
+                    {tour.copy.guideRole} ({tour.staff.guideLanguages.join(', ')})
                   </p>
                 </div>
                 <M3Button
@@ -250,7 +250,7 @@ export const AgentView: React.FC = () => {
               <div className="p-2.5 rounded-m3-md bg-surface-container-low flex items-center justify-between">
                 <div>
                   <span className="block text-[10px] uppercase font-bold text-on-surface-variant/70">
-                    Dedicated Chauffeur & Vehicle
+                    Driver & Vehicle
                   </span>
                   <span className="font-semibold text-on-surface">
                     {tour.staff.driverName} • {tour.staff.vehicleModel}
@@ -343,7 +343,7 @@ export const AgentView: React.FC = () => {
 
           <div className="mt-4 pt-3 border-t border-outline-variant/30 flex items-center justify-between text-xs">
             <span className="text-on-surface-variant">Updated by:</span>
-            <span className="text-primary font-bold">Tour leader & DMC</span>
+            <span className="text-primary font-bold">Tour leader & {tour.copy.operatorNoun}</span>
           </div>
         </M3Card>
       </div>
@@ -384,7 +384,7 @@ export const AgentView: React.FC = () => {
                 }`}
               >
                 <M3Icon name="person" size={15} />
-                <span>All Guests ({passengers.length})</span>
+                <span>All {tour.copy.paxNoun} ({passengers.length})</span>
               </button>
             </div>
 
@@ -414,9 +414,9 @@ export const AgentView: React.FC = () => {
               className={flaggedCount > 0 ? 'text-error border-error/50' : ''}
             />
             <M3Chip
-              label={`Halal (${halalCount})`}
-              selected={filter === 'halal'}
-              onClick={() => setFilter('halal')}
+              label={`${tour.copy.careHighlight} (${careCount})`}
+              selected={filter === 'care'}
+              onClick={() => setFilter('care')}
             />
           </div>
         </div>
@@ -555,7 +555,7 @@ export const AgentView: React.FC = () => {
                   <th className="px-4 py-3">Guest Name</th>
                   <th className="px-3 py-3">Booking Group (Ref)</th>
                   <th className="px-3 py-3">Passport & Validity</th>
-                  <th className="px-3 py-3">Japan Visa Status</th>
+                  <th className="px-3 py-3">{tour.copy.visaLabel} Status</th>
                   <th className="px-3 py-3">Room Assignment</th>
                   <th className="px-3 py-3">Dietary Requirements</th>
                   <th className="px-3 py-3 text-center">Customs Status</th>
@@ -771,7 +771,7 @@ export const AgentView: React.FC = () => {
                     {t.agent.incidentHub}
                   </h3>
                   <p className="text-xs text-on-surface-variant">
-                    One log shared by Agent HQ, the tour leader and the overseas DMC
+                    One log shared by Agent HQ, the tour leader and the overseas {tour.copy.operatorNoun}
                   </p>
                 </div>
               </div>
@@ -880,9 +880,9 @@ export const AgentView: React.FC = () => {
 
             <div className="p-3.5 rounded-m3-md bg-surface-container-low border border-outline-variant/40 space-y-3">
               <div className="flex justify-between items-center text-xs">
-                <span className="text-on-surface-variant">{t.agent.netRateTotal} (6D5N Coach + Hotels)</span>
+                <span className="text-on-surface-variant">{t.agent.netRateTotal} ({tour.copy.netRateNote})</span>
                 <span className="font-bold text-sm text-on-surface">
-                  ¥{settlement.baseNetRate.toLocaleString()} {settlement.currency}
+                  {formatMoney(settlement.baseNetRate, settlement.currency)}
                 </span>
               </div>
 
@@ -905,7 +905,7 @@ export const AgentView: React.FC = () => {
                         </span>
                       </span>
                     </span>
-                    <span className="font-mono font-medium shrink-0">+¥{ex.amount.toLocaleString()}</span>
+                    <span className="font-mono font-medium shrink-0">+{formatMoney(ex.amount, settlement.currency)}</span>
                   </div>
                 ))}
               </div>
@@ -913,7 +913,7 @@ export const AgentView: React.FC = () => {
               <div className="pt-2 border-t border-outline-variant/30 flex justify-between items-center">
                 <span className="font-bold text-sm text-on-surface">Total to Settle:</span>
                 <span className="font-extrabold text-base text-primary font-mono">
-                  ¥{(settlement.baseNetRate + extrasTotal).toLocaleString()} {settlement.currency}
+                  {formatMoney(settlement.baseNetRate + extrasTotal, settlement.currency)}
                 </span>
               </div>
             </div>
@@ -967,7 +967,7 @@ export const AgentView: React.FC = () => {
         onClose={() => setIncidentModalOpen(false)}
         icon="report_problem"
         headline="Log Shared Outbound Incident"
-        supportingText="This ticket goes into the log shared with the tour leader and the Tokyo ground DMC."
+        supportingText="This ticket goes into the log shared with the tour leader and the ground operator."
         actions={
           <>
             <M3Button variant="text" onClick={() => setIncidentModalOpen(false)}>

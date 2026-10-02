@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 424" font-family="Roboto, 'Helvetica Neue', Arial, sans-serif">
+  <rect width="600" height="424" fill="#EEF3FB"/>
+  <!-- immigration / baggage hall -->
+  <rect x="16" y="16" width="568" height="76" rx="10" fill="#D8E2FF"/>
+  <text x="32" y="46" font-size="18" font-weight="700" fill="#001A41">Immigration &amp; baggage claim</text>
+  <text x="32" y="70" font-size="15" fill="#3F4759">Madinah Airport (MED) · international arrivals</text>
+  <!-- arrivals hall -->
+  <rect x="16" y="92" width="568" height="312" rx="10" fill="#FFFFFF" stroke="#CAC4D0" stroke-width="1.5"/>
+  <!-- exit gate 3 -->
+  <rect x="56" y="78" width="148" height="30" rx="7" fill="#005AC1"/>
+  <text x="130" y="99" font-size="16" font-weight="700" fill="#FFFFFF" text-anchor="middle">EXIT GATE 3</text>
+  <!-- walking route -->
+  <path d="M130 116 V258 H372" fill="none" stroke="#005AC1" stroke-width="6" stroke-dasharray="2 14" stroke-linecap="round"/>
+  <path d="M388 258 l-17 -11 v22 z" fill="#005AC1"/>
+  <text x="148" y="160" font-size="17" font-weight="700" fill="#005AC1">1. Leave by Gate 3</text>
+  <text x="148" y="290" font-size="17" font-weight="700" fill="#005AC1">2. Walk straight</text>
+  <!-- umrah groups desk -->
+  <rect x="336" y="150" width="164" height="58" rx="8" fill="#984061"/>
+  <text x="418" y="176" font-size="16" font-weight="800" fill="#FFFFFF" text-anchor="middle">Umrah groups desk</text>
+  <text x="418" y="196" font-size="14" fill="#FFD9E2" text-anchor="middle">مكتب مجموعات العمرة</text>
+  <!-- muthawif marker -->
+  <circle cx="418" cy="258" r="20" fill="#984061"/>
+  <circle cx="418" cy="251" r="6.5" fill="#FFFFFF"/>
+  <path d="M405 270 a13 10.5 0 0 1 26 0 z" fill="#FFFFFF"/>
+  <rect x="296" y="290" width="276" height="54" rx="9" fill="#FFD9E2"/>
+  <text x="434" y="313" font-size="17" font-weight="800" fill="#3E001D" text-anchor="middle">3. Meet muthawif Ahmad</text>
+  <text x="434" y="333" font-size="14" fill="#3E001D" text-anchor="middle">Board: “AL-HIDAYAH NUSANTARA”</text>
+  <!-- landmarks -->
+  <rect x="32" y="352" width="170" height="40" rx="8" fill="#F2EEF6" stroke="#CAC4D0"/>
+  <text x="117" y="378" font-size="15" font-weight="700" fill="#49454E" text-anchor="middle">SIM card kiosks</text>
+  <rect x="296" y="352" width="124" height="40" rx="8" fill="#F2EEF6" stroke="#CAC4D0"/>
+  <text x="358" y="378" font-size="15" font-weight="700" fill="#49454E" text-anchor="middle">Prayer room</text>
+  <rect x="432" y="352" width="140" height="40" rx="8" fill="#F2EEF6" stroke="#CAC4D0"/>
+  <text x="502" y="378" font-size="15" font-weight="700" fill="#49454E" text-anchor="middle">Wheelchair point</text>
+  <!-- coach exit -->
+  <text x="538" y="126" font-size="15" font-weight="700" fill="#006874" text-anchor="end">Coach parking</text>
+  <path d="M546 121 h16" stroke="#006874" stroke-width="4" stroke-linecap="round"/>
+  <path d="M574 121 l-13 -8 v16 z" fill="#006874"/>
+  <text x="584" y="419" font-size="11" fill="#79747E" text-anchor="end">Schematic · not to scale</text>
+</svg>

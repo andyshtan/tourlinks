@@ -1,4 +1,5 @@
-import type { Passenger } from '../types/tour';
+import type { Passenger, TourPackage } from '../types/tour';
+import { scenarioBasePath } from '../scenario';
 
 export type DocumentType = 'passport' | 'visa' | 'eticket' | 'insurance';
 
@@ -17,8 +18,12 @@ export interface PassengerDocument {
   expiryDate?: string;
 }
 
-export const getPassengerDocuments = (p: Passenger): PassengerDocument[] => {
+const airportCode = (label: string): string => label.match(/\((\w{3})\)/)?.[1] || label;
+
+export const getPassengerDocuments = (p: Passenger, tour: TourPackage): PassengerDocument[] => {
   const isExpiringSoon = !p.isPassportValid;
+  const isUmrah = tour.scenario === 'umrah';
+  const { flight } = tour;
 
   return [
     {
@@ -38,29 +43,29 @@ export const getPassengerDocuments = (p: Passenger): PassengerDocument[] => {
     {
       id: `${p.id}-visa`,
       type: 'visa',
-      title: 'Japan Visa Waiver Registration',
-      subtitle: 'For Indonesian e-passport holders',
-      fileName: `VISA_WAIVER_JP_${p.passportNumber}.pdf`,
+      title: isUmrah ? 'Umrah Visa' : 'Japan Visa Waiver Registration',
+      subtitle: isUmrah ? 'Issued through Nusuk for this departure' : 'For Indonesian e-passport holders',
+      fileName: isUmrah ? `UMRAH_VISA_${p.passportNumber}.pdf` : `VISA_WAIVER_JP_${p.passportNumber}.pdf`,
       fileSize: '624 KB PDF',
-      docNumber: p.eVisaNumber || `VW-2026-JKT-${p.passportNumber.slice(-4)}`,
+      docNumber: p.eVisaNumber || `${isUmrah ? 'UV-2026-KSA' : 'VW-2026-JKT'}-${p.passportNumber.slice(-4)}`,
       status: p.visaStatus === 'approved' ? 'verified' : p.visaStatus === 'flagged' ? 'warning' : 'pending',
-      statusLabel: p.visaStatus === 'approved' ? 'Registered' : p.visaStatus === 'flagged' ? 'Needs Review' : 'Pending Registration',
-      issuedBy: 'Embassy of Japan in Indonesia',
+      statusLabel: p.visaStatus === 'approved' ? (isUmrah ? 'Issued' : 'Registered') : p.visaStatus === 'flagged' ? 'Needs Review' : 'Pending',
+      issuedBy: isUmrah ? 'Saudi umrah visa platform (sample)' : 'Embassy of Japan in Indonesia',
       issueDate: '2026-09-15',
       // A waiver registration cannot outlive the passport it is tied to
-      expiryDate: p.passportExpiry < '2029-09-14' ? p.passportExpiry : '2029-09-14',
+      expiryDate: isUmrah ? '2026-12-14' : p.passportExpiry < '2029-09-14' ? p.passportExpiry : '2029-09-14',
     },
     {
       id: `${p.id}-eticket`,
       type: 'eticket',
       title: 'Flight E-Ticket Receipt & Boarding Pass',
-      subtitle: 'Japan Airlines JL720 (CGK ➔ NRT)',
-      fileName: `ETICKET_JL720_${p.passportNumber}.pdf`,
+      subtitle: `${flight.carrier} ${flight.number} (${airportCode(flight.origin)} ➔ ${airportCode(flight.destination)})`,
+      fileName: `ETICKET_${flight.number}_${p.passportNumber}.pdf`,
       fileSize: '890 KB PDF',
       docNumber: `131-${Math.abs(hashString(p.name)).toString().padStart(10, '0').slice(0, 10)}`,
       status: 'verified',
       statusLabel: p.seatNumber ? `Confirmed Seat ${p.seatNumber}` : 'Confirmed',
-      issuedBy: 'Japan Airlines International',
+      issuedBy: flight.carrier,
       issueDate: '2026-09-20',
       expiryDate: '2026-10-15',
     },
@@ -90,7 +95,7 @@ export const getDocumentDirectUrl = (
       ? window.location.origin
       : 'https://demo.tourlinks.co';
 
-  return `${origin}/docs?passenger=${passengerId}&type=${docType}`;
+  return `${origin}${scenarioBasePath}/docs?passenger=${passengerId}&type=${docType}`;
 };
 
 export const generateMRZ = (p: Passenger): { line1: string; line2: string } => {

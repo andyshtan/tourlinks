@@ -6,6 +6,7 @@ import { M3Button } from '../m3/M3Button';
 import { M3Badge } from '../m3/M3Badge';
 import { M3Icon } from '../m3/M3Icon';
 import { M3Avatar } from '../m3/M3Avatar';
+import { formatMoney } from '../../utils/format';
 
 type LeaderTab = 'today' | 'rollcall' | 'rooming' | 'issues';
 
@@ -86,7 +87,7 @@ export const TourLeaderView: React.FC = () => {
             </p>
           </div>
           <div className="text-right text-xs shrink-0">
-            <p className="font-mono font-bold bg-black/20 px-2.5 py-1 rounded-m3-full">16:15 JST</p>
+            <p className="font-mono font-bold bg-black/20 px-2.5 py-1 rounded-m3-full">{tour.copy.nowLocal}</p>
             <p className="mt-1.5 text-on-leader/80">{tour.dates}</p>
           </div>
         </div>
@@ -94,7 +95,7 @@ export const TourLeaderView: React.FC = () => {
         <div className="grid grid-cols-3 gap-2 text-center text-xs">
           <div className="p-2 rounded-m3-md bg-white/15">
             <p className="text-lg font-extrabold font-mono">{passengers.length}</p>
-            <p className="text-on-leader/80">Guests • {bookingGroups.length} parties</p>
+            <p className="text-on-leader/80">{tour.copy.paxNoun} • {bookingGroups.length} parties</p>
           </div>
           <div className="p-2 rounded-m3-md bg-white/15">
             <p className="text-lg font-extrabold font-mono">
@@ -138,9 +139,9 @@ export const TourLeaderView: React.FC = () => {
           <M3Card variant="elevated" className="p-5 space-y-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h3 className="font-bold text-lg text-on-surface">Airport Handover to Local Guide</h3>
+                <h3 className="font-bold text-lg text-on-surface">Airport Handover to the {tour.copy.guideRole}</h3>
                 <p className="text-xs text-on-surface-variant">
-                  You lead the group out of customs; the guide and driver take over at the meeting point.
+                  You lead the group out of customs; the {tour.copy.guideRole.toLowerCase()} and driver take over at the meeting point.
                 </p>
               </div>
               <M3Badge
@@ -243,7 +244,7 @@ export const TourLeaderView: React.FC = () => {
               <div className="p-3 rounded-m3-md bg-surface-container-low border border-outline-variant/30 flex items-center gap-3">
                 <M3Avatar name={tour.staff.guideName} size={44} />
                 <div className="flex-1 min-w-0">
-                  <span className="text-[10px] font-bold text-on-surface-variant uppercase">Local guide</span>
+                  <span className="text-[10px] font-bold text-on-surface-variant uppercase">{tour.copy.guideRole}</span>
                   <p className="font-bold text-sm text-on-surface">{tour.staff.guideName}</p>
                   <p className="text-on-surface-variant truncate">{tour.staff.guideLanguages.join(', ')}</p>
                 </div>
@@ -307,7 +308,7 @@ export const TourLeaderView: React.FC = () => {
                     }`}
                   >
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="font-mono font-bold text-leader">{item.time} JST</span>
+                      <span className="font-mono font-bold text-leader">{item.time} {tour.copy.tz}</span>
                       {item.delayMinutes > 0 && (
                         <span className="text-[10px] font-bold text-error bg-error-container px-1.5 py-0.5 rounded-m3-xs">
                           +{item.delayMinutes}m
@@ -428,7 +429,7 @@ export const TourLeaderView: React.FC = () => {
           <div>
             <h3 className="font-bold text-lg text-on-surface">{t.leader.tabRooming}</h3>
             <p className="text-xs text-on-surface-variant">
-              {tour.hotel.name} • {rooms.length} rooms • the same list the hotel and DMC hold
+              {tour.hotel.name} • {rooms.length} rooms • the same list the hotel and {tour.copy.operatorNoun} hold
             </p>
           </div>
 
@@ -492,7 +493,7 @@ export const TourLeaderView: React.FC = () => {
             <div>
               <h3 className="font-bold text-lg text-on-surface">Extra Charges to Confirm</h3>
               <p className="text-xs text-on-surface-variant">
-                The DMC lists each extra. You confirm it really happened; the agency then signs it off.
+                The {tour.copy.operatorNoun} lists each extra. You confirm it really happened; the agency then signs it off.
               </p>
             </div>
 
@@ -505,7 +506,7 @@ export const TourLeaderView: React.FC = () => {
                   <div className="min-w-0">
                     <p className="font-semibold text-on-surface">{ex.description}</p>
                     <p className="font-mono font-bold text-on-surface-variant mt-0.5">
-                      ¥{ex.amount.toLocaleString()}
+                      {formatMoney(ex.amount, settlement.currency)}
                     </p>
                   </div>
                   {ex.leaderConfirmed ? (
@@ -530,7 +531,7 @@ export const TourLeaderView: React.FC = () => {
             <div>
               <h3 className="font-bold text-lg text-on-surface">{t.agent.incidentHub}</h3>
               <p className="text-xs text-on-surface-variant">
-                One log shared with agency HQ and the DMC, with who reported what and when.
+                One log shared with agency HQ and the {tour.copy.operatorNoun}, with who reported what and when.
               </p>
             </div>
 
@@ -539,7 +540,7 @@ export const TourLeaderView: React.FC = () => {
                 type="text"
                 value={incidentTitle}
                 onChange={(e) => setIncidentTitle(e.target.value)}
-                placeholder="e.g. Guest left the group at Shinjuku station / lost baggage / medical"
+                placeholder={tour.copy.incidentPlaceholder}
                 className="w-full p-2.5 rounded-m3-sm bg-surface border border-outline-variant text-sm text-on-surface focus:outline-none focus:border-leader"
               />
               <div className="flex items-center justify-between gap-2 flex-wrap">

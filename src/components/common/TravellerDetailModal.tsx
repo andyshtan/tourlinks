@@ -29,7 +29,8 @@ export const TravellerDetailModal: React.FC = () => {
   const p = selectedPassenger;
   const isExpiringSoon = !p.isPassportValid;
   const isPresent = p.rollCallStatus === 'present';
-  const docs = getPassengerDocuments(p);
+  const docs = getPassengerDocuments(p, tour);
+  const visaDoc = docs.find((d) => d.type === 'visa');
   const companions = passengers.filter((m) => m.groupId === p.groupId && m.id !== p.id);
 
   const handleCopyDocLink = (passengerId: string, docType: DocumentType, docId: string) => {
@@ -164,7 +165,7 @@ export const TravellerDetailModal: React.FC = () => {
                 <div className="mt-2 p-2 rounded-m3-xs bg-error-container text-on-error-container text-[11px] flex items-start gap-1.5 font-medium leading-snug">
                   <M3Icon name="warning" filled size={16} className="text-error shrink-0 mt-0.5" />
                   <span>
-                    Passport expires within 6 months of the tour dates, below agency policy. Check the destination's entry rules and keep the return ticket and hotel voucher at hand.
+                    {tour.copy.passportWarning}
                   </span>
                 </div>
               )}
@@ -267,10 +268,10 @@ export const TravellerDetailModal: React.FC = () => {
               <div className="p-3 rounded-m3-md bg-surface-container border border-outline-variant/40 space-y-1">
                 <span className="text-[10px] uppercase font-bold text-on-surface-variant flex items-center gap-1">
                   <M3Icon name="verified_user" size={14} className="text-secondary" />
-                  <span>Japan Visa Waiver</span>
+                  <span>{tour.copy.visaLabel}</span>
                 </span>
                 <p className="font-mono font-bold text-xs text-on-surface">
-                  {p.eVisaNumber || `VW-2026-JKT-${p.passportNumber.slice(-4)}`}
+                  {visaDoc?.docNumber}
                 </p>
                 <span
                   className={`inline-block px-2 py-0.5 rounded-m3-full text-[10px] font-bold ${
@@ -279,7 +280,7 @@ export const TravellerDetailModal: React.FC = () => {
                       : 'bg-error-container text-on-error-container'
                   }`}
                 >
-                  {p.visaStatus === 'approved' ? 'REGISTERED' : p.visaStatus.toUpperCase()}
+                  {(visaDoc?.statusLabel || p.visaStatus).toUpperCase()}
                 </span>
               </div>
 
@@ -290,10 +291,10 @@ export const TravellerDetailModal: React.FC = () => {
                   <span>Inbound Seat</span>
                 </span>
                 <p className="font-bold text-xs text-on-surface">
-                  JL720 • Seat {p.seatNumber || '—'}
+                  {tour.flight.number} • Seat {p.seatNumber || '—'}
                 </p>
                 <p className="text-[10px] text-on-surface-variant font-mono">
-                  Baggage: {p.baggageTag || `JL-889${p.id.slice(-2)}`} (Carousel 3)
+                  Baggage: {p.baggageTag || '—'} ({tour.flight.belt})
                 </p>
               </div>
             </div>

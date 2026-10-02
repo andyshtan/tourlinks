@@ -10,6 +10,16 @@ import type {
   SettlementLedger,
   StakeholderRole,
 } from '../types/tour';
+import { scenario } from '../scenario';
+import {
+  umrahTour,
+  umrahPassengers,
+  umrahCheckpoints,
+  umrahItinerary,
+  umrahGatheringPin,
+  umrahIncidents,
+  umrahSettlement,
+} from '../data/umrah';
 
 interface TourContextType {
   role: StakeholderRole;
@@ -42,7 +52,45 @@ interface TourContextType {
   resolveIncident: (id: string) => void;
 }
 
-const initialTour: TourPackage = {
+const japanTour: TourPackage = {
+  scenario: 'japan',
+  copy: {
+    tz: 'JST',
+    nowLocal: '16:15 JST',
+    weather: 'Tokyo: 19°C Crisp Autumn',
+    destinationFlag: '🇯🇵',
+    operatorBase: 'Tokyo HQ',
+    operatorContract: 'DMC-TYO-994',
+    flightBadge: 'JL720 • Landed at NRT T1',
+    flightDuration: '7h 20m',
+    arrivalLine: 'Japan Airlines JL-720 • Narita Terminal 1',
+    welcomeLine: 'Welcome to Tokyo, Japan',
+    signboardTitle: 'NUSANTARA ODYSSEY',
+    signboardSubtitle: 'TOKYO & MT. FUJI DELEGATION',
+    meetingPointShort: 'Pillar #17',
+    trafficTitle: 'Metropolitan Expressway Traffic',
+    trafficNote: 'Heavy traffic at Hakozaki Junction (+20 min delay expected to Shinjuku).',
+    netRateNote: '6D5N Coach + Hotels',
+    visaLabel: 'Japan Visa Waiver',
+    visaSubLabel: 'e-passport registration',
+    visaStay: 'UP TO 15 DAYS',
+    passportWarning:
+      "Passport expires within 6 months of the tour dates, below agency policy. Check the destination's entry rules and keep the return ticket and hotel voucher at hand.",
+    guideRole: 'Local Guide',
+    paxNoun: 'Guests',
+    operatorNoun: 'DMC',
+    careLabel: 'Dietary',
+    careHighlight: 'Halal',
+    incidentPlaceholder: 'e.g. Guest left the group at Shinjuku station / lost baggage / medical',
+    taxiCardHeadline: 'Show to Taxi Driver (タクシー運転手様へ)',
+    cohortLabel: 'Tokyo Cohort',
+    agentHqLine: 'Nusantara Odyssey HQ in Jakarta',
+    nudgeMessage:
+      'Hello {name}, this is Nusantara Odyssey Travel. Your passport expires within 6 months of the tour dates. Please contact us about renewing it before departure.',
+    aircraft: 'Boeing 787-9',
+    departureTerminal: 'T3',
+  },
+
   id: 'TK-2026-B4',
   code: 'TK-OUT-889',
   name: 'Tokyo Autumn Wonder & Mt. Fuji Discovery',
@@ -55,7 +103,7 @@ const initialTour: TourPackage = {
   // DMC / Ground Operator (Land Arrangement Service)
   dmcProductCode: 'TYO-PVT-06D',
   dmcProductName: 'Kanto Golden Route 6D - Private Coach & Bilingual Guide',
-  dmcProductNameJa: '関東ゴールデンルート6日間 専用車・ガイド手配',
+  dmcProductNameLocal: '関東ゴールデンルート6日間 専用車・ガイド手配',
   operatorName: 'Sakura Nippon DMC & Ground Transport (Tokyo)',
 
   destination: 'Tokyo & Yamanashi, Japan',
@@ -92,15 +140,16 @@ const initialTour: TourPackage = {
   },
   hotel: {
     name: 'Shinjuku Granbell Hotel Tokyo',
+    nameLocal: '新宿グランベルホテル',
     address: '2-14-5 Kabukicho, Shinjuku-ku, Tokyo 160-0021',
-    addressJapanese: '東京都新宿区歌舞伎町2-14-5',
+    addressLocal: '東京都新宿区歌舞伎町2-14-5',
     phone: '+81-3-5155-2666',
     wifiSsid: 'Granbell_Guest_5G',
     wifiPass: 'tokyo2026',
   },
 };
 
-const initialPassengers: Passenger[] = [
+const japanPassengers: Passenger[] = [
   // Group 1: Santoso Family (BKG-SAN-881)
   {
     id: 'p1',
@@ -441,7 +490,7 @@ const initialPassengers: Passenger[] = [
   },
 ];
 
-const initialCheckpoints: ArrivalCheckpoint[] = [
+const japanCheckpoints: ArrivalCheckpoint[] = [
   {
     id: 'standby',
     labelKey: 'stepStandby',
@@ -472,13 +521,13 @@ const initialCheckpoints: ArrivalCheckpoint[] = [
   },
 ];
 
-const initialItinerary: ItineraryItem[] = [
+const japanItinerary: ItineraryItem[] = [
   {
     id: 'it-1',
     day: 1,
     time: '15:55',
     title: 'JL720 Flight Landed at NRT T1',
-    titleJa: 'JL720便 成田空港第1ターミナル到着',
+    titleLocal: 'JL720便 成田空港第1ターミナル到着',
     location: 'Narita International Airport',
     description: 'Passengers disembark, clear immigration, collect baggage, pass customs.',
     category: 'flight',
@@ -490,7 +539,7 @@ const initialItinerary: ItineraryItem[] = [
     day: 1,
     time: '16:30',
     title: 'Arrival Handshake & Boarding Coach',
-    titleJa: '到着ミーティング＆専用バス乗車',
+    titleLocal: '到着ミーティング＆専用バス乗車',
     location: 'NRT T1 South Wing Pillar #17',
     description: 'Tour leader Rina meets guide Yumi Sato at Pillar #17; the group boards Toyota Coaster #4 driven by Kenji Tanaka.',
     category: 'transfer',
@@ -502,7 +551,7 @@ const initialItinerary: ItineraryItem[] = [
     day: 1,
     time: '18:15',
     title: 'Hotel Check-in & Room Key Distribution',
-    titleJa: 'ホテルチェックイン・ルームキー配布',
+    titleLocal: 'ホテルチェックイン・ルームキー配布',
     location: 'Shinjuku Granbell Hotel',
     description: 'Rooms pre-blocked on the 8th floor. Tour leader hands out room keys and breakfast vouchers.',
     category: 'hotel',
@@ -514,7 +563,7 @@ const initialItinerary: ItineraryItem[] = [
     day: 1,
     time: '19:30',
     title: 'Welcome Dinner: Halal & Washoku Banquet',
-    titleJa: 'ウェルカムディナー（ハラール対応和食宴会）',
+    titleLocal: 'ウェルカムディナー（ハラール対応和食宴会）',
     location: 'Sakura-tei Halal Washoku, Shinjuku (Private Room)',
     description: 'Pre-ordered set menus: 6 halal, 1 vegetarian, 1 no-beef, 1 allergy-safe, 5 standard.',
     category: 'meal',
@@ -526,7 +575,7 @@ const initialItinerary: ItineraryItem[] = [
     day: 2,
     time: '08:30',
     title: 'Mt. Fuji 5th Station & Lake Kawaguchiko Excursion',
-    titleJa: '富士山五合目＆河口湖日帰り観光',
+    titleLocal: '富士山五合目＆河口湖日帰り観光',
     location: 'Fuji-Hakone-Izu National Park',
     description: 'Private coach departs hotel prompt 08:30. Gathering pin armed at station.',
     category: 'sightseeing',
@@ -535,7 +584,7 @@ const initialItinerary: ItineraryItem[] = [
   },
 ];
 
-const initialGatheringPin: GatheringPin = {
+const japanGatheringPin: GatheringPin = {
   isActive: true,
   locationName: 'Narita T1 South Wing • Pillar #17 Meeting Point',
   targetTime: '17:00 JST',
@@ -546,7 +595,7 @@ const initialGatheringPin: GatheringPin = {
   notes: 'Guide holding digital "NUSANTARA ODYSSEY" sign near Starbucks entrance.',
 };
 
-const initialIncidents: Incident[] = [
+const japanIncidents: Incident[] = [
   {
     id: 'INC-101',
     title: 'Short passport validity: Kevin Wijaya (expires 2026-11-20)',
@@ -575,7 +624,7 @@ const initialIncidents: Incident[] = [
   },
 ];
 
-const initialSettlement: SettlementLedger = {
+const japanSettlement: SettlementLedger = {
   baseNetRate: 1450000, // JPY, land arrangement for 14 pax, 6D5N
   currency: 'JPY',
   extraCharges: [
@@ -602,12 +651,30 @@ const initialSettlement: SettlementLedger = {
     },
   ],
   proofImages: [
-    { src: '/demo/proof-service-sheet.svg', label: 'Signed arrival service sheet' },
-    { src: '/demo/proof-toll-receipt.svg', label: 'Expressway toll receipt' },
+    {
+      src: '/demo/proof-service-sheet.svg',
+      label: 'Signed arrival service sheet',
+      detail: '16:50 JST • 14 guests • signed by guide and tour leader',
+    },
+    {
+      src: '/demo/proof-toll-receipt.svg',
+      label: 'Expressway toll receipt',
+      detail: '17:42 JST • ¥8,600 • Narita IC to Shinjuku',
+    },
   ],
   operatorSignedAt: '2026-10-02 16:15 JST',
   isSettled: false,
 };
+
+// The demo scenario is fixed per page load (see src/scenario.ts)
+const isUmrah = scenario === 'umrah';
+const initialTour = isUmrah ? umrahTour : japanTour;
+const initialPassengers = isUmrah ? umrahPassengers : japanPassengers;
+const initialCheckpoints = isUmrah ? umrahCheckpoints : japanCheckpoints;
+const initialItinerary = isUmrah ? umrahItinerary : japanItinerary;
+const initialGatheringPin = isUmrah ? umrahGatheringPin : japanGatheringPin;
+const initialIncidents = isUmrah ? umrahIncidents : japanIncidents;
+const initialSettlement = isUmrah ? umrahSettlement : japanSettlement;
 
 const TourContext = createContext<TourContextType | undefined>(undefined);
 
@@ -738,8 +805,8 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const triggerSOS = () => {
     setActiveSosAlert({
       passengerName: passengers[0].name,
-      time: '16:42 JST',
-      location: 'Narita Terminal 1 arrival lobby',
+      time: tour.copy.nowLocal,
+      location: `${tour.meetingPoint.terminal}, ${tour.meetingPoint.zone}`,
     });
   };
 
@@ -751,7 +818,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSettlement((prev) => ({
       ...prev,
       isSettled: true,
-      agentApprovedAt: '2026-10-02 16:50 JST (Approved by Agent HQ)',
+      agentApprovedAt: `2026-10-02 ${tour.copy.nowLocal} (Approved by Agent HQ)`,
       extraCharges: prev.extraCharges.map((e) => ({ ...e, approved: true })),
     }));
   };
@@ -766,9 +833,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const nudgePassengerWhatsApp = (phone: string, name: string) => {
-    const text = encodeURIComponent(
-      `Hello ${name}, this is Nusantara Odyssey Travel. Your passport expires within 6 months of the tour dates. Please contact us about renewing it before departure.`
-    );
+    const text = encodeURIComponent(tour.copy.nudgeMessage.replace('{name}', name));
     window.open(`https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${text}`, '_blank');
   };
 

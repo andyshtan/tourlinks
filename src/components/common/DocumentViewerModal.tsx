@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Passenger } from '../../types/tour';
+import { useTour } from '../../context/TourContext';
 import { M3Icon } from '../m3/M3Icon';
 import {
   type DocumentType,
@@ -23,12 +24,13 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
   onClose,
   isStandalone = false,
 }) => {
+  const { tour } = useTour();
   const [activeType, setActiveType] = useState<DocumentType>(initialType);
   const [copied, setCopied] = useState(false);
 
   if (!isOpen && !isStandalone) return null;
 
-  const docs = getPassengerDocuments(passenger);
+  const docs = getPassengerDocuments(passenger, tour);
   const activeDoc = docs.find((d) => d.type === activeType) || docs[0];
   const directUrl = getDocumentDirectUrl(passenger.id, activeType);
   const mrz = generateMRZ(passenger);
@@ -170,7 +172,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
                   {d.type === 'passport'
                     ? 'Passport Scan'
                     : d.type === 'visa'
-                    ? 'Japan Visa Waiver'
+                    ? tour.copy.visaLabel
                     : d.type === 'eticket'
                     ? 'Flight Ticket'
                     : 'Insurance Policy'}
@@ -335,10 +337,10 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
               <div className="flex items-center justify-between border-b-2 border-slate-700 pb-3 mb-4">
                 <div>
                   <h4 className="text-sm font-black tracking-widest uppercase text-slate-900">
-                    VISA WAIVER REGISTRATION
+                    {activeDoc.title}
                   </h4>
                   <p className="text-xs font-bold text-slate-600 uppercase">
-                    For Indonesian e-passport holders • sample copy
+                    {activeDoc.subtitle} • sample copy
                   </p>
                 </div>
                 <div className="px-2 py-1 rounded border border-slate-400 text-slate-600 font-bold text-[10px] uppercase select-none">
@@ -350,7 +352,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
                 <div className="sm:col-span-2 space-y-2 text-xs">
                   <div>
                     <span className="text-[10px] text-stone-500 uppercase font-bold block">
-                      Registration Number
+                      Document Number
                     </span>
                     <span className="font-mono font-bold text-sm text-slate-900">
                       {activeDoc.docNumber}
@@ -385,13 +387,15 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
                       <span className="text-[10px] text-stone-500 uppercase font-bold block">
                         Status of Stay
                       </span>
-                      <span className="font-bold text-slate-900">TEMPORARY VISITOR</span>
+                      <span className="font-bold text-slate-900">
+                        {tour.scenario === 'umrah' ? 'UMRAH PILGRIM' : 'TEMPORARY VISITOR'}
+                      </span>
                     </div>
                     <div>
                       <span className="text-[10px] text-stone-500 uppercase font-bold block">
                         Stay per Entry
                       </span>
-                      <span className="font-bold text-slate-900">UP TO 15 DAYS</span>
+                      <span className="font-bold text-slate-900">{tour.copy.visaStay}</span>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
@@ -418,8 +422,8 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
                   <span className="text-[9px] font-mono text-center text-slate-600 mt-2 font-bold uppercase">
                     Sample QR
                   </span>
-                  <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full mt-1">
-                    REGISTERED
+                  <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full mt-1 uppercase">
+                    {activeDoc.statusLabel}
                   </span>
                 </div>
               </div>
@@ -432,19 +436,19 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
               <div className="flex items-center justify-between border-b-2 border-red-600 pb-3 mb-4">
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-full bg-red-600 flex items-center justify-center text-white font-bold text-xs">
-                    JAL
+                    {tour.flight.number.slice(0, 2)}
                   </div>
                   <div>
                     <h4 className="text-sm font-black tracking-wide uppercase text-slate-900">
-                      JAPAN AIRLINES • ELECTRONIC TICKET PASSENGER RECEIPT
+                      {tour.flight.carrier} • ELECTRONIC TICKET PASSENGER RECEIPT
                     </h4>
                     <p className="text-xs font-mono text-slate-500">
-                      ETKT No: {activeDoc.docNumber} • PNR: JAL-TK889
+                      ETKT No: {activeDoc.docNumber} • Group: {tour.code}
                     </p>
                   </div>
                 </div>
                 <span className="text-xs font-bold text-red-600 uppercase font-mono">
-                  ONEWORLD
+                  SAMPLE
                 </span>
               </div>
 
@@ -461,7 +465,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
                       Confirmed Seat
                     </span>
                     <p className="font-mono font-bold text-sm text-red-700">
-                      {passenger.seatNumber || '14K'} (Window)
+                      {passenger.seatNumber || '—'}
                     </p>
                   </div>
                 </div>
@@ -469,24 +473,24 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
                 <div className="grid grid-cols-3 gap-3 p-3 bg-slate-50 rounded-m3-sm border border-slate-200">
                   <div>
                     <span className="text-[10px] text-slate-500 uppercase font-bold">Flight</span>
-                    <p className="font-bold text-slate-900">JL 720</p>
-                    <p className="text-[11px] text-slate-500 font-mono">Boeing 787-9</p>
+                    <p className="font-bold text-slate-900">{tour.flight.number}</p>
+                    <p className="text-[11px] text-slate-500 font-mono">{tour.copy.aircraft}</p>
                   </div>
                   <div>
                     <span className="text-[10px] text-slate-500 uppercase font-bold">Departure</span>
-                    <p className="font-bold text-slate-900">Jakarta (CGK)</p>
-                    <p className="text-[11px] text-slate-500 font-mono">06:45 WIB • T3</p>
+                    <p className="font-bold text-slate-900">{tour.flight.origin}</p>
+                    <p className="text-[11px] text-slate-500 font-mono">{tour.flight.depTime} • {tour.copy.departureTerminal}</p>
                   </div>
                   <div>
                     <span className="text-[10px] text-slate-500 uppercase font-bold">Arrival</span>
-                    <p className="font-bold text-slate-900">Tokyo Narita (NRT)</p>
-                    <p className="text-[11px] text-slate-500 font-mono">16:15 JST • T1</p>
+                    <p className="font-bold text-slate-900">{tour.flight.destination}</p>
+                    <p className="text-[11px] text-slate-500 font-mono">{tour.flight.arrTime}</p>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-[11px] text-slate-600 pt-2 border-t border-slate-200">
                   <span>Baggage Allowance: 2 Pieces (23kg each)</span>
-                  <span>Meal: {passenger.dietary} (Confirmed)</span>
+                  <span>Special request: {passenger.dietary === 'Standard' ? 'None' : passenger.dietary}</span>
                 </div>
               </div>
             </div>

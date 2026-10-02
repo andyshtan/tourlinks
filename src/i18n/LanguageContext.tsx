@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { SupportedLanguage, TranslationDictionary } from './translations';
-import { translations } from './translations';
+import { dictionaries, dictionaryFor } from './dictionaries';
 
 interface LanguageContextType {
   language: SupportedLanguage;
@@ -13,7 +13,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<SupportedLanguage>(() => {
     const saved = localStorage.getItem('tourlinks_lang');
-    return saved && saved in translations ? (saved as SupportedLanguage) : 'en';
+    return saved && saved in dictionaries ? (saved as SupportedLanguage) : 'en';
   });
 
   const setLanguage = (lang: SupportedLanguage) => {
@@ -21,7 +21,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.setItem('tourlinks_lang', lang);
   };
 
-  const t = translations[language] || translations.en;
+  const t = dictionaryFor(language);
 
   useEffect(() => {
     document.documentElement.lang = language;

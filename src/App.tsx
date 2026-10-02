@@ -13,11 +13,13 @@ import { MarketingPage } from './components/marketing/MarketingPage';
 import { TravellerDetailModal } from './components/common/TravellerDetailModal';
 import { DocumentViewerModal } from './components/common/DocumentViewerModal';
 import type { DocumentType } from './utils/documentUtils';
+import { Logo } from './components/common/Logo';
+import { scenario, scenarioBasePath, scenarioPathname } from './scenario';
 
 const detectInitialView = (): 'marketing' | 'demo' | 'document' => {
   if (typeof window === 'undefined') return 'marketing';
   const hostname = window.location.hostname;
-  const pathname = window.location.pathname;
+  const pathname = scenarioPathname();
   const search = window.location.search;
 
   // Direct document copy link detection (e.g. /docs?passenger=p1&type=passport)
@@ -29,8 +31,9 @@ const detectInitialView = (): 'marketing' | 'demo' | 'document' => {
     return 'document';
   }
 
-  // If on demo subdomain, /demo path, or ?view=demo
+  // If on demo subdomain, /demo path, or ?view=demo. The umrah scenario has no marketing page of its own.
   if (
+    scenario === 'umrah' ||
     hostname.startsWith('demo.') ||
     pathname.startsWith('/demo') ||
     search.includes('view=demo')
@@ -63,11 +66,17 @@ const MainContent: React.FC = () => {
     // Ensure English default on welcome screen
     setLanguage('en');
     if (window.history && window.history.pushState) {
-      window.history.pushState({}, '', '/demo');
+      window.history.pushState({}, '', `${scenarioBasePath}/demo`);
     }
   };
 
   const handleBackToMarketing = () => {
+    if (scenario === 'umrah') {
+      // Leaving the umrah demo goes back to the main site
+      const { hostname } = window.location;
+      window.location.href = hostname.startsWith('demoum.') ? `https://${hostname.replace(/^demoum\./, '')}` : '/';
+      return;
+    }
     if (typeof window !== 'undefined' && window.location.hostname.startsWith('demo.')) {
       window.location.href = `https://${window.location.hostname.replace(/^demo\./, '')}`;
       return;
@@ -109,12 +118,12 @@ const MainContent: React.FC = () => {
               setView('demo');
               setScreen('dashboard');
               if (window.history && window.history.pushState) {
-                window.history.pushState({}, '', '/demo');
+                window.history.pushState({}, '', `${scenarioBasePath}/demo`);
               }
             }}
-            className="font-black text-2xl tracking-tighter text-on-surface hover:opacity-80 transition-opacity cursor-pointer flex items-center gap-2"
+            className="text-on-surface hover:opacity-80 transition-opacity cursor-pointer flex items-center gap-2"
           >
-            <span>Tourlinks</span>
+            <Logo className="text-2xl" />
             <span className="text-xs font-mono font-normal text-on-surface-variant">
               / Document Archive
             </span>
@@ -125,7 +134,7 @@ const MainContent: React.FC = () => {
               setView('demo');
               setScreen('dashboard');
               if (window.history && window.history.pushState) {
-                window.history.pushState({}, '', '/demo');
+                window.history.pushState({}, '', `${scenarioBasePath}/demo`);
               }
             }}
             className="px-4 py-2 rounded-m3-full bg-primary text-on-primary text-xs font-bold hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
@@ -203,9 +212,15 @@ const MainContent: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-4 text-[11px]">
-            <span>Agent ➔ Tour Leader ➔ Ground DMC ➔ Traveller</span>
+            <span>
+              {scenario === 'umrah'
+                ? 'Organiser ➔ Tour Leader ➔ Saudi Operator ➔ Jamaah'
+                : 'Agent ➔ Tour Leader ➔ Ground DMC ➔ Traveller'}
+            </span>
             <span className="hidden md:inline">•</span>
-            <span className="hidden md:inline font-mono">demo.tourlinks.co</span>
+            <span className="hidden md:inline font-mono">
+              {scenario === 'umrah' ? 'demoum.tourlinks.co' : 'demo.tourlinks.co'}
+            </span>
           </div>
         </div>
       </footer>

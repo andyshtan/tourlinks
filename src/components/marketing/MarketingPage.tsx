@@ -1,6 +1,7 @@
 import React from 'react';
 import { M3Icon } from '../m3/M3Icon';
 import { M3Card } from '../m3/M3Card';
+import { Logo } from '../common/Logo';
 
 interface MarketingPageProps {
   onLaunchDemo: () => void;
@@ -11,6 +12,9 @@ export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) =>
 
   // The demo lives on its own subdomain where one is set up; elsewhere it is the /demo path
   const demoUrl = hostname === 'tourlinks.neralab.id' ? 'https://demo.tourlinks.neralab.id' : '/demo';
+
+  // The umrah demo is a second scenario of the same app (see src/scenario.ts)
+  const umrahDemoUrl = '/umroh';
 
   const handleDemoClick = (e: React.MouseEvent) => {
     if (demoUrl !== '/demo') {
@@ -27,9 +31,7 @@ export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) =>
       <header className="sticky top-0 z-50 bg-surface/90 backdrop-blur-md border-b border-outline-variant/40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
           <div className="flex items-center">
-            <span className="font-black text-2xl sm:text-3xl tracking-tighter text-on-surface select-none">
-              Tourlinks
-            </span>
+            <Logo className="text-3xl sm:text-4xl" />
           </div>
 
           <div className="flex items-center gap-3">
@@ -62,14 +64,21 @@ export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) =>
             the manifest, document checks, the airport handover and the extras to settle.
           </p>
 
-          <div className="flex items-center justify-center pt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
             <a
               href={demoUrl}
               onClick={handleDemoClick}
               className="w-full sm:w-auto px-8 py-4 rounded-m3-full bg-primary text-on-primary font-extrabold text-base shadow-lg hover:bg-[#004FAF] active:scale-98 transition-all flex items-center justify-center gap-3 cursor-pointer"
             >
               <M3Icon name="play_circle" filled size={22} />
-              <span>Try the Interactive Demo</span>
+              <span>Try the Japan Tour Demo</span>
+            </a>
+            <a
+              href={umrahDemoUrl}
+              className="w-full sm:w-auto px-8 py-4 rounded-m3-full bg-surface-container-lowest text-primary border-2 border-primary font-extrabold text-base hover:bg-primary-container/40 active:scale-98 transition-all flex items-center justify-center gap-3 cursor-pointer"
+            >
+              <M3Icon name="mosque" filled size={22} />
+              <span>Try the Umrah Demo</span>
             </a>
           </div>
 
@@ -492,9 +501,8 @@ export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) =>
       <footer className="py-8 bg-surface-container border-t border-outline-variant/30 text-xs text-on-surface-variant">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="font-black text-base text-on-surface">Tourlinks</span>
-            <span>•</span>
-            <span>Shared Outbound Tour Workflow</span>
+            <Logo className="text-xl" />
+            <span className="pl-1">Shared Outbound Tour Workflow</span>
           </div>
 
           <div className="flex items-center gap-6">

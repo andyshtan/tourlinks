@@ -2,16 +2,19 @@ import React, { useState } from 'react';
 import { useTour } from '../../context/TourContext';
 import { useTranslation } from '../../i18n/LanguageContext';
 import type { SupportedLanguage } from '../../i18n/translations';
-import { translations } from '../../i18n/translations';
+import { availableLanguages, dictionaryFor } from '../../i18n/dictionaries';
+import type { UmrahLanguage } from '../../i18n/translationsUmrah';
+import { scenario } from '../../scenario';
 import type { StakeholderRole } from '../../types/tour';
 import { M3Icon } from '../m3/M3Icon';
+import { Logo } from '../common/Logo';
 
 interface RoleSelectionScreenProps {
   onEnterDashboard: (selectedRole: StakeholderRole, selectedLang: SupportedLanguage) => void;
   onBackToMarketing?: () => void;
 }
 
-const languageOptions: { code: SupportedLanguage; label: string; flag: string }[] = [
+const allLanguageOptions: { code: SupportedLanguage; label: string; flag: string }[] = [
   { code: 'en', label: 'English', flag: '🇺🇸' },
   { code: 'id', label: 'Bahasa Indonesia', flag: '🇮🇩' },
   { code: 'ja', label: '日本語 (Japanese)', flag: '🇯🇵' },
@@ -19,6 +22,94 @@ const languageOptions: { code: SupportedLanguage; label: string; flag: string }[
   { code: 'ko', label: '한국어 (Korean)', flag: '🇰🇷' },
   { code: 'ar', label: 'العربية (Arabic)', flag: '🇸🇦' },
 ];
+
+// Only the languages the current demo scenario is written in
+const languageOptions = availableLanguages.flatMap(
+  (code) => allLanguageOptions.find((opt) => opt.code === code) ?? []
+);
+
+const roleFeaturesUmrah: Record<StakeholderRole, Record<UmrahLanguage, string[]>> = {
+  agent: {
+    en: [
+      'Passport Validity & Umrah Visa Status for Every Jamaah',
+      'Manifest of 16 Jamaah with Rooming and Selling Sub-Agents',
+      'Flight and Arrival Status (SV827 CGK ➔ MED)',
+      'Sign-off of Land Arrangement Extras & Settlement (SAR 52,800)',
+    ],
+    id: [
+      'Masa Berlaku Paspor & Status Visa Umroh Setiap Jamaah',
+      'Manifes 16 Jamaah dengan Kamar dan Sub-Agen Penjual',
+      'Status Penerbangan dan Kedatangan (SV827 CGK ➔ MED)',
+      'Persetujuan Biaya Tambahan & Pelunasan Land Arrangement (SAR 52.800)',
+    ],
+    ar: [
+      'صلاحية الجواز وحالة تأشيرة العمرة لكل معتمر',
+      'كشف 16 معتمراً مع الغرف والوكلاء الفرعيين',
+      'حالة الرحلة والوصول (SV827 CGK ➔ MED)',
+      'اعتماد الرسوم الإضافية وتسوية الخدمات الأرضية (52,800 ريال)',
+    ],
+  },
+  leader: {
+    en: [
+      'Airport Handover to the Muthawif and Driver',
+      'Roll Call by Family or by Jamaah Before Every Move',
+      'Rooming List with Wheelchair, Elderly and Medical Notes',
+      'Incident Log & Confirmation of Extra Charges',
+    ],
+    id: [
+      'Serah Terima di Bandara dengan Muthawif dan Sopir',
+      'Absensi per Keluarga atau per Jamaah Sebelum Setiap Perpindahan',
+      'Daftar Kamar dengan Catatan Kursi Roda, Lansia, dan Medis',
+      'Catatan Insiden & Konfirmasi Biaya Tambahan',
+    ],
+    ar: [
+      'تسليم المجموعة في المطار إلى المطوف والسائق',
+      'التحقق من الحضور حسب العائلة أو المعتمر قبل كل تحرك',
+      'قائمة الغرف مع ملاحظات الكرسي المتحرك وكبار السن والحالات الطبية',
+      'سجل الحوادث وتأكيد الرسوم الإضافية',
+    ],
+  },
+  operator: {
+    en: [
+      'Driver (Khalid) & Muthawif (Ahmad) Dispatch',
+      'Airport Welcome Board for the Group',
+      'Arrival Checkpoints (Standby ➔ Landed ➔ Met ➔ Boarded)',
+      'Schedule Changes and Gathering Points Around Prayer Times',
+    ],
+    id: [
+      'Penugasan Sopir (Khalid) & Muthawif (Ahmad)',
+      'Papan Sambutan Bandara untuk Rombongan',
+      'Tahapan Kedatangan (Siaga ➔ Mendarat ➔ Bertemu ➔ Naik Bus)',
+      'Perubahan Jadwal dan Titik Kumpul Mengikuti Waktu Sholat',
+    ],
+    ar: [
+      'توزيع السائق (خالد) والمطوف (أحمد)',
+      'لوحة استقبال المجموعة في المطار',
+      'مراحل الوصول (جاهزية ➔ هبوط ➔ لقاء ➔ صعود الحافلة)',
+      'تعديل البرنامج ونقاط التجمع حسب أوقات الصلاة',
+    ],
+  },
+  traveller: {
+    en: [
+      'Mobile Pass with Hotel, Room and Wi-Fi Details',
+      'Madinah Airport Meeting Point Map (Exit Gate 3)',
+      '1-Tap "I Am Through Immigration"',
+      'Arabic Taxi Address Card & SOS Button',
+    ],
+    id: [
+      'Kartu Digital dengan Info Hotel, Kamar, dan Wi-Fi',
+      'Peta Titik Temu Bandara Madinah (Pintu Keluar 3)',
+      '1-Klik "Saya Sudah Lolos Imigrasi"',
+      'Kartu Alamat Taksi Berbahasa Arab & Tombol SOS',
+    ],
+    ar: [
+      'بطاقة على الهاتف تضم بيانات الفندق والغرفة والواي فاي',
+      'خريطة نقطة الالتقاء بمطار المدينة المنورة (بوابة الخروج 3)',
+      'ضغطة واحدة: "أنهيت إجراءات الجوازات"',
+      'بطاقة عنوان بالعربية لسائق التاكسي وزر SOS',
+    ],
+  },
+};
 
 const roleFeaturesByLang: Record<StakeholderRole, Record<SupportedLanguage, string[]>> = {
   agent: {
@@ -185,12 +276,14 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
   const [selectedRole, setSelectedRole] = useState<StakeholderRole>('agent');
 
   // Independent in-card language state: Agent and Tour Leader default to ID, Operator to JA, Traveler to EN
-  const [cardLanguages, setCardLanguages] = useState<Record<StakeholderRole, SupportedLanguage>>({
-    agent: 'id',
-    leader: 'id',
-    operator: 'ja',
-    traveller: 'en',
-  });
+  const [cardLanguages, setCardLanguages] = useState<Record<StakeholderRole, SupportedLanguage>>(
+    scenario === 'umrah'
+      ? { agent: 'id', leader: 'id', operator: 'ar', traveller: 'id' }
+      : { agent: 'id', leader: 'id', operator: 'ja', traveller: 'en' }
+  );
+
+  const roleFeatures: Record<StakeholderRole, Partial<Record<SupportedLanguage, string[]>>> =
+    scenario === 'umrah' ? roleFeaturesUmrah : roleFeaturesByLang;
 
   // Guarantee welcome page header stays clean in English by default
   React.useEffect(() => {
@@ -272,18 +365,20 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
             className="inline-flex items-center gap-2 px-4 py-2 rounded-m3-full bg-surface-container border border-outline-variant/60 text-xs font-bold text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
           >
             <M3Icon name="arrow_back" size={16} />
-            <span className="font-black text-sm">Tourlinks</span>
+            <Logo className="text-lg" />
           </a>
 
           <span className="text-[11px] font-mono font-bold text-primary px-3 py-1 rounded-m3-full bg-primary-container text-on-primary-container hidden sm:inline">
-            demo.tourlinks.co
+            {scenario === 'umrah' ? 'demoum.tourlinks.co' : 'demo.tourlinks.co'}
           </span>
         </div>
 
         {/* Brand & Hero Banner */}
         <div className="text-center space-y-3">
           <div className="inline-flex items-center px-4 py-1.5 rounded-m3-full bg-primary-container text-on-primary-container text-xs font-extrabold tracking-wide uppercase shadow-xs">
-            <span>Interactive Outbound Tour Workflow Demo</span>
+            <span>
+              {scenario === 'umrah' ? 'Interactive Umrah Departure Demo' : 'Interactive Outbound Tour Workflow Demo'}
+            </span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black font-roboto tracking-tight text-on-surface">
@@ -306,7 +401,7 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
 
               {/* Tour Name with Destination Flag */}
               <div className="flex items-center gap-1.5 font-black text-xs sm:text-sm text-on-surface tracking-tight px-1">
-                <span className="text-base" role="img" aria-label="Japan">🇯🇵</span>
+                <span className="text-base" aria-hidden="true">{tour.copy.destinationFlag}</span>
                 <span className="text-on-surface hover:text-primary transition-colors">
                   {tour.name}
                 </span>
@@ -321,7 +416,7 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
               {/* Live Flight & Ground Radar Badge */}
               <div className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-m3-full bg-[#D4F7DC] text-[#0A6324] text-[11px] font-extrabold font-roboto border border-[#A1E8B2]">
                 <M3Icon name="flight_land" size={14} />
-                <span>JL720 • Landed at NRT T1</span>
+                <span>{tour.copy.flightBadge}</span>
               </div>
             </div>
           </div>
@@ -332,13 +427,13 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
           {rolesMeta.map((cfg) => {
             const isSelected = selectedRole === cfg.id;
             const currentLang = cardLanguages[cfg.id];
-            const dict = translations[currentLang] || translations.en;
+            const dict = dictionaryFor(currentLang);
 
             const title = dict.roles[cfg.id];
             const badge = dict.roleSelection[`${cfg.id}Badge`];
             const summary = dict.roleSelection[`${cfg.id}Summary`];
 
-            const features = roleFeaturesByLang[cfg.id]?.[currentLang] || roleFeaturesByLang[cfg.id].en;
+            const features = roleFeatures[cfg.id][currentLang] || roleFeatures[cfg.id].en || [];
 
             return (
               <div

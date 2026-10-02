@@ -45,7 +45,7 @@ export const OperatorView: React.FC = () => {
               {t.operator.badge}
             </span>
             <span className="text-xs text-on-secondary/80">
-              Contract Ref: DMC-TYO-994
+              Contract Ref: {tour.copy.operatorContract}
             </span>
           </div>
           <h2 className="text-xl sm:text-2xl font-bold font-roboto tracking-tight">
@@ -94,8 +94,8 @@ export const OperatorView: React.FC = () => {
                 {tour.dmcProductCode}
               </span>
               <span>• {tour.dmcProductName}</span>
-              {tour.dmcProductNameJa && (
-                <span className="text-[11px] text-on-surface-variant font-normal">({tour.dmcProductNameJa})</span>
+              {tour.dmcProductNameLocal && (
+                <span className="text-[11px] text-on-surface-variant font-normal">({tour.dmcProductNameLocal})</span>
               )}
             </div>
             <p className="text-[11px] text-on-surface-variant mt-0.5">
@@ -106,7 +106,7 @@ export const OperatorView: React.FC = () => {
 
         <div className="flex items-center gap-2 self-start md:self-auto shrink-0">
           <span className="px-2 py-0.5 rounded-m3-full bg-surface text-[10px] font-mono font-bold text-on-surface-variant border border-outline-variant/50">
-            Contract: DMC-TYO-994
+            Contract: {tour.copy.operatorContract}
           </span>
           <span className="px-2 py-0.5 rounded-m3-full bg-secondary text-on-secondary text-[10px] font-bold">
             {bookingGroups.length} Booking Groups • {passengers.length} Pax
@@ -274,7 +274,7 @@ export const OperatorView: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-xs text-on-surface">
-                    Inbound Tour Manifest ({passengers.length} Guests)
+                    Inbound Manifest ({passengers.length} {tour.copy.paxNoun})
                   </h4>
                   <p className="text-[11px] text-on-surface-variant">
                     {passengers.filter((p) => p.hasClearedCustoms).length} Cleared Customs •{' '}
@@ -337,10 +337,10 @@ export const OperatorView: React.FC = () => {
                 <div className="p-3 rounded-m3-md bg-primary-container/40 text-on-primary-container text-xs space-y-1">
                   <div className="flex items-center gap-1.5 font-bold">
                     <M3Icon name="traffic" size={16} />
-                    <span>Metropolitan Expressway Traffic</span>
+                    <span>{tour.copy.trafficTitle}</span>
                   </div>
                   <p className="text-[11px]">
-                    Heavy traffic at Hakozaki Junction (+20 min delay expected to Shinjuku).
+                    {tour.copy.trafficNote}
                   </p>
                 </div>
               </div>
@@ -352,7 +352,7 @@ export const OperatorView: React.FC = () => {
               icon="call"
               onClick={() => window.open(`tel:${tour.staff.driverPhone}`)}
             >
-              Call Chauffeur (Kenji)
+              Call Driver ({tour.staff.driverName.split(' ')[0]})
             </M3Button>
           </M3Card>
         </div>
@@ -408,7 +408,7 @@ export const OperatorView: React.FC = () => {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2">
                       <span className="font-mono font-bold text-sm text-primary">
-                        {item.adjustedTime || item.time} JST
+                        {item.adjustedTime || item.time} {tour.copy.tz}
                       </span>
                       {item.delayMinutes > 0 && (
                         <span className="px-2 py-0.5 rounded-m3-full text-[10px] font-bold bg-error-container text-on-error-container">
@@ -434,8 +434,8 @@ export const OperatorView: React.FC = () => {
                   </div>
 
                   <h4 className="font-bold text-sm text-on-surface mt-1.5">{item.title}</h4>
-                  {item.titleJa && (
-                    <p className="text-xs text-on-surface-variant font-medium">{item.titleJa}</p>
+                  {item.titleLocal && (
+                    <p className="text-xs text-on-surface-variant font-medium">{item.titleLocal}</p>
                   )}
                   <p className="text-xs text-on-surface-variant mt-1">{item.description}</p>
                 </div>
@@ -547,7 +547,7 @@ export const OperatorView: React.FC = () => {
                   }`}
                 >
                   <M3Icon name="person" size={15} />
-                  <span>All Guests ({passengers.length})</span>
+                  <span>All {tour.copy.paxNoun} ({passengers.length})</span>
                 </button>
               </div>
 
@@ -808,7 +808,7 @@ export const OperatorView: React.FC = () => {
                 />
                 <div className="text-xs">
                   <p className="font-bold text-on-surface">{settlement.proofImages[0].label}</p>
-                  <p className="text-on-surface-variant">16:50 JST • {passengers.length} guests • signed by guide and tour leader</p>
+                  <p className="text-on-surface-variant">{settlement.proofImages[0].detail}</p>
                   <span className="text-green-700 font-bold inline-flex items-center gap-1 mt-1">
                     <M3Icon name="check_circle" size={14} /> Shared with Agent HQ
                   </span>
@@ -822,7 +822,7 @@ export const OperatorView: React.FC = () => {
                 />
                 <div className="text-xs">
                   <p className="font-bold text-on-surface">{settlement.proofImages[1].label}</p>
-                  <p className="text-on-surface-variant">17:42 JST • ¥8,600 • Narita IC to Shinjuku</p>
+                  <p className="text-on-surface-variant">{settlement.proofImages[1].detail}</p>
                 </div>
               </div>
             </div>
@@ -845,33 +845,33 @@ export const OperatorView: React.FC = () => {
         <div className="p-8 rounded-m3-xl bg-gradient-to-br from-primary to-[#003B80] text-on-primary text-center space-y-6 shadow-2xl">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-m3-full bg-white/20 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-xs">
             <M3Icon name="flight_land" size={18} />
-            <span>Japan Airlines JL-720 • Narita Terminal 1</span>
+            <span>{tour.copy.arrivalLine}</span>
           </div>
 
           <div className="space-y-2">
             <p className="text-sm font-roboto tracking-widest uppercase text-white/80">
-              Welcome to Tokyo, Japan
+              {tour.copy.welcomeLine}
             </p>
             <h1 className="text-3xl sm:text-5xl font-extrabold font-roboto tracking-tight drop-shadow-sm">
-              NUSANTARA ODYSSEY
+              {tour.copy.signboardTitle}
             </h1>
             <p className="text-xl sm:text-2xl font-bold text-secondary-container">
-              TOKYO & MT. FUJI DELEGATION
+              {tour.copy.signboardSubtitle}
             </p>
           </div>
 
           <div className="pt-4 border-t border-white/20 flex items-center justify-around text-xs text-white/90">
             <div>
-              <span className="block opacity-75">Local Guide</span>
-              <span className="font-bold text-sm">Yumi Sato</span>
+              <span className="block opacity-75">{tour.copy.guideRole}</span>
+              <span className="font-bold text-sm">{tour.staff.guideName}</span>
             </div>
             <div>
-              <span className="block opacity-75">Coach #04</span>
-              <span className="font-bold text-sm">品川 200 か 48-12</span>
+              <span className="block opacity-75">Coach</span>
+              <span className="font-bold text-sm">{tour.staff.vehiclePlate}</span>
             </div>
             <div>
               <span className="block opacity-75">Meeting Point</span>
-              <span className="font-bold text-sm">Pillar #17</span>
+              <span className="font-bold text-sm">{tour.copy.meetingPointShort}</span>
             </div>
           </div>
         </div>
