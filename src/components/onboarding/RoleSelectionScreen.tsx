@@ -270,7 +270,9 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
         <div className="flex items-center justify-between">
           <a
             href={
-              typeof window !== 'undefined' && window.location.hostname.includes('travelflow.neralab.id')
+              typeof window !== 'undefined' && window.location.hostname.includes('tourlinks.neralab.id')
+                ? 'https://tourlinks.neralab.id'
+                : typeof window !== 'undefined' && window.location.hostname.includes('travelflow.neralab.id')
                 ? 'https://travelflow.neralab.id'
                 : '/'
             }
@@ -283,11 +285,11 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
             className="inline-flex items-center gap-2 px-4 py-2 rounded-m3-full bg-surface-container border border-outline-variant/60 text-xs font-bold text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
           >
             <M3Icon name="arrow_back" size={16} />
-            <span className="font-black text-sm">Travelflows</span>
+            <span className="font-black text-sm">Tourlinks</span>
           </a>
 
           <span className="text-[11px] font-mono font-bold text-primary px-3 py-1 rounded-m3-full bg-primary-container text-on-primary-container hidden sm:inline">
-            demo.travelflow.neralab.id
+            {typeof window !== 'undefined' && window.location.hostname.includes('travelflow') ? 'demo.travelflow.neralab.id' : 'demo.tourlinks.neralab.id'}
           </span>
         </div>
 
@@ -482,7 +484,7 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
 
       {/* Footer */}
       <footer className="text-center pt-8 text-xs text-on-surface-variant">
-        <span>Google Material Design 3 • Multi-Lingual Architecture (9 Languages Supported) • Travelflows OS</span>
+        <span>Google Material Design 3 • Multi-Lingual Architecture (9 Languages Supported) • Tourlinks OS</span>
       </footer>
     </div>
   );

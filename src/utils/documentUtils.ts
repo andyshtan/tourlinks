@@ -87,7 +87,7 @@ export const getDocumentDirectUrl = (
   const origin =
     typeof window !== 'undefined' && window.location.origin
       ? window.location.origin
-      : 'https://demo.travelflow.neralab.id';
+      : 'https://demo.tourlinks.neralab.id';
 
   return `${origin}/docs?passenger=${passengerId}&type=${docType}`;
 };

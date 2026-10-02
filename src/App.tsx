@@ -68,7 +68,7 @@ const MainContent: React.FC = () => {
 
   const handleBackToMarketing = () => {
     if (typeof window !== 'undefined' && window.location.hostname.startsWith('demo.')) {
-      window.location.href = 'https://travelflow.neralab.id';
+      window.location.href = window.location.hostname.includes('travelflow') ? 'https://travelflow.neralab.id' : 'https://tourlinks.neralab.id';
       return;
     }
     setView('marketing');
@@ -113,7 +113,7 @@ const MainContent: React.FC = () => {
             }}
             className="font-black text-2xl tracking-tighter text-on-surface hover:opacity-80 transition-opacity cursor-pointer flex items-center gap-2"
           >
-            <span>Travelflows</span>
+            <span>Tourlinks</span>
             <span className="text-xs font-mono font-normal text-on-surface-variant">
               / Document Archive
             </span>
@@ -129,7 +129,7 @@ const MainContent: React.FC = () => {
             }}
             className="px-4 py-2 rounded-m3-full bg-primary text-on-primary text-xs font-bold hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
           >
-            ← Back to Travelflows Operations
+            ← Back to Tourlinks Operations
           </button>
         </header>
 
@@ -203,7 +203,9 @@ const MainContent: React.FC = () => {
           <div className="flex items-center gap-4 text-[11px]">
             <span>Tri-Party Outbound Coordination: Agent ➔ Operator ➔ Traveller</span>
             <span className="hidden md:inline">•</span>
-            <span className="hidden md:inline font-mono">demo.travelflow.neralab.id</span>
+            <span className="hidden md:inline font-mono">
+              {typeof window !== 'undefined' && window.location.hostname.includes('travelflow') ? 'demo.travelflow.neralab.id' : 'demo.tourlinks.neralab.id'}
+            </span>
           </div>
         </div>
       </footer>
