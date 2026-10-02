@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #005AC1;
+  --color-on-primary: #FFFFFF;
+  --color-primary-container: #D8E2FF;
+  --color-on-primary-container: #001A41;
+
+  --color-secondary: #006874;
+  --color-on-secondary: #FFFFFF;
+  --color-secondary-container: #9EEFFD;
+  --color-on-secondary-container: #001F24;
+
+  --color-tertiary: #984061;
+  --color-on-tertiary: #FFFFFF;
+  --color-tertiary-container: #FFD9E2;
+  --color-on-tertiary-container: #3E001D;
+
+  --color-error: #BA1A1A;
+  --color-on-error: #FFFFFF;
+  --color-error-container: #FFDAD6;
+  --color-on-error-container: #410002;
+
+  --color-surface: #FDFBFF;
+  --color-on-surface: #1D1B20;
+  --color-on-surface-variant: #49454E;
+
+  --color-surface-container-lowest: #FFFFFF;
+  --color-surface-container-low: #F8F5FB;
+  --color-surface-container: #F2EEF6;
+  --color-surface-container-high: #EAE5F0;
+  --color-surface-container-highest: #E2DDE8;
+
+  --color-outline: #79747E;
+  --color-outline-variant: #CAC4D0;
+
+  --radius-m3-none: 0px;
+  --radius-m3-xs: 4px;
+  --radius-m3-sm: 8px;
+  --radius-m3-md: 12px;
+  --radius-m3-lg: 16px;
+  --radius-m3-xl: 28px;
+  --radius-m3-full: 9999px;
+
+  --font-roboto: "Roboto", system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Roboto", system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-surface);
+    color: var(--color-on-surface);
+    font-family: var(--font-sans);
+  }
+}
+
+/* Material Symbols Rounded font helper */
+.material-symbols-rounded {
+  font-family: 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
+}
+
+.material-symbols-rounded.filled {
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+}
+
+.material-symbols-rounded.outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Material 3 Elevation shadows (soft tonal depth) */
+.m3-elevation-1 {
+  box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.08);
+}
+
+.m3-elevation-2 {
+  box-shadow: 0 2px 6px 2px rgba(0, 0, 0, 0.06), 0 1px 2px 0 rgba(0, 0, 0, 0.09);
+}
+
+.m3-elevation-3 {
+  box-shadow: 0 4px 10px 3px rgba(0, 0, 0, 0.08), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Custom crisp scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface-container-low);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-outline);
+}

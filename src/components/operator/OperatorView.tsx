@@ -1,0 +1,620 @@
+import React, { useState } from 'react';
+import { useTour } from '../../context/TourContext';
+import { useTranslation } from '../../i18n/LanguageContext';
+import { M3Card } from '../m3/M3Card';
+import { M3Button } from '../m3/M3Button';
+import { M3Badge } from '../m3/M3Badge';
+import { M3Icon } from '../m3/M3Icon';
+import { M3Dialog } from '../m3/M3Dialog';
+
+export const OperatorView: React.FC = () => {
+  const {
+    tour,
+    passengers,
+    checkpoints,
+    itinerary,
+    gatheringPin,
+    advanceCheckpoint,
+    updateRollCall,
+    shiftSchedule,
+    toggleGatheringPin,
+  } = useTour();
+  const { t } = useTranslation();
+
+  const [signboardModalOpen, setSignboardModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'arrival' | 'itinerary' | 'rollcall' | 'proof'>('arrival');
+
+  const presentCount = passengers.filter((p) => p.rollCallStatus === 'present').length;
+  const missingCount = passengers.filter((p) => p.rollCallStatus === 'missing').length;
+
+  return (
+    <div className="space-y-6">
+      {/* Top Header Card: Destination Ground Handling Command */}
+      <div className="p-5 rounded-m3-xl bg-secondary text-on-secondary shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2.5 py-0.5 rounded-m3-full text-xs font-bold bg-secondary-container text-on-secondary-container">
+              {t.operator.badge}
+            </span>
+            <span className="text-xs text-on-secondary/80">
+              Contract Ref: DMC-TYO-994
+            </span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold font-roboto tracking-tight">
+            {tour.operatorName}
+          </h2>
+          <p className="text-xs sm:text-sm text-on-secondary/90 mt-0.5">
+            Handling Agent: <span className="font-semibold">{tour.agentName}</span> • Group Size: 14 Pax
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Digital Signboard Button */}
+          <M3Button
+            variant="tonal"
+            size="md"
+            icon="tablet_mac"
+            onClick={() => setSignboardModalOpen(true)}
+            className="bg-secondary-container text-on-secondary-container"
+          >
+            {t.operator.signboardPreview}
+          </M3Button>
+
+          {/* Quick Schedule Push */}
+          <M3Button
+            variant="filled"
+            size="md"
+            icon="schedule"
+            onClick={() => shiftSchedule(20)}
+            className="bg-surface text-on-surface hover:bg-surface-container"
+          >
+            {t.operator.pushSchedule}
+          </M3Button>
+        </div>
+      </div>
+
+      {/* Navigation Sub-Tabs */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-outline-variant/40">
+        <button
+          onClick={() => setActiveTab('arrival')}
+          className={`h-10 px-4 rounded-m3-full text-xs sm:text-sm font-roboto font-bold transition-all inline-flex items-center gap-2 cursor-pointer ${
+            activeTab === 'arrival'
+              ? 'bg-secondary-container text-on-secondary-container shadow-xs'
+              : 'text-on-surface hover:bg-surface-container'
+          }`}
+        >
+          <M3Icon name="flight_land" size={18} />
+          {t.operator.arrivalHandshake}
+        </button>
+
+        <button
+          onClick={() => setActiveTab('itinerary')}
+          className={`h-10 px-4 rounded-m3-full text-xs sm:text-sm font-roboto font-bold transition-all inline-flex items-center gap-2 cursor-pointer ${
+            activeTab === 'itinerary'
+              ? 'bg-secondary-container text-on-secondary-container shadow-xs'
+              : 'text-on-surface hover:bg-surface-container'
+          }`}
+        >
+          <M3Icon name="calendar_month" size={18} />
+          {t.operator.scheduleTitle}
+        </button>
+
+        <button
+          onClick={() => setActiveTab('rollcall')}
+          className={`h-10 px-4 rounded-m3-full text-xs sm:text-sm font-roboto font-bold transition-all inline-flex items-center gap-2 cursor-pointer ${
+            activeTab === 'rollcall'
+              ? 'bg-secondary-container text-on-secondary-container shadow-xs'
+              : 'text-on-surface hover:bg-surface-container'
+          }`}
+        >
+          <M3Icon name="checklist" size={18} />
+          {t.operator.rollCall} ({presentCount}/{passengers.length})
+        </button>
+
+        <button
+          onClick={() => setActiveTab('proof')}
+          className={`h-10 px-4 rounded-m3-full text-xs sm:text-sm font-roboto font-bold transition-all inline-flex items-center gap-2 cursor-pointer ${
+            activeTab === 'proof'
+              ? 'bg-secondary-container text-on-secondary-container shadow-xs'
+              : 'text-on-surface hover:bg-surface-container'
+          }`}
+        >
+          <M3Icon name="verified" size={18} />
+          {t.operator.proofOfService}
+        </button>
+      </div>
+
+      {/* TAB 1: ARRIVAL HANDSHAKE & AIRPORT OPS */}
+      {activeTab === 'arrival' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          {/* Handshake Checkpoints Progress */}
+          <M3Card variant="elevated" className="p-5 lg:col-span-2 space-y-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-lg text-on-surface">
+                  {t.operator.arrivalHandshake}
+                </h3>
+                <p className="text-xs text-on-surface-variant">
+                  Update checkpoints in real time to reassure Jakarta Agent & synchronize Traveller Passes
+                </p>
+              </div>
+              <M3Button
+                variant="filled"
+                size="sm"
+                icon="check_circle"
+                onClick={advanceCheckpoint}
+              >
+                {t.operator.advanceCheckpoint}
+              </M3Button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {checkpoints.map((cp, index) => {
+                const isCompleted = cp.status === 'completed';
+                const isCurrent = cp.status === 'in_progress';
+
+                return (
+                  <div
+                    key={cp.id}
+                    className={`p-4 rounded-m3-lg border transition-all ${
+                      isCurrent
+                        ? 'border-secondary bg-secondary-container/20 ring-2 ring-secondary/30'
+                        : isCompleted
+                        ? 'border-green-300 bg-green-50/60'
+                        : 'border-outline-variant/50 bg-surface-container-low opacity-60'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                            isCompleted
+                              ? 'bg-green-600 text-white'
+                              : isCurrent
+                              ? 'bg-secondary text-on-secondary animate-bounce'
+                              : 'bg-surface-container-highest text-on-surface-variant'
+                          }`}
+                        >
+                          {isCompleted ? <M3Icon name="check" size={16} /> : index + 1}
+                        </span>
+                        <span
+                          className={`text-xs font-bold uppercase ${
+                            isCompleted
+                              ? 'text-green-800'
+                              : isCurrent
+                              ? 'text-secondary font-black'
+                              : 'text-on-surface-variant'
+                          }`}
+                        >
+                          {cp.status.replace('_', ' ')}
+                        </span>
+                      </div>
+                      <span className="text-xs font-mono font-semibold text-on-surface">
+                        {cp.time}
+                      </span>
+                    </div>
+
+                    <h4 className="font-bold text-sm text-on-surface mb-1">
+                      {t.operator[cp.labelKey]}
+                    </h4>
+                    <p className="text-xs text-on-surface-variant">{cp.updatedBy}</p>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Visual Meeting Point Banner */}
+            <div className="p-4 rounded-m3-lg bg-surface-container flex flex-col sm:flex-row items-center gap-4 border border-outline-variant/40">
+              <img
+                src={tour.meetingPoint.photoUrl}
+                alt="Meeting Point"
+                className="w-full sm:w-36 h-24 rounded-m3-md object-cover shadow-xs"
+              />
+              <div className="flex-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-secondary">
+                  Designated Meeting Zone
+                </span>
+                <h4 className="font-bold text-base text-on-surface">
+                  {tour.meetingPoint.pillar}
+                </h4>
+                <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                  {tour.meetingPoint.instructions}
+                </p>
+              </div>
+            </div>
+          </M3Card>
+
+          {/* Chauffeur & Vehicle Status */}
+          <M3Card variant="elevated" className="p-5 flex flex-col justify-between space-y-4">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-bold text-base text-on-surface">
+                  {t.operator.driverGuideDispatch}
+                </h3>
+                <M3Badge label="On Site" variant="secondary" />
+              </div>
+
+              <div className="space-y-4 text-xs">
+                {/* Guide Info */}
+                <div className="p-3 rounded-m3-md bg-surface-container-low border border-outline-variant/30 flex items-center gap-3">
+                  <img
+                    src={tour.staff.guidePhoto}
+                    alt={tour.staff.guideName}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                  <div>
+                    <span className="text-[10px] font-bold text-on-surface-variant uppercase">
+                      {t.operator.assignedGuide}
+                    </span>
+                    <p className="font-bold text-sm text-on-surface">{tour.staff.guideName}</p>
+                    <p className="text-on-surface-variant font-mono">{tour.staff.guidePhone}</p>
+                  </div>
+                </div>
+
+                {/* Driver Info */}
+                <div className="p-3 rounded-m3-md bg-surface-container-low border border-outline-variant/30">
+                  <span className="text-[10px] font-bold text-on-surface-variant uppercase">
+                    {t.operator.assignedDriver} & Vehicle
+                  </span>
+                  <p className="font-bold text-sm text-on-surface mt-0.5">
+                    {tour.staff.driverName}
+                  </p>
+                  <p className="text-on-surface-variant">{tour.staff.vehicleModel}</p>
+                  <div className="mt-2 flex items-center justify-between bg-surface-container p-2 rounded-m3-xs font-mono font-bold text-primary text-xs">
+                    <span>{t.operator.vehiclePlate}:</span>
+                    <span>{tour.staff.vehiclePlate}</span>
+                  </div>
+                </div>
+
+                {/* Highway & Weather advisory */}
+                <div className="p-3 rounded-m3-md bg-primary-container/40 text-on-primary-container text-xs space-y-1">
+                  <div className="flex items-center gap-1.5 font-bold">
+                    <M3Icon name="traffic" size={16} />
+                    <span>Metropolitan Expressway Traffic</span>
+                  </div>
+                  <p className="text-[11px]">
+                    Heavy traffic at Hakozaki Junction (+20 min delay expected to Shinjuku).
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <M3Button
+              variant="tonal"
+              fullWidth
+              icon="call"
+              onClick={() => window.open(`tel:${tour.staff.driverPhone}`)}
+            >
+              Call Chauffeur (Kenji)
+            </M3Button>
+          </M3Card>
+        </div>
+      )}
+
+      {/* TAB 2: DYNAMIC ITINERARY & GATHERING PIN RADAR */}
+      {activeTab === 'itinerary' && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          {/* Live Dynamic Schedule */}
+          <M3Card variant="elevated" className="p-5 lg:col-span-2 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="font-bold text-lg text-on-surface">
+                  {t.operator.scheduleTitle}
+                </h3>
+                <p className="text-xs text-on-surface-variant">
+                  Adjust stop durations on the ground. Updates propagate directly to Traveller passes.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <M3Button
+                  variant="outlined"
+                  size="sm"
+                  icon="schedule"
+                  onClick={() => shiftSchedule(15)}
+                >
+                  +15 Mins
+                </M3Button>
+                <M3Button
+                  variant="filled"
+                  size="sm"
+                  icon="update"
+                  onClick={() => shiftSchedule(30)}
+                >
+                  +30 Mins Delay
+                </M3Button>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {itinerary.map((item) => (
+                <div
+                  key={item.id}
+                  className={`p-4 rounded-m3-lg border transition-all ${
+                    item.status === 'current'
+                      ? 'border-primary bg-primary-container/20 ring-2 ring-primary/20'
+                      : item.status === 'completed'
+                      ? 'border-outline-variant/30 bg-surface-container-low opacity-75'
+                      : 'border-outline-variant/50 bg-surface'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-sm text-primary">
+                        {item.adjustedTime || item.time} JST
+                      </span>
+                      {item.delayMinutes > 0 && (
+                        <span className="px-2 py-0.5 rounded-m3-full text-[10px] font-bold bg-error-container text-on-error-container">
+                          +{item.delayMinutes}m adjusted
+                        </span>
+                      )}
+                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-m3-xs bg-surface-container text-on-surface-variant">
+                        {item.category}
+                      </span>
+                    </div>
+
+                    <span
+                      className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-m3-full ${
+                        item.status === 'current'
+                          ? 'bg-primary text-on-primary animate-pulse'
+                          : item.status === 'completed'
+                          ? 'bg-surface-container-highest text-on-surface-variant'
+                          : 'bg-surface-container text-on-surface-variant'
+                      }`}
+                    >
+                      {item.status}
+                    </span>
+                  </div>
+
+                  <h4 className="font-bold text-sm text-on-surface mt-1.5">{item.title}</h4>
+                  {item.titleJa && (
+                    <p className="text-xs text-on-surface-variant font-medium">{item.titleJa}</p>
+                  )}
+                  <p className="text-xs text-on-surface-variant mt-1">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </M3Card>
+
+          {/* Gathering Radar & Live Pin Dropper */}
+          <M3Card variant="elevated" className="p-5 flex flex-col justify-between space-y-4">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="p-2 rounded-m3-sm bg-tertiary-container text-on-tertiary-container">
+                    <M3Icon name="pin_drop" filled size={20} />
+                  </span>
+                  <div>
+                    <h3 className="font-bold text-base text-on-surface">
+                      {t.operator.dropGatheringPin}
+                    </h3>
+                    <p className="text-xs text-on-surface-variant">Free Time Gathering Point</p>
+                  </div>
+                </div>
+                <M3Badge
+                  label={gatheringPin.isActive ? 'Active' : 'Inactive'}
+                  variant={gatheringPin.isActive ? 'tertiary' : 'surface'}
+                />
+              </div>
+
+              {gatheringPin.isActive ? (
+                <div className="p-4 rounded-m3-lg bg-tertiary-container/30 border border-tertiary/40 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-on-tertiary-container">
+                      Target Meeting Time
+                    </span>
+                    <span className="text-lg font-bold font-mono text-tertiary">
+                      {gatheringPin.targetTime}
+                    </span>
+                  </div>
+
+                  <div className="bg-surface p-3 rounded-m3-md border border-outline-variant/40">
+                    <p className="font-bold text-sm text-on-surface">{gatheringPin.locationName}</p>
+                    <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                      {gatheringPin.notes}
+                    </p>
+                  </div>
+
+                  {/* Countdown Display */}
+                  <div className="flex items-center justify-between p-3 rounded-m3-md bg-tertiary text-on-tertiary">
+                    <span className="text-xs font-bold">{t.operator.timeRemaining}:</span>
+                    <span className="text-xl font-mono font-extrabold tracking-wider">
+                      {gatheringPin.remainingMinutes}:00 Min
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-6 rounded-m3-lg bg-surface-container text-center space-y-2">
+                  <M3Icon name="location_off" size={32} className="text-on-surface-variant" />
+                  <p className="text-xs text-on-surface-variant">
+                    No active gathering radar. Drop a pin during free shopping or sightseeing.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <M3Button
+              variant={gatheringPin.isActive ? 'outlined' : 'filled'}
+              fullWidth
+              icon={gatheringPin.isActive ? 'stop_circle' : 'play_circle'}
+              onClick={toggleGatheringPin}
+              className={gatheringPin.isActive ? 'text-error border-error' : ''}
+            >
+              {gatheringPin.isActive ? 'Stop / Clear Gathering Radar' : 'Drop Gathering Pin (45m)'}
+            </M3Button>
+          </M3Card>
+        </div>
+      )}
+
+      {/* TAB 3: ROLL CALL ATTENDANCE */}
+      {activeTab === 'rollcall' && (
+        <M3Card variant="elevated" className="p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 className="font-bold text-lg text-on-surface">{t.operator.rollCall}</h3>
+              <p className="text-xs text-on-surface-variant">
+                1-Tap attendance at coach boarding or departure points
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span className="px-3 py-1 rounded-m3-full text-xs font-bold bg-green-100 text-green-800">
+                {t.operator.present}: {presentCount}
+              </span>
+              <span className="px-3 py-1 rounded-m3-full text-xs font-bold bg-red-100 text-red-800">
+                {t.operator.missing}: {missingCount}
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {passengers.map((p) => {
+              const isPresent = p.rollCallStatus === 'present';
+
+              return (
+                <div
+                  key={p.id}
+                  className={`p-3 rounded-m3-md border flex items-center justify-between transition-all ${
+                    isPresent
+                      ? 'bg-surface-container-low border-outline-variant/40'
+                      : 'bg-error-container/20 border-error'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
+                        isPresent
+                          ? 'bg-green-600 text-white'
+                          : 'bg-error text-on-error animate-pulse'
+                      }`}
+                    >
+                      {isPresent ? <M3Icon name="check" size={16} /> : '!'}
+                    </span>
+                    <div>
+                      <p className="font-bold text-sm text-on-surface">{p.name}</p>
+                      <p className="text-xs text-on-surface-variant">
+                        Room {p.roomNumber} • {p.dietary}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() =>
+                        updateRollCall(p.id, isPresent ? 'missing' : 'present')
+                      }
+                      className={`px-3 py-1 rounded-m3-full text-xs font-bold cursor-pointer transition-all ${
+                        isPresent
+                          ? 'bg-surface-container text-on-surface hover:bg-surface-container-high'
+                          : 'bg-green-600 text-white hover:bg-green-700'
+                      }`}
+                    >
+                      {isPresent ? 'Mark Missing' : 'Mark Present'}
+                    </button>
+
+                    <button
+                      onClick={() => window.open(`https://wa.me/${p.phone}`, '_blank')}
+                      className="p-1.5 rounded-full text-primary hover:bg-primary/10 transition-colors"
+                      title="Call guest"
+                    >
+                      <M3Icon name="chat" size={18} />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </M3Card>
+      )}
+
+      {/* TAB 4: DIGITAL PROOF OF SERVICE */}
+      {activeTab === 'proof' && (
+        <M3Card variant="elevated" className="p-5 space-y-4">
+          <div>
+            <h3 className="font-bold text-lg text-on-surface">{t.operator.proofOfService}</h3>
+            <p className="text-xs text-on-surface-variant">
+              Submit signed arrival sheet & coach itinerary verification for instant Agent HQ sign-off
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="border-2 border-dashed border-outline-variant rounded-m3-lg p-6 text-center space-y-2 hover:bg-surface-container cursor-pointer transition-colors">
+              <M3Icon name="add_photo_alternate" size={36} className="text-primary" />
+              <h4 className="font-bold text-sm text-on-surface">{t.operator.uploadProof}</h4>
+              <p className="text-xs text-on-surface-variant">
+                Take photo of signed manifest / hotel voucher stamped by front desk
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <span className="text-xs font-bold text-on-surface-variant uppercase">
+                Uploaded Proof & Signatures
+              </span>
+              <div className="p-3.5 rounded-m3-md bg-surface-container-low border border-outline-variant/40 flex items-center gap-3">
+                <img
+                  src="https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&w=200&q=80"
+                  alt="Proof"
+                  className="w-14 h-14 rounded-m3-xs object-cover"
+                />
+                <div className="text-xs">
+                  <p className="font-bold text-on-surface">Narita Airport Arrival Sign-off</p>
+                  <p className="text-on-surface-variant">Timestamp: 16:50 JST • 14 Pax Verified</p>
+                  <span className="text-green-700 font-bold inline-flex items-center gap-1 mt-1">
+                    <M3Icon name="check_circle" size={14} /> Synchronized with Agent HQ
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </M3Card>
+      )}
+
+      {/* Digital Welcome Signboard Fullscreen / Modal */}
+      <M3Dialog
+        open={signboardModalOpen}
+        onClose={() => setSignboardModalOpen(false)}
+        headline="iPad Airport Welcome Signboard"
+        maxWidth="lg"
+        actions={
+          <M3Button variant="filled" onClick={() => setSignboardModalOpen(false)}>
+            Close Paging Board
+          </M3Button>
+        }
+      >
+        <div className="p-8 rounded-m3-xl bg-gradient-to-br from-primary to-[#003B80] text-on-primary text-center space-y-6 shadow-2xl">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-m3-full bg-white/20 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-xs">
+            <M3Icon name="flight_land" size={18} />
+            <span>Japan Airlines JL-720 • Narita Terminal 1</span>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-sm font-roboto tracking-widest uppercase text-white/80">
+              Welcome to Tokyo, Japan
+            </p>
+            <h1 className="text-3xl sm:text-5xl font-extrabold font-roboto tracking-tight drop-shadow-sm">
+              NUSANTARA ODYSSEY
+            </h1>
+            <p className="text-xl sm:text-2xl font-bold text-secondary-container">
+              TOKYO & MT. FUJI DELEGATION
+            </p>
+          </div>
+
+          <div className="pt-4 border-t border-white/20 flex items-center justify-around text-xs text-white/90">
+            <div>
+              <span className="block opacity-75">Lead Guide</span>
+              <span className="font-bold text-sm">Yumi Sato</span>
+            </div>
+            <div>
+              <span className="block opacity-75">Coach #04</span>
+              <span className="font-bold text-sm">品川 200 か 48-12</span>
+            </div>
+            <div>
+              <span className="block opacity-75">Meeting Point</span>
+              <span className="font-bold text-sm">Pillar #17</span>
+            </div>
+          </div>
+        </div>
+      </M3Dialog>
+    </div>
+  );
+};
