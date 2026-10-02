@@ -499,20 +499,9 @@ export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) =>
 
       {/* Footer */}
       <footer className="py-8 bg-surface-container border-t border-outline-variant/30 text-xs text-on-surface-variant">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Logo className="text-xl" />
-            <span className="pl-1">by Nera</span>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <a href="https://tourlinks.co" className="hover:text-primary transition-colors">
-              tourlinks.co
-            </a>
-            <a href={demoUrl} onClick={handleDemoClick} className="hover:text-primary transition-colors">
-              Demo
-            </a>
-          </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center sm:justify-start gap-2">
+          <Logo className="text-xl" />
+          <span className="pl-1">by Nera</span>
         </div>
       </footer>
     </div>
