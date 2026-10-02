@@ -15,6 +15,13 @@ export interface Passenger {
   phone: string;
   rollCallStatus: 'present' | 'missing';
   hasClearedCustoms: boolean;
+  seatNumber?: string;
+  baggageTag?: string;
+  eVisaNumber?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  roommateName?: string;
+  avatarUrl?: string;
 }
 
 export type ArrivalStepId = 'standby' | 'landed' | 'customs_meet' | 'boarded_enroute';

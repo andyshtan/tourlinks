@@ -18,6 +18,7 @@ export const OperatorView: React.FC = () => {
     updateRollCall,
     shiftSchedule,
     toggleGatheringPin,
+    setSelectedPassenger,
   } = useTour();
   const { t } = useTranslation();
 
@@ -220,6 +221,34 @@ export const OperatorView: React.FC = () => {
                 <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">
                   {tour.meetingPoint.instructions}
                 </p>
+              </div>
+            </div>
+
+            {/* Quick Inbound Manifest Strip */}
+            <div className="p-3.5 rounded-m3-md bg-surface-container-low border border-outline-variant/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold shrink-0">
+                  <M3Icon name="groups" size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-xs text-on-surface">
+                    Inbound Tour Manifest ({passengers.length} Guests)
+                  </h4>
+                  <p className="text-[11px] text-on-surface-variant">
+                    {passengers.filter((p) => p.hasClearedCustoms).length} Cleared Customs •{' '}
+                    {passengers.filter((p) => !p.isPassportValid).length} Require Attention
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setSelectedPassenger(passengers[0])}
+                  className="px-3 py-1.5 rounded-m3-full bg-surface-container-highest hover:bg-secondary-container hover:text-on-secondary-container text-xs font-bold text-on-surface inline-flex items-center gap-1.5 cursor-pointer transition-colors border border-outline-variant/60"
+                >
+                  <M3Icon name="badge" size={16} className="text-secondary" />
+                  <span>Inspect Passenger Details</span>
+                </button>
               </div>
             </div>
           </M3Card>
@@ -476,13 +505,17 @@ export const OperatorView: React.FC = () => {
                   key={p.id}
                   className={`p-3 rounded-m3-md border flex items-center justify-between transition-all ${
                     isPresent
-                      ? 'bg-surface-container-low border-outline-variant/40'
-                      : 'bg-error-container/20 border-error'
+                      ? 'bg-surface-container-low border-outline-variant/40 hover:border-secondary/50'
+                      : 'bg-error-container/20 border-error hover:border-error/80'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  <div
+                    onClick={() => setSelectedPassenger(p)}
+                    className="flex items-center gap-3 cursor-pointer group/item flex-1 min-w-0"
+                    title="Click to view full passenger dossier"
+                  >
                     <span
-                      className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
+                      className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${
                         isPresent
                           ? 'bg-green-600 text-white'
                           : 'bg-error text-on-error animate-pulse'
@@ -490,15 +523,32 @@ export const OperatorView: React.FC = () => {
                     >
                       {isPresent ? <M3Icon name="check" size={16} /> : '!'}
                     </span>
-                    <div>
-                      <p className="font-bold text-sm text-on-surface">{p.name}</p>
-                      <p className="text-xs text-on-surface-variant">
-                        Room {p.roomNumber} • {p.dietary}
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className="font-bold text-sm text-on-surface group-hover/item:text-secondary transition-colors truncate">
+                          {p.name}
+                        </p>
+                        <M3Icon
+                          name="visibility"
+                          size={14}
+                          className="text-secondary opacity-0 group-hover/item:opacity-100 transition-opacity"
+                        />
+                      </div>
+                      <p className="text-xs text-on-surface-variant truncate">
+                        Room {p.roomNumber} • {p.dietary} • Seat {p.seatNumber || '14A'}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      onClick={() => setSelectedPassenger(p)}
+                      className="p-1.5 rounded-full text-secondary hover:bg-secondary/15 transition-colors cursor-pointer"
+                      title="Inspect passenger dossier (passport, visa, hotel, baggage)"
+                    >
+                      <M3Icon name="badge" size={18} />
+                    </button>
+
                     <button
                       onClick={() =>
                         updateRollCall(p.id, isPresent ? 'missing' : 'present')
@@ -514,7 +564,7 @@ export const OperatorView: React.FC = () => {
 
                     <button
                       onClick={() => window.open(`https://wa.me/${p.phone}`, '_blank')}
-                      className="p-1.5 rounded-full text-primary hover:bg-primary/10 transition-colors"
+                      className="p-1.5 rounded-full text-primary hover:bg-primary/10 transition-colors cursor-pointer"
                       title="Call guest"
                     >
                       <M3Icon name="chat" size={18} />

@@ -21,6 +21,9 @@ interface TourContextType {
   incidents: Incident[];
   settlement: SettlementLedger;
   activeSosAlert: { passengerName: string; time: string; location: string } | null;
+  selectedPassenger: Passenger | null;
+  setSelectedPassenger: (p: Passenger | null) => void;
+  openPassengerDetailById: (id: string) => void;
   // Actions
   advanceCheckpoint: () => void;
   updateRollCall: (id: string, status: 'present' | 'missing') => void;
@@ -487,6 +490,12 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
     time: string;
     location: string;
   } | null>(null);
+  const [selectedPassenger, setSelectedPassenger] = useState<Passenger | null>(null);
+
+  const openPassengerDetailById = (id: string) => {
+    const p = passengers.find((x) => x.id === id);
+    if (p) setSelectedPassenger(p);
+  };
 
   // Active countdown timer for gathering pin
   useEffect(() => {
@@ -610,6 +619,9 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
         incidents,
         settlement,
         activeSosAlert,
+        selectedPassenger,
+        setSelectedPassenger,
+        openPassengerDetailById,
         advanceCheckpoint,
         updateRollCall,
         passengerClearedCustoms,

@@ -10,6 +10,7 @@ import { TravellerView } from './components/traveller/TravellerView';
 import { SplitView } from './components/layout/SplitView';
 import { RoleSelectionScreen } from './components/onboarding/RoleSelectionScreen';
 import { MarketingPage } from './components/marketing/MarketingPage';
+import { TravellerDetailModal } from './components/common/TravellerDetailModal';
 
 const detectInitialView = (): 'marketing' | 'demo' => {
   if (typeof window === 'undefined') return 'marketing';
@@ -119,6 +120,9 @@ const MainContent: React.FC = () => {
           </div>
         )}
       </main>
+
+      {/* Universal 1-Click Traveler Detail Inspection Modal */}
+      <TravellerDetailModal />
 
       {/* Material 3 Bottom Bar */}
       <footer className="w-full bg-surface-container border-t border-outline-variant/30 py-4 px-6 text-xs text-on-surface-variant select-none">

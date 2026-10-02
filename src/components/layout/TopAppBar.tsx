@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTour } from '../../context/TourContext';
 import { useTranslation } from '../../i18n/LanguageContext';
 import type { SupportedLanguage } from '../../i18n/translations';
 import { M3Icon } from '../m3/M3Icon';
 import { M3Button } from '../m3/M3Button';
-import type { StakeholderRole } from '../../types/tour';
+import { M3Dialog } from '../m3/M3Dialog';
 
 interface TopAppBarProps {
   splitView: boolean;
@@ -19,18 +19,24 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
   onBackToRoleSelect,
   onBackToMarketing,
 }) => {
-  const { role, setRole, tour, activeSosAlert, dismissSOS } = useTour();
+  const {
+    role,
+    tour,
+    passengers,
+    activeSosAlert,
+    dismissSOS,
+    setSelectedPassenger,
+  } = useTour();
   const { language, setLanguage, t } = useTranslation();
 
-  const rolesList: { id: StakeholderRole; icon: string; label: string; badge?: string }[] = [
-    { id: 'agent', icon: 'corporate_fare', label: t.roles.agent, badge: 'HQ' },
-    { id: 'operator', icon: 'commute', label: t.roles.operator, badge: 'Tokyo' },
-    { id: 'traveller', icon: 'badge', label: t.roles.traveller, badge: 'Guest' },
-  ];
+  const [travellerListOpen, setTravellerListOpen] = useState(false);
+
+  const flaggedCount = passengers.filter((p) => !p.isPassportValid).length;
+  const presentCount = passengers.filter((p) => p.rollCallStatus === 'present').length;
 
   return (
     <header className="sticky top-0 z-40 w-full bg-surface-container border-b border-outline-variant/40 shadow-xs select-none">
-      {/* SOS Alert Bar if active */}
+      {/* Emergency SOS Banner if active */}
       {activeSosAlert && (
         <div className="bg-error text-on-error px-4 py-2 flex items-center justify-between animate-pulse">
           <div className="flex items-center gap-2 text-sm font-semibold">
@@ -49,124 +55,168 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
         </div>
       )}
 
-      {/* Main Top Bar */}
-      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        {/* Brand & Active Trip */}
+      {/* Main Role-Specific Top Bar */}
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
+        {/* Left: Role-Specific Identity & Active Tour */}
         <div className="flex items-center gap-3 min-w-0">
           <button
-            onClick={onBackToRoleSelect}
-            className="w-10 h-10 rounded-m3-md bg-primary flex items-center justify-center text-on-primary shadow-xs hover:bg-[#004FAF] transition-all cursor-pointer"
-            title="Return to Role Decider"
+            onClick={onBackToMarketing}
+            className={`w-10 h-10 rounded-m3-md flex items-center justify-center shadow-xs shrink-0 cursor-pointer hover:opacity-90 transition-opacity ${
+              role === 'agent'
+                ? 'bg-primary text-on-primary'
+                : role === 'operator'
+                ? 'bg-secondary text-on-secondary'
+                : 'bg-tertiary text-on-tertiary'
+            }`}
+            title="Return to TravelFlow Home"
           >
-            <M3Icon name="flight_takeoff" filled size={24} />
+            <M3Icon
+              name={
+                role === 'agent'
+                  ? 'corporate_fare'
+                  : role === 'operator'
+                  ? 'commute'
+                  : 'badge'
+              }
+              filled
+              size={24}
+            />
           </button>
+
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="font-extrabold text-base tracking-tight text-on-surface">
-                {t.appName}
+              <span className="font-extrabold text-sm sm:text-base tracking-tight text-on-surface truncate">
+                {role === 'agent'
+                  ? `${tour.agentName}`
+                  : role === 'operator'
+                  ? `${tour.operatorName}`
+                  : `${tour.name} • Guest Pass`}
               </span>
-              <button
-                onClick={onBackToRoleSelect}
-                className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-m3-full text-[10px] font-bold uppercase bg-surface-container-highest text-on-surface hover:bg-outline-variant/50 transition-colors cursor-pointer"
-              >
-                <M3Icon name="swap_horiz" size={12} />
-                <span>{t.roleSelection.changeRoleBtn}</span>
-              </button>
-              {onBackToMarketing && (
-                <button
-                  onClick={onBackToMarketing}
-                  className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-m3-full text-[10px] font-bold uppercase bg-surface-container-high text-primary hover:bg-primary-container transition-colors cursor-pointer"
-                >
-                  <M3Icon name="arrow_back" size={12} />
-                  <span>Website</span>
-                </button>
-              )}
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-on-surface-variant truncate">
-              <span className="font-mono font-extrabold text-[11px] px-1.5 py-0.5 rounded-m3-xs bg-primary-container text-on-primary-container">
-                {tour.code}
-              </span>
-              <span className="truncate font-semibold text-on-surface flex items-center gap-1">
-                <span>🇯🇵</span>
-                <span>{tour.name}</span>
-              </span>
-            </div>
-          </div>
-        </div>
 
-        {/* Timezone Clocks (Origin vs Destination) */}
-        <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-m3-full bg-surface-container-high text-xs font-roboto border border-outline-variant/40">
-          <div className="flex items-center gap-1.5 text-on-surface-variant">
-            <M3Icon name="home_pin" size={16} className="text-secondary" />
-            <span className="font-medium">Jakarta</span>
-            <span className="font-bold text-on-surface">14:15 WIB</span>
-          </div>
-          <span className="text-outline-variant">|</span>
-          <div className="flex items-center gap-1.5 text-on-surface-variant">
-            <M3Icon name="flight_land" size={16} className="text-primary" />
-            <span className="font-medium">Tokyo</span>
-            <span className="font-bold text-primary">16:15 JST</span>
-            <span className="text-[10px] bg-primary/10 text-primary font-bold px-1 rounded-sm">
-              +2 hrs
-            </span>
-          </div>
-        </div>
-
-        {/* Persona Switcher Buttons (Primary M3 Segmented Bar) */}
-        <div className="flex items-center gap-1.5 bg-surface-container-lowest p-1 rounded-m3-full border border-outline-variant/60 shadow-xs">
-          {rolesList.map((r) => {
-            const isSelected = role === r.id;
-            return (
-              <button
-                key={r.id}
-                onClick={() => setRole(r.id)}
-                className={`relative px-3.5 py-1.5 rounded-m3-full text-xs font-roboto font-semibold transition-all inline-flex items-center gap-1.5 cursor-pointer active:scale-95 ${
-                  isSelected
-                    ? 'bg-primary text-on-primary shadow-xs'
-                    : 'text-on-surface hover:bg-surface-container-high'
+              {/* Role Badge */}
+              <span
+                className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-m3-full hidden sm:inline-block ${
+                  role === 'agent'
+                    ? 'bg-primary-container text-on-primary-container'
+                    : role === 'operator'
+                    ? 'bg-secondary-container text-on-secondary-container'
+                    : 'bg-tertiary-container text-on-tertiary-container'
                 }`}
               >
-                <M3Icon name={r.icon} size={16} filled={isSelected} />
-                <span className="hidden sm:inline">{r.label}</span>
-                {r.badge && (
-                  <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                      isSelected
-                        ? 'bg-on-primary text-primary'
-                        : 'bg-surface-container-highest text-on-surface-variant'
-                    }`}
-                  >
-                    {r.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+                {role === 'agent'
+                  ? 'Origin Agent HQ'
+                  : role === 'operator'
+                  ? 'Ground DMC Tokyo'
+                  : 'Traveler'}
+              </span>
+            </div>
+
+            {/* Tour Subtitle */}
+            <div className="flex items-center gap-2 text-xs text-on-surface-variant truncate">
+              <span className="font-mono font-bold text-[11px] px-1.5 py-0.2 rounded-xs bg-surface-container-highest text-on-surface">
+                {tour.code}
+              </span>
+              <span className="truncate text-on-surface-variant hidden md:inline">
+                {tour.name}
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Right Tools: Split View & Language Selector */}
+        {/* Center: Role-Relevant Clocks & Indicators */}
+        <div className="hidden lg:flex items-center gap-3">
+          {/* Agent: Shows Home Time & Destination Flight */}
+          {role === 'agent' && (
+            <div className="flex items-center gap-3 px-3.5 py-1.5 rounded-m3-full bg-surface-container-high border border-outline-variant/40 text-xs font-roboto">
+              <div className="flex items-center gap-1.5 text-on-surface">
+                <M3Icon name="home_pin" size={16} className="text-primary" />
+                <span className="text-on-surface-variant">Jakarta:</span>
+                <span className="font-bold">14:15 WIB</span>
+              </div>
+              <span className="text-outline-variant">|</span>
+              <div className="flex items-center gap-1.5 text-on-surface">
+                <M3Icon name="flight_land" size={16} className="text-secondary" />
+                <span className="text-on-surface-variant">Tokyo:</span>
+                <span className="font-bold text-secondary">16:15 JST (+2h)</span>
+              </div>
+            </div>
+          )}
+
+          {/* Operator: Shows Tokyo Local Time & Chauffeur Gate */}
+          {role === 'operator' && (
+            <div className="flex items-center gap-3 px-3.5 py-1.5 rounded-m3-full bg-surface-container-high border border-outline-variant/40 text-xs font-roboto">
+              <div className="flex items-center gap-1.5 text-on-surface">
+                <M3Icon name="schedule" size={16} className="text-secondary" />
+                <span className="text-on-surface-variant">現地時間:</span>
+                <span className="font-bold text-secondary">16:15 JST</span>
+              </div>
+              <span className="text-outline-variant">|</span>
+              <div className="flex items-center gap-1.5 text-on-surface">
+                <M3Icon name="directions_bus" size={16} className="text-primary" />
+                <span className="font-bold text-primary">4号車 • 待機中</span>
+              </div>
+            </div>
+          )}
+
+          {/* Traveler: Shows Local Weather & Flight Status */}
+          {role === 'traveller' && (
+            <div className="flex items-center gap-3 px-3.5 py-1.5 rounded-m3-full bg-surface-container-high border border-outline-variant/40 text-xs font-roboto">
+              <div className="flex items-center gap-1.5 text-on-surface">
+                <M3Icon name="partly_cloudy_day" size={16} className="text-primary" />
+                <span>Tokyo: 19°C Autumn</span>
+              </div>
+              <span className="text-outline-variant">|</span>
+              <div className="flex items-center gap-1.5 text-on-surface">
+                <span className="font-bold text-primary">Narita T1 • Pillar #17</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Right: Quick Passenger Detail Drawer Trigger + Clean Actions */}
         <div className="flex items-center gap-2">
-          {/* Tri-Party Live Split View Toggle */}
+          {/* Quick Click to View All Travellers with 1-Click Detail */}
+          <button
+            onClick={() => setTravellerListOpen(true)}
+            className="h-9 px-3 rounded-m3-full bg-surface-container-lowest border border-outline-variant/60 hover:bg-surface-container-high transition-all text-xs font-roboto font-bold text-on-surface flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-98"
+            title="Click to view all travellers and inspect details"
+          >
+            <M3Icon name="groups" size={16} className="text-primary" />
+            <span className="hidden sm:inline">Travellers ({passengers.length})</span>
+            <span className="sm:hidden">({passengers.length})</span>
+            {role === 'agent' && flaggedCount > 0 && (
+              <span className="w-2 h-2 rounded-full bg-error" />
+            )}
+            {role === 'operator' && (
+              <span className="text-[10px] text-green-700 bg-green-100 px-1.5 rounded-full font-mono hidden md:inline">
+                {presentCount}/{passengers.length}
+              </span>
+            )}
+          </button>
+
+          {/* Tri-Party Sync View Toggle */}
           <M3Button
             variant={splitView ? 'filled' : 'tonal'}
             size="sm"
             icon="splitscreen"
             onClick={onToggleSplitView}
-            className="hidden md:inline-flex"
-            title="Compare all 3 stakeholders side-by-side"
+            className="hidden xl:inline-flex"
+            title="Side-by-side view"
           >
-            <span>{splitView ? 'Single View' : 'Tri-Party Sync'}</span>
+            <span>{splitView ? 'Single' : 'Tri-Party'}</span>
           </M3Button>
 
-          {/* Change Role Button for compact screens */}
+          {/* Switch Role Button */}
           <M3Button
-            variant="text"
+            variant="outlined"
             size="sm"
-            icon="switch_account"
+            icon="swap_horiz"
             onClick={onBackToRoleSelect}
-            className="sm:hidden"
-            title="Switch Role"
-          />
+            className="cursor-pointer"
+            title="Change active role"
+          >
+            <span className="hidden sm:inline">{t.roleSelection.changeRoleBtn}</span>
+          </M3Button>
 
           {/* Language Selector Dropdown */}
           <div className="relative flex items-center bg-surface-container-lowest rounded-m3-full border border-outline-variant/60 px-2 py-1 text-xs">
@@ -183,6 +233,77 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Quick All-Travellers Modal (Click any traveller to open their full detail profile!) */}
+      <M3Dialog
+        open={travellerListOpen}
+        onClose={() => setTravellerListOpen(false)}
+        headline="14 Travellers Manifest"
+        supportingText="Click any traveller below to inspect their full passport, rooming, flight, and health details."
+        maxWidth="lg"
+        actions={
+          <M3Button variant="filled" onClick={() => setTravellerListOpen(false)}>
+            Close
+          </M3Button>
+        }
+      >
+        <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+          {passengers.map((p) => {
+            const isExpiringSoon = !p.isPassportValid;
+            const isPresent = p.rollCallStatus === 'present';
+
+            return (
+              <div
+                key={p.id}
+                onClick={() => {
+                  setTravellerListOpen(false);
+                  setSelectedPassenger(p);
+                }}
+                className="p-3 rounded-m3-md bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/40 flex items-center justify-between transition-all cursor-pointer group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">
+                    {p.gender === 'F' ? '👩' : '👨'}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-sm text-on-surface group-hover:text-primary transition-colors">
+                        {p.name}
+                      </p>
+                      {isExpiringSoon && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-xs bg-error text-on-error flex items-center gap-0.5">
+                          <M3Icon name="warning" size={10} filled />
+                          &lt;6mo
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-on-surface-variant font-mono">
+                      Pass: {p.passportNumber} • Room {p.roomNumber} ({p.dietary})
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded-m3-full ${
+                      isPresent
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}
+                  >
+                    {isPresent ? 'Present' : 'Missing'}
+                  </span>
+
+                  <span className="text-primary font-bold text-xs flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    <span>View Detail</span>
+                    <M3Icon name="chevron_right" size={16} />
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </M3Dialog>
     </header>
   );
 };

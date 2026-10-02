@@ -16,6 +16,7 @@ export const TravellerView: React.FC = () => {
     passengerClearedCustoms,
     triggerSOS,
     activeSosAlert,
+    setSelectedPassenger,
   } = useTour();
   const { t } = useTranslation();
 
@@ -64,12 +65,35 @@ export const TravellerView: React.FC = () => {
         <h2 className="text-xl font-extrabold tracking-tight text-white mb-1">
           {tour.name}
         </h2>
-        <p className="text-xs text-white/90">
-          Guest: <span className="font-bold text-white">{currentTraveller.name}</span> • Room {currentTraveller.roomNumber}
-        </p>
+        <div className="flex items-center justify-between text-xs text-white/90">
+          <p>
+            Guest: <span className="font-bold text-white">{currentTraveller.name}</span> • Room {currentTraveller.roomNumber}
+          </p>
+          <span className="font-mono text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-bold">
+            Seat {currentTraveller.seatNumber || '14K'}
+          </span>
+        </div>
+
+        {/* 1-Tap Passenger Dossier Button */}
+        <div className="mt-3">
+          <button
+            onClick={() => setSelectedPassenger(currentTraveller)}
+            className="w-full py-2 px-3 rounded-m3-md bg-white/15 hover:bg-white/25 text-white text-xs font-bold flex items-center justify-between transition-all cursor-pointer border border-white/20 active:scale-98"
+            title="Inspect full passport, e-Visa, baggage tag, and room details"
+          >
+            <div className="flex items-center gap-2">
+              <M3Icon name="badge" size={16} />
+              <span>My Passport, e-Visa & Baggage Tag</span>
+            </div>
+            <span className="flex items-center gap-1 text-[11px] opacity-90 font-medium">
+              <span>View Dossier</span>
+              <M3Icon name="chevron_right" size={14} />
+            </span>
+          </button>
+        </div>
 
         {/* Live Weather & Local Time Widget */}
-        <div className="mt-4 pt-3 border-t border-white/20 flex items-center justify-between text-xs">
+        <div className="mt-3 pt-3 border-t border-white/20 flex items-center justify-between text-xs">
           <div className="flex items-center gap-1.5">
             <M3Icon name="partly_cloudy_day" size={18} />
             <span>Tokyo: 19°C Crisp Autumn</span>
@@ -269,6 +293,27 @@ export const TravellerView: React.FC = () => {
           <span className="font-mono font-bold text-primary">{tour.hotel.wifiPass}</span>
         </div>
 
+        {/* Roommate details */}
+        <div
+          onClick={() => {
+            const roommate = passengers.find((p) => p.id === 'p2');
+            if (roommate) setSelectedPassenger(roommate);
+          }}
+          className="p-2.5 rounded-m3-md bg-surface-container-low hover:bg-surface-container-high transition-colors text-xs flex items-center justify-between cursor-pointer border border-outline-variant/30"
+          title="Click to view roommate details"
+        >
+          <div className="flex items-center gap-2">
+            <M3Icon name="people" size={16} className="text-secondary" />
+            <span className="text-on-surface">
+              Roommate: <strong className="text-primary font-bold">Ratna Dewi</strong>
+            </span>
+          </div>
+          <span className="text-primary font-bold text-[11px] flex items-center gap-0.5">
+            <span>View Dossier</span>
+            <M3Icon name="chevron_right" size={14} />
+          </span>
+        </div>
+
         {/* Taxi Card Button (Shows large Japanese text to driver) */}
         <M3Button
           variant="outlined"
@@ -279,6 +324,51 @@ export const TravellerView: React.FC = () => {
         >
           {t.traveller.taxiCardAddress}
         </M3Button>
+      </M3Card>
+
+      {/* Tour Companions List */}
+      <M3Card variant="elevated" className="p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="p-1.5 rounded-m3-sm bg-primary-container text-on-primary-container">
+              <M3Icon name="groups" filled size={18} />
+            </span>
+            <div>
+              <h3 className="font-bold text-sm text-on-surface">
+                My Travel Group ({passengers.length} Guests)
+              </h3>
+              <p className="text-[11px] text-on-surface-variant">Tap any guest to view details</p>
+            </div>
+          </div>
+          <M3Badge label="Tokyo Cohort" variant="primary" />
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          {passengers.slice(0, 6).map((p) => (
+            <div
+              key={p.id}
+              onClick={() => setSelectedPassenger(p)}
+              className="p-2 rounded-m3-md bg-surface-container-low hover:bg-primary-container/20 border border-outline-variant/40 flex items-center gap-2 cursor-pointer transition-colors"
+            >
+              <div className="w-7 h-7 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs shrink-0">
+                {p.gender === 'F' ? '👩' : '👨'}
+              </div>
+              <div className="min-w-0">
+                <p className="font-bold text-xs text-on-surface truncate">{p.name.split(' ')[0]}</p>
+                <p className="text-[10px] text-on-surface-variant font-mono">Room {p.roomNumber}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {passengers.length > 6 && (
+          <button
+            onClick={() => setSelectedPassenger(passengers[0])}
+            className="w-full py-1.5 text-center text-xs font-bold text-primary hover:underline cursor-pointer"
+          >
+            + View all {passengers.length} companions & manifest
+          </button>
+        )}
       </M3Card>
 
       {/* Emergency SOS Button */}

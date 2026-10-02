@@ -19,6 +19,7 @@ export const AgentView: React.FC = () => {
     nudgePassengerWhatsApp,
     addIncident,
     resolveIncident,
+    setSelectedPassenger,
   } = useTour();
   const { t } = useTranslation();
 
@@ -68,18 +69,32 @@ export const AgentView: React.FC = () => {
               </p>
             </div>
           </div>
-          <M3Button
-            variant="filled"
-            size="sm"
-            icon="notifications_active"
-            onClick={() => {
-              const flagged = passengers.filter((p) => !p.isPassportValid);
-              flagged.forEach((p) => nudgePassengerWhatsApp(p.phone, p.name));
-            }}
-            className="bg-tertiary text-on-tertiary hover:bg-[#83344f]"
-          >
-            {t.agent.nudgeWhatsApp} (All {flaggedCount})
-          </M3Button>
+          <div className="flex items-center gap-2 flex-wrap">
+            <M3Button
+              variant="outlined"
+              size="sm"
+              icon="visibility"
+              onClick={() => {
+                const flagged = passengers.filter((p) => !p.isPassportValid);
+                if (flagged.length > 0) setSelectedPassenger(flagged[0]);
+              }}
+              className="border-tertiary text-on-surface hover:bg-surface-container bg-surface cursor-pointer"
+            >
+              Inspect Flagged Guest
+            </M3Button>
+            <M3Button
+              variant="filled"
+              size="sm"
+              icon="notifications_active"
+              onClick={() => {
+                const flagged = passengers.filter((p) => !p.isPassportValid);
+                flagged.forEach((p) => nudgePassengerWhatsApp(p.phone, p.name));
+              }}
+              className="bg-tertiary text-on-tertiary hover:bg-[#83344f] cursor-pointer"
+            >
+              {t.agent.nudgeWhatsApp} (All {flaggedCount})
+            </M3Button>
+          </div>
         </div>
       )}
 
@@ -369,15 +384,27 @@ export const AgentView: React.FC = () => {
                 return (
                   <tr
                     key={p.id}
-                    className={`hover:bg-surface-container-high/40 transition-colors ${
+                    onClick={() => setSelectedPassenger(p)}
+                    className={`hover:bg-primary-container/20 transition-colors cursor-pointer group ${
                       isExpiringSoon ? 'bg-tertiary-container/15' : ''
                     }`}
+                    title="Click to view full passenger dossier"
                   >
                     <td className="px-4 py-3">
-                      <div className="font-bold text-on-surface text-sm">{p.name}</div>
-                      <span className="text-[11px] text-on-surface-variant font-mono">
-                        {p.phone}
-                      </span>
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center text-xs font-bold shrink-0 ring-1 ring-primary/20">
+                          {p.gender === 'F' ? '👩' : '👨'}
+                        </div>
+                        <div>
+                          <div className="font-bold text-on-surface text-sm group-hover:text-primary transition-colors flex items-center gap-1">
+                            <span>{p.name}</span>
+                            <M3Icon name="open_in_new" size={13} className="opacity-0 group-hover:opacity-100 text-primary transition-opacity" />
+                          </div>
+                          <span className="text-[11px] text-on-surface-variant font-mono">
+                            {p.phone}
+                          </span>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-3 py-3">
                       <div className="font-mono font-medium text-on-surface">
@@ -462,23 +489,37 @@ export const AgentView: React.FC = () => {
                       )}
                     </td>
                     <td className="px-3 py-3 text-right">
-                      {isExpiringSoon ? (
+                      <div
+                        className="flex items-center justify-end gap-1.5"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <button
-                          onClick={() => nudgePassengerWhatsApp(p.phone, p.name)}
-                          className="px-2.5 py-1 rounded-m3-full bg-tertiary text-on-tertiary font-bold text-[11px] hover:bg-[#83344f] transition-all inline-flex items-center gap-1 cursor-pointer"
+                          onClick={() => setSelectedPassenger(p)}
+                          className="px-2.5 py-1 rounded-m3-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container text-on-surface font-bold text-[11px] inline-flex items-center gap-1 cursor-pointer transition-all border border-outline-variant/60"
+                          title="View full passenger dossier"
                         >
-                          <M3Icon name="chat" size={12} />
-                          Nudge
+                          <M3Icon name="visibility" size={13} className="text-primary" />
+                          <span>Detail</span>
                         </button>
-                      ) : (
-                        <button
-                          onClick={() => nudgePassengerWhatsApp(p.phone, p.name)}
-                          className="p-1 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors"
-                          title="Message via WhatsApp"
-                        >
-                          <M3Icon name="chat" size={16} />
-                        </button>
-                      )}
+                        {isExpiringSoon ? (
+                          <button
+                            onClick={() => nudgePassengerWhatsApp(p.phone, p.name)}
+                            className="px-2.5 py-1 rounded-m3-full bg-tertiary text-on-tertiary font-bold text-[11px] hover:bg-[#83344f] transition-all inline-flex items-center gap-1 cursor-pointer"
+                            title="Nudge via WhatsApp"
+                          >
+                            <M3Icon name="chat" size={12} />
+                            Nudge
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => nudgePassengerWhatsApp(p.phone, p.name)}
+                            className="p-1 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer"
+                            title="Message via WhatsApp"
+                          >
+                            <M3Icon name="chat" size={16} />
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
