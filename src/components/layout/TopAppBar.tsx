@@ -22,6 +22,11 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           label: t.agent.badge || 'Origin Agent HQ',
           classes: 'bg-primary-container text-on-primary-container',
         };
+      case 'leader':
+        return {
+          label: t.leader.badge,
+          classes: 'bg-leader-container text-on-leader-container',
+        };
       case 'operator':
         return {
           label: t.operator.badge || 'Ground Operator DMC',
@@ -79,7 +84,7 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           </span>
 
           <div className="hidden sm:flex items-center gap-2 text-xs text-on-surface-variant truncate">
-            {role === 'agent' ? (
+            {role === 'agent' || role === 'leader' ? (
               <>
                 <span className="font-mono font-bold text-[11px] px-1.5 py-0.5 rounded-xs bg-primary-container text-on-primary-container">
                   {tour.agentPackageCode}

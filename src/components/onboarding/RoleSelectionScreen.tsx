@@ -15,11 +15,8 @@ const languageOptions: { code: SupportedLanguage; label: string; flag: string }[
   { code: 'en', label: 'English', flag: '🇺🇸' },
   { code: 'id', label: 'Bahasa Indonesia', flag: '🇮🇩' },
   { code: 'ja', label: '日本語 (Japanese)', flag: '🇯🇵' },
-  { code: 'th', label: 'ไทย (Thai)', flag: '🇹🇭' },
   { code: 'zh', label: '中文 (Chinese)', flag: '🇨🇳' },
   { code: 'ko', label: '한국어 (Korean)', flag: '🇰🇷' },
-  { code: 'es', label: 'Español (Spanish)', flag: '🇪🇸' },
-  { code: 'hi', label: 'हिन्दी (Hindi)', flag: '🇮🇳' },
   { code: 'ar', label: 'العربية (Arabic)', flag: '🇸🇦' },
 ];
 
@@ -29,55 +26,75 @@ const roleFeaturesByLang: Record<StakeholderRole, Record<SupportedLanguage, stri
       'Passport (<6 months) Guard with 1-Click WhatsApp Nudge',
       'Digital Manifest of 14 Guests & Rooming Allocation',
       'Live Flight In-Transit Radar (JL720 CGK ➔ NRT)',
-      'Sign-off & DMC Net Rate Settlement ($14,800)',
+      'Sign-off of DMC Extras & Settlement (¥1,450,000)',
     ],
     id: [
       'Pengawal Paspor (<6 bulan) dengan 1-Klik Nudge WhatsApp',
       'Manifes Digital 14 Tamu & Alokasi Kamar Hotel',
       'Radar Penerbangan Langsung (JL720 CGK ➔ NRT)',
-      'Tanda Tangan & Pelunasan Net Rate DMC ($14.800)',
+      'Tanda Tangan & Pelunasan Net Rate DMC (¥1.450.000)',
     ],
     ja: [
       'パスポート残存期間（6ヶ月未満）検知＆WhatsApp督促',
       '14名のデジタル搭乗者名簿＆ホテル客室アサイン',
       '運航監視レーダー（JL720 CGK ➔ NRT）',
-      'DMCネトレート決済承認＆送金管理（$14,800）',
-    ],
-    th: [
-      'ระบบตรวจพาสปอร์ต (<6 เดือน) พร้อมแจ้งเตือน WhatsApp 1 คลิก',
-      'บัญชีรายชื่อดิจิทัล 14 ท่านและการจัดสรรห้องพัก',
-      'เรดาร์เที่ยวบินสด (JL720 CGK ➔ NRT)',
-      'ลงนามและอนุมัติการชำระเงินสุทธิ DMC ($14,800)',
+      'DMCネトレート決済承認＆送金管理（¥1,450,000）',
     ],
     zh: [
       '护照合规守卫（<6个月预警）与 1键 WhatsApp 催办',
       '14位旅客数字名册与酒店分房入住明细',
       '国际航班动态雷达（JL720 CGK ➔ NRT）',
-      'DMC 地接净价结算签核与拨款（$14,800）',
+      'DMC 地接净价结算签核与拨款（¥1,450,000）',
     ],
     ko: [
       '여권 유효기간(6개월 미만) 감지 및 1클릭 왓츠앱 안내',
       '14명 디지털 승객 명부 및 객실 배정',
       '항공편 실시간 운항 레이더 (JL720 CGK ➔ NRT)',
-      'DMC 넷레이트 정산 승인 및 결제 ($14,800)',
-    ],
-    es: [
-      'Alerta de pasaporte (<6 meses) y recordatorio por WhatsApp',
-      'Manifiesto digital de 14 huéspedes y asignación de habitaciones',
-      'Radar de vuelo en tránsito (JL720 CGK ➔ NRT)',
-      'Firma y liquidación de tarifa neta DMC ($14,800)',
-    ],
-    hi: [
-      'पासपोर्ट (<6 महीने) सुरक्षा और 1-क्लिक व्हाट्सएप अनुस्मारक',
-      '14 अतिथियों का डिजिटल घोषणापत्र और कमरा आवंटन',
-      'लाइव उड़ान ट्रैकिंग रडार (JL720 CGK ➔ NRT)',
-      'डीएमसी शुद्ध दर निपटान अनुमोदन ($14,800)',
+      'DMC 넷레이트 정산 승인 및 결제 (¥1,450,000)',
     ],
     ar: [
       'مراقبة صلاحية الجوازات (أقل من 6 أشهر) والتذكير بواتساب',
       'القائمة الرقمية لـ 14 مسافراً وتوزيع الغرف الفندقية',
       'رادار تتبع الرحلة الجوية المباشرة (JL720 CGK ➔ NRT)',
-      'اعتماد وصرف المستحقات المالية الصافية للمشغل (14,800$)',
+      'اعتماد وصرف المستحقات المالية الصافية للمشغل (1,450,000 ين)',
+    ],
+  },
+  leader: {
+    en: [
+      'Airport Handover to the Local Guide & Driver',
+      'Roll Call by Party or by Guest',
+      'Rooming List with Halal, Vegetarian & Allergy Notes',
+      'Incident Log & Confirmation of DMC Extra Charges',
+    ],
+    id: [
+      'Serah Terima di Bandara dengan Pemandu Lokal & Sopir',
+      'Absensi per Rombongan atau per Tamu',
+      'Daftar Kamar dengan Catatan Halal, Vegetarian & Alergi',
+      'Catatan Insiden & Konfirmasi Biaya Tambahan DMC',
+    ],
+    ja: [
+      '空港での現地ガイド・ドライバーへの引き継ぎ',
+      'グループ単位・個人単位の点呼',
+      'ハラール・ベジタリアン・アレルギー情報付き部屋割り表',
+      'インシデント記録とDMC追加料金の確認',
+    ],
+    zh: [
+      '机场与地接导游及司机交接',
+      '按同行小组或逐人点名',
+      '含清真、素食与过敏备注的分房表',
+      '异常事件记录与地接额外费用确认',
+    ],
+    ko: [
+      '공항에서 현지 가이드·기사에게 인계',
+      '일행별 또는 개인별 인원 점검',
+      '할랄·채식·알레르기 메모가 포함된 객실 배정표',
+      '돌발상황 기록 및 랜드사 추가 요금 확인',
+    ],
+    ar: [
+      'تسليم المجموعة في المطار إلى المرشد المحلي والسائق',
+      'التحقق من الحضور حسب المجموعة أو الفرد',
+      'قائمة الغرف مع ملاحظات الحلال والنباتي والحساسية',
+      'سجل الحوادث وتأكيد الرسوم الإضافية للمشغل الأرضي',
     ],
   },
   operator: {
@@ -99,12 +116,6 @@ const roleFeaturesByLang: Record<StakeholderRole, Record<SupportedLanguage, stri
       '空港到着ハンドシェイク（待機 ➔ 乗車完了）',
       '首都高渋滞による動的遅延調整（+20分）＆集合ピン',
     ],
-    th: [
-      'จัดสรรคนขับ (Tanaka) และมัคคุเทศก์หลัก (Sato)',
-      'ป้ายต้อนรับดิจิทัลเต็มจอสำหรับ iPad ที่สนามบิน',
-      'ขั้นตอนการรับที่สนามบิน (สแตนด์บาย ➔ ลงจอด ➔ พบกัน ➔ ขึ้นรถ)',
-      'ปรับเวลาล่าช้าจากสภาพการจราจร (+20 นาที) และเรดาร์จุดรวมพล',
-    ],
     zh: [
       '专车司机（田中）与带队导游（佐藤）就位调度',
       '适用于 iPad 的机场全屏电子接机牌',
@@ -117,18 +128,6 @@ const roleFeaturesByLang: Record<StakeholderRole, Record<SupportedLanguage, stri
       '공항 영접 단계 (대기 ➔ 착륙 ➔ 미팅 ➔ 탑승)',
       '고속도로 정체 반영 동적 시간 조정 (+20분) 및 집결 레이더',
     ],
-    es: [
-      'Asignación de chofer (Tanaka) y guía líder (Sato)',
-      'Cartel digital de bienvenida en pantalla completa para iPad',
-      'Protocolo de recepción (Espera ➔ Aterrizaje ➔ Encuentro ➔ A bordo)',
-      'Ajuste dinámico por tráfico (+20m) y radar de punto de encuentro',
-    ],
-    hi: [
-      'ड्राइवर (तनाका) और टूर गाइड (सातो) प्रेषण',
-      'iPad के लिए पूर्ण-स्क्रीन डिजिटल हवाई अड्डा स्वागत बोर्ड',
-      'आगमन प्रक्रिया (तैयार ➔ उतरा ➔ मिले ➔ बस में सवार)',
-      'हाईवे जाम के कारण गतिशील समायोजन (+20 मिनट) और सभा रडार',
-    ],
     ar: [
       'جدولة السائق (تاناكا) والمرشد السياحي (ساتو)',
       'لافتة ترحيب رقمية ملء الشاشة لأجهزة iPad بالمطار',
@@ -138,56 +137,38 @@ const roleFeaturesByLang: Record<StakeholderRole, Record<SupportedLanguage, stri
   },
   traveller: {
     en: [
-      'Offline-Ready Mobile Web Pass (Cached Vouchers & Wi-Fi)',
-      'Narita T1 Meeting Point Photo (Pillar #17 Near Starbucks)',
+      'Mobile Web Pass with Hotel Voucher & Wi-Fi Details',
+      'Narita T1 Meeting Point Map (Pillar #17 Near Starbucks)',
       '1-Tap "I Have Cleared Customs! Heading to Exit"',
       'Japanese Taxi Address Card & Emergency SOS Radar',
     ],
     id: [
-      'Paspor Digital Offline (Voucher Hotel & Sandi Wi-Fi Tersimpan)',
-      'Foto Titik Temu Bandara Narita T1 (Tiang #17 Dekat Starbucks)',
+      'Paspor Digital Tamu (Voucher Hotel & Sandi Wi-Fi)',
+      'Peta Titik Temu Bandara Narita T1 (Tiang #17 Dekat Starbucks)',
       '1-Klik "Saya Sudah Lolos Imigrasi! Menuju Pintu Keluar"',
       'Kartu Alamat Taksi Jepang & Radar SOS Darurat',
     ],
     ja: [
-      'オフライン対応モバイル旅程（バウチャー＆Wi-Fi保存済）',
-      '成田空港T1 ミーティング柱写真（南ウイング17番柱）',
+      'モバイル旅程（ホテルバウチャー＆Wi-Fi情報）',
+      '成田空港T1 ミーティングポイント案内図（南ウイング17番柱）',
       '1タップ「税関通過・出口へ向かいます」連絡',
       'タクシー運転手提示カード（日本語住所）＆緊急SOS',
     ],
-    th: [
-      'พาสดิจิทัลออฟไลน์ (บันทึกวอชเชอร์และรหัส Wi-Fi)',
-      'รูปถ่ายจุดนัดพบสนามบินนาริตะ T1 (เสา #17 ใกล้สตาร์บัคส์)',
-      '1 แตะ "ฉันผ่านศุลกากรแล้ว! กำลังเดินไปทางออก"',
-      'การ์ดที่อยู่ภาษาญี่ปุ่นสำหรับแท็กซี่ และ SOS ฉุกเฉิน',
-    ],
     zh: [
-      '离线可用随身行程单（酒店凭证与 Wi-Fi 密码离线存储）',
-      '成田 T1 接机立柱实景指引图（南翼 17号立柱 星巴克旁）',
+      '随身行程单（酒店凭证与 Wi-Fi 密码）',
+      '成田 T1 接机会合点示意图（南翼 17号立柱 星巴克旁）',
       '1键报备“我已通过海关！正前往出口会合”',
       '日文出租车司机地址卡与精准紧急 SOS 救援',
     ],
     ko: [
-      '오프라인 지원 모바일 패스 (호텔 바우처 및 Wi-Fi 캐싱)',
-      '나리타 T1 미팅 포인트 실사 사진 (스타벅스 옆 17번 기둥)',
+      '모바일 패스 (호텔 바우처 및 Wi-Fi 정보)',
+      '나리타 T1 미팅 포인트 안내도 (스타벅스 옆 17번 기둥)',
       '1탭 "입국심사 완료! 출구로 이동 중" 알림',
       '일본어 택시 주소 카드 및 긴급 SOS 레이더',
     ],
-    es: [
-      'Pase móvil sin conexión (cupones y Wi-Fi en caché)',
-      'Foto del punto de encuentro en Narita T1 (Pilar #17)',
-      '1 toque "¡Pasé la aduana! Voy a la salida"',
-      'Tarjeta de taxi en japonés y radar SOS de emergencia',
-    ],
-    hi: [
-      'ऑफ़लाइन-तैयार मोबाइल पास (वाउचर और वाई-फ़ाई सहेजे गए)',
-      'नरीता T1 मिलन स्थल फ़ोटो (स्टारबक्स के पास पिलर #17)',
-      '1-टैप "मैंने कस्टम्स पार किया! बाहर आ रहा हूँ"',
-      'जापानी टैक्सी पता कार्ड और आपातकालीन एसओएस',
-    ],
     ar: [
-      'بطاقة هاتف ذكية تعمل بدون إنترنت (القسائم وبيانات الواي فاي)',
-      'صورة نقطة الالتقاء بمطار ناريتا T1 (أمام العمود رقم 17)',
+      'بطاقة سفر على الهاتف (قسيمة الفندق وبيانات الواي فاي)',
+      'خريطة نقطة الالتقاء بمطار ناريتا T1 (أمام العمود رقم 17)',
       'ضغطة زر واحدة: "لقد اجتزت الجمارك وأتجه نحو المخرج"',
       'بطاقة عنوان الفندق لسائق التاكسي باليابانية ونداء SOS طارئ',
     ],
@@ -203,9 +184,10 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
 
   const [selectedRole, setSelectedRole] = useState<StakeholderRole>('agent');
 
-  // Independent in-card language state: Agent defaults to ID, Operator to JA, Traveler to EN
+  // Independent in-card language state: Agent and Tour Leader default to ID, Operator to JA, Traveler to EN
   const [cardLanguages, setCardLanguages] = useState<Record<StakeholderRole, SupportedLanguage>>({
     agent: 'id',
+    leader: 'id',
     operator: 'ja',
     traveller: 'en',
   });
@@ -248,6 +230,13 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
       borderActive: 'border-primary ring-primary/20',
     },
     {
+      id: 'leader',
+      icon: 'tour',
+      colorAccent: 'text-leader',
+      bgAccent: 'bg-leader-container text-on-leader-container',
+      borderActive: 'border-leader ring-leader/20',
+    },
+    {
       id: 'operator',
       icon: 'commute',
       colorAccent: 'text-secondary',
@@ -265,13 +254,13 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
 
   return (
     <div className="min-h-screen bg-surface flex flex-col justify-between p-4 sm:p-6 lg:p-10 select-none animate-in fade-in duration-300">
-      <div className="max-w-6xl w-full mx-auto space-y-8">
+      <div className="max-w-7xl w-full mx-auto space-y-8">
         {/* Top Bar with Return to Marketing Website */}
         <div className="flex items-center justify-between">
           <a
             href={
-              typeof window !== 'undefined' && window.location.hostname.includes('tourlinks.neralab.id')
-                ? 'https://tourlinks.neralab.id'
+              typeof window !== 'undefined' && window.location.hostname.startsWith('demo.')
+                ? `https://${window.location.hostname.replace(/^demo\./, '')}`
                 : '/'
             }
             onClick={(e) => {
@@ -287,7 +276,7 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
           </a>
 
           <span className="text-[11px] font-mono font-bold text-primary px-3 py-1 rounded-m3-full bg-primary-container text-on-primary-container hidden sm:inline">
-            demo.tourlinks.neralab.id
+            demo.tourlinks.co
           </span>
         </div>
 
@@ -338,26 +327,16 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
           </div>
         </div>
 
-        {/* 3 Role Selection Cards — Each with its Own Interactive In-Card Language Selector */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch pt-2">
+        {/* 4 Role Selection Cards — Each with its Own Interactive In-Card Language Selector */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 items-stretch pt-2">
           {rolesMeta.map((cfg) => {
             const isSelected = selectedRole === cfg.id;
             const currentLang = cardLanguages[cfg.id];
             const dict = translations[currentLang] || translations.en;
 
             const title = dict.roles[cfg.id];
-            const badge =
-              cfg.id === 'agent'
-                ? dict.roleSelection.agentBadge
-                : cfg.id === 'operator'
-                ? dict.roleSelection.operatorBadge
-                : dict.roleSelection.travellerBadge;
-            const summary =
-              cfg.id === 'agent'
-                ? dict.roleSelection.agentSummary
-                : cfg.id === 'operator'
-                ? dict.roleSelection.operatorSummary
-                : dict.roleSelection.travellerSummary;
+            const badge = dict.roleSelection[`${cfg.id}Badge`];
+            const summary = dict.roleSelection[`${cfg.id}Summary`];
 
             const features = roleFeaturesByLang[cfg.id]?.[currentLang] || roleFeaturesByLang[cfg.id].en;
 
@@ -482,7 +461,7 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
 
       {/* Footer */}
       <footer className="text-center pt-8 text-xs text-on-surface-variant">
-        <span>Google Material Design 3 • Multi-Lingual Architecture (9 Languages Supported) • Tourlinks OS</span>
+        <span>Interactive demo with sample data • {languageOptions.length} languages • Tourlinks</span>
       </footer>
     </div>
   );

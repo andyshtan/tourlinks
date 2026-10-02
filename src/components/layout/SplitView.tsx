@@ -60,7 +60,7 @@ export const SplitView: React.FC = () => {
             </div>
             <div>
               <h3 className="font-bold text-sm text-on-surface">Traveller Pass (Mobile)</h3>
-              <p className="text-[11px] text-on-surface-variant">Guest Offline-Ready PWA</p>
+              <p className="text-[11px] text-on-surface-variant">Guest Mobile Pass</p>
             </div>
           </div>
           <div className="max-w-sm mx-auto">

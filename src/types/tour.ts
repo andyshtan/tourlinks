@@ -1,4 +1,4 @@
-export type StakeholderRole = 'agent' | 'operator' | 'traveller';
+export type StakeholderRole = 'agent' | 'leader' | 'operator' | 'traveller';
 
 export interface BookingGroup {
   id: string;
@@ -18,8 +18,8 @@ export interface Passenger {
   gender: 'M' | 'F';
   passportNumber: string;
   passportExpiry: string; // YYYY-MM-DD
-  isPassportValid: boolean; // false if < 6 months from Oct 2026
-  visaStatus: 'approved' | 'pending' | 'flagged';
+  isPassportValid: boolean; // false if expiry is < 6 months after the tour ends (agency policy)
+  visaStatus: 'approved' | 'pending' | 'flagged'; // Japan visa waiver registration (e-passport)
   roomType: 'Twin' | 'Double' | 'Single';
   roomNumber: string;
   dietary: 'Standard' | 'Halal' | 'Vegetarian' | 'No Beef' | 'Allergy';
@@ -33,7 +33,6 @@ export interface Passenger {
   emergencyContactName?: string;
   emergencyContactPhone?: string;
   roommateName?: string;
-  avatarUrl?: string;
 
   // Group / Family Party Information
   groupId: string;
@@ -41,6 +40,9 @@ export interface Passenger {
   bookingRef: string;
   groupRole: 'Lead Guest' | 'Spouse' | 'Child' | 'Friend' | 'Colleague';
   isGroupLead: boolean;
+
+  // Consortium departure: the retail agency that sold this booking to the lead operator
+  sellingAgent: string;
 }
 
 export type ArrivalStepId = 'standby' | 'landed' | 'customs_meet' | 'boarded_enroute';
@@ -82,7 +84,7 @@ export interface Incident {
   id: string;
   title: string;
   passengerName?: string;
-  reportedBy: 'Agent' | 'Operator' | 'Traveller';
+  reportedBy: 'Agent' | 'Tour Leader' | 'Operator' | 'Traveller';
   severity: 'low' | 'medium' | 'high' | 'critical';
   status: 'open' | 'investigating' | 'resolved';
   timestamp: string;
@@ -97,8 +99,9 @@ export interface SettlementLedger {
     description: string;
     amount: number;
     approved: boolean;
+    leaderConfirmed: boolean; // tour leader confirms on the ground that the extra happened
   }[];
-  proofImages: string[];
+  proofImages: { src: string; label: string }[];
   operatorSignedAt?: string;
   agentApprovedAt?: string;
   isSettled: boolean;
@@ -111,13 +114,13 @@ export interface TourPackage {
 
   // Agent (Retail Outbound Package)
   agentPackageCode: string; // 'PKG-JKT-889'
-  agentProductName: string; // '7D6N Tokyo Autumn Wonder & Mt. Fuji Discovery'
+  agentProductName: string; // '6D5N Tokyo Autumn Wonder & Mt. Fuji Discovery'
   agentName: string; // 'Nusantara Tour & Travel HQ'
 
   // DMC / Ground Operator (Land Arrangement Service)
-  dmcProductCode: string; // 'TYO-PVT-07D'
-  dmcProductName: string; // 'Kanto Golden Route 7D - Private Coach & Bilingual Guide'
-  dmcProductNameJa: string; // '関東ゴールデンルート7日間 専用車・ガイド手配'
+  dmcProductCode: string; // 'TYO-PVT-06D'
+  dmcProductName: string; // 'Kanto Golden Route 6D - Private Coach & Bilingual Guide'
+  dmcProductNameJa: string; // '関東ゴールデンルート6日間 専用車・ガイド手配'
   operatorName: string; // 'Japan Land DMC Tokyo'
 
   destination: string;
@@ -134,10 +137,12 @@ export interface TourPackage {
     belt: string;
   };
   staff: {
+    tourLeaderName: string;
+    tourLeaderPhone: string;
+    tourLeaderLanguages: string[];
     guideName: string;
     guidePhone: string;
     guideLanguages: string[];
-    guidePhoto: string;
     driverName: string;
     driverPhone: string;
     vehicleModel: string;
@@ -147,7 +152,7 @@ export interface TourPackage {
     terminal: string;
     zone: string;
     pillar: string;
-    photoUrl: string;
+    mapUrl: string;
     instructions: string;
   };
   hotel: {

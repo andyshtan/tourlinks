@@ -6,6 +6,7 @@ import { M3Button } from '../m3/M3Button';
 import { M3Badge } from '../m3/M3Badge';
 import { M3Icon } from '../m3/M3Icon';
 import { M3Dialog } from '../m3/M3Dialog';
+import { M3Avatar } from '../m3/M3Avatar';
 import { getDocumentDirectUrl } from '../../utils/documentUtils';
 
 export const OperatorView: React.FC = () => {
@@ -16,6 +17,7 @@ export const OperatorView: React.FC = () => {
     checkpoints,
     itinerary,
     gatheringPin,
+    settlement,
     advanceCheckpoint,
     updateRollCall,
     updateGroupRollCall,
@@ -50,7 +52,7 @@ export const OperatorView: React.FC = () => {
             {tour.operatorName}
           </h2>
           <p className="text-xs sm:text-sm text-on-secondary/90 mt-0.5">
-            Handling Agent: <span className="font-semibold">{tour.agentName}</span> • Group Size: 14 Pax
+            Handling Agent: <span className="font-semibold">{tour.agentName}</span> • Group Size: {passengers.length} Pax + Tour Leader {tour.staff.tourLeaderName}
           </p>
         </div>
 
@@ -89,9 +91,9 @@ export const OperatorView: React.FC = () => {
             <div className="flex items-center gap-1.5 font-bold text-on-surface flex-wrap">
               <span>Ground Land Product:</span>
               <span className="font-mono text-secondary bg-secondary-container/50 px-1.5 py-0.5 rounded text-[11px]">
-                {tour.dmcProductCode || 'TYO-PVT-07D'}
+                {tour.dmcProductCode}
               </span>
-              <span>• {tour.dmcProductName || 'Kanto Golden Route 7D - Private Coach & Bilingual Guide'}</span>
+              <span>• {tour.dmcProductName}</span>
               {tour.dmcProductNameJa && (
                 <span className="text-[11px] text-on-surface-variant font-normal">({tour.dmcProductNameJa})</span>
               )}
@@ -174,14 +176,14 @@ export const OperatorView: React.FC = () => {
                   {t.operator.arrivalHandshake}
                 </h3>
                 <p className="text-xs text-on-surface-variant">
-                  Update checkpoints in real time to reassure Jakarta Agent & synchronize Traveller Passes
+                  Each update shows on the Jakarta agent's dashboard, the tour leader's kit and the traveller passes
                 </p>
               </div>
               <M3Button
                 variant="filled"
                 size="sm"
                 icon="check_circle"
-                onClick={advanceCheckpoint}
+                onClick={() => advanceCheckpoint()}
               >
                 {t.operator.advanceCheckpoint}
               </M3Button>
@@ -244,11 +246,13 @@ export const OperatorView: React.FC = () => {
 
             {/* Visual Meeting Point Banner */}
             <div className="p-4 rounded-m3-lg bg-surface-container flex flex-col sm:flex-row items-center gap-4 border border-outline-variant/40">
-              <img
-                src={tour.meetingPoint.photoUrl}
-                alt="Meeting Point"
-                className="w-full sm:w-36 h-24 rounded-m3-md object-cover shadow-xs"
-              />
+              <a href={tour.meetingPoint.mapUrl} target="_blank" rel="noreferrer" className="w-full sm:w-48 shrink-0" title="Open meeting point map">
+                <img
+                  src={tour.meetingPoint.mapUrl}
+                  alt="Meeting point map"
+                  className="w-full rounded-m3-md border border-outline-variant/40 shadow-xs"
+                />
+              </a>
               <div className="flex-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-secondary">
                   Designated Meeting Zone
@@ -304,11 +308,7 @@ export const OperatorView: React.FC = () => {
               <div className="space-y-4 text-xs">
                 {/* Guide Info */}
                 <div className="p-3 rounded-m3-md bg-surface-container-low border border-outline-variant/30 flex items-center gap-3">
-                  <img
-                    src={tour.staff.guidePhoto}
-                    alt={tour.staff.guideName}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
+                  <M3Avatar name={tour.staff.guideName} size={48} />
                   <div>
                     <span className="text-[10px] font-bold text-on-surface-variant uppercase">
                       {t.operator.assignedGuide}
@@ -369,7 +369,7 @@ export const OperatorView: React.FC = () => {
                   {t.operator.scheduleTitle}
                 </h3>
                 <p className="text-xs text-on-surface-variant">
-                  Adjust stop durations on the ground. Updates propagate directly to Traveller passes.
+                  Adjust stop times on the ground. The tour leader and traveller passes show the new times.
                 </p>
               </div>
 
@@ -783,7 +783,7 @@ export const OperatorView: React.FC = () => {
           <div>
             <h3 className="font-bold text-lg text-on-surface">{t.operator.proofOfService}</h3>
             <p className="text-xs text-on-surface-variant">
-              Submit signed arrival sheet & coach itinerary verification for instant Agent HQ sign-off
+              Submit the signed arrival sheet and receipts so Agent HQ can sign off extras
             </p>
           </div>
 
@@ -802,16 +802,27 @@ export const OperatorView: React.FC = () => {
               </span>
               <div className="p-3.5 rounded-m3-md bg-surface-container-low border border-outline-variant/40 flex items-center gap-3">
                 <img
-                  src="https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&w=200&q=80"
-                  alt="Proof"
-                  className="w-14 h-14 rounded-m3-xs object-cover"
+                  src={settlement.proofImages[0].src}
+                  alt={settlement.proofImages[0].label}
+                  className="w-14 h-14 rounded-m3-xs object-cover border border-outline-variant/50"
                 />
                 <div className="text-xs">
-                  <p className="font-bold text-on-surface">Narita Airport Arrival Sign-off</p>
-                  <p className="text-on-surface-variant">Timestamp: 16:50 JST • 14 Pax Verified</p>
+                  <p className="font-bold text-on-surface">{settlement.proofImages[0].label}</p>
+                  <p className="text-on-surface-variant">16:50 JST • {passengers.length} guests • signed by guide and tour leader</p>
                   <span className="text-green-700 font-bold inline-flex items-center gap-1 mt-1">
-                    <M3Icon name="check_circle" size={14} /> Synchronized with Agent HQ
+                    <M3Icon name="check_circle" size={14} /> Shared with Agent HQ
                   </span>
+                </div>
+              </div>
+              <div className="p-3.5 rounded-m3-md bg-surface-container-low border border-outline-variant/40 flex items-center gap-3">
+                <img
+                  src={settlement.proofImages[1].src}
+                  alt={settlement.proofImages[1].label}
+                  className="w-14 h-14 rounded-m3-xs object-cover border border-outline-variant/50"
+                />
+                <div className="text-xs">
+                  <p className="font-bold text-on-surface">{settlement.proofImages[1].label}</p>
+                  <p className="text-on-surface-variant">17:42 JST • ¥8,600 • Narita IC to Shinjuku</p>
                 </div>
               </div>
             </div>
@@ -851,7 +862,7 @@ export const OperatorView: React.FC = () => {
 
           <div className="pt-4 border-t border-white/20 flex items-center justify-around text-xs text-white/90">
             <div>
-              <span className="block opacity-75">Lead Guide</span>
+              <span className="block opacity-75">Local Guide</span>
               <span className="font-bold text-sm">Yumi Sato</span>
             </div>
             <div>

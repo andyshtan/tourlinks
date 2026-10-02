@@ -13,7 +13,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<SupportedLanguage>(() => {
     const saved = localStorage.getItem('tourlinks_lang');
-    return (saved as SupportedLanguage) || 'en';
+    return saved && saved in translations ? (saved as SupportedLanguage) : 'en';
   });
 
   const setLanguage = (lang: SupportedLanguage) => {

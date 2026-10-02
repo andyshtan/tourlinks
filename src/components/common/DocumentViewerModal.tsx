@@ -65,10 +65,10 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-extrabold text-sm sm:text-base text-on-surface">
-                  Official Travel Document Archive
+                  Travel Document Copies
                 </h3>
                 <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container">
-                  Verified Copy
+                  Sample Data
                 </span>
               </div>
               <p className="text-xs text-on-surface-variant font-roboto">
@@ -104,7 +104,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <M3Icon name="link" size={16} className="text-primary shrink-0" />
             <span className="font-bold text-on-surface shrink-0 hidden sm:inline">
-              Real Document Link:
+              Document Link:
             </span>
             <input
               type="text"
@@ -170,7 +170,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
                   {d.type === 'passport'
                     ? 'Passport Scan'
                     : d.type === 'visa'
-                    ? 'Japan e-Visa'
+                    ? 'Japan Visa Waiver'
                     : d.type === 'eticket'
                     ? 'Flight Ticket'
                     : 'Insurance Policy'}
@@ -329,20 +329,20 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
             </div>
           )}
 
-          {/* 2. JAPAN E-VISA COPY */}
+          {/* 2. JAPAN VISA WAIVER REGISTRATION COPY */}
           {activeType === 'visa' && (
             <div className="max-w-2xl mx-auto rounded-m3-lg bg-white text-stone-900 border-2 border-slate-300 shadow-md p-6 font-sans relative">
               <div className="flex items-center justify-between border-b-2 border-slate-700 pb-3 mb-4">
                 <div>
                   <h4 className="text-sm font-black tracking-widest uppercase text-slate-900">
-                    MINISTRY OF FOREIGN AFFAIRS OF JAPAN
+                    VISA WAIVER REGISTRATION
                   </h4>
                   <p className="text-xs font-bold text-slate-600 uppercase">
-                    ELECTRONIC VISA ISSUANCE NOTICE (JAPAN eVISA)
+                    For Indonesian e-passport holders • sample copy
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-full border border-red-500 flex items-center justify-center text-red-600 font-serif font-bold text-xs select-none">
-                  MOFA
+                <div className="px-2 py-1 rounded border border-slate-400 text-slate-600 font-bold text-[10px] uppercase select-none">
+                  Sample
                 </div>
               </div>
 
@@ -350,7 +350,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
                 <div className="sm:col-span-2 space-y-2 text-xs">
                   <div>
                     <span className="text-[10px] text-stone-500 uppercase font-bold block">
-                      Visa Number
+                      Registration Number
                     </span>
                     <span className="font-mono font-bold text-sm text-slate-900">
                       {activeDoc.docNumber}
@@ -383,15 +383,15 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <span className="text-[10px] text-stone-500 uppercase font-bold block">
-                        Visa Category
+                        Status of Stay
                       </span>
                       <span className="font-bold text-slate-900">TEMPORARY VISITOR</span>
                     </div>
                     <div>
                       <span className="text-[10px] text-stone-500 uppercase font-bold block">
-                        Entries Allowed
+                        Stay per Entry
                       </span>
-                      <span className="font-bold text-slate-900">SINGLE (90 DAYS)</span>
+                      <span className="font-bold text-slate-900">UP TO 15 DAYS</span>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
@@ -416,10 +416,10 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
                     <M3Icon name="qr_code_2" size={90} className="text-slate-800" />
                   </div>
                   <span className="text-[9px] font-mono text-center text-slate-600 mt-2 font-bold uppercase">
-                    Scan for Visit Japan Web
+                    Sample QR
                   </span>
                   <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full mt-1">
-                    VERIFIED ACTIVE
+                    REGISTERED
                   </span>
                 </div>
               </div>
@@ -498,7 +498,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
               <div className="flex items-center justify-between border-b-2 border-blue-700 pb-3 mb-4">
                 <div>
                   <h4 className="text-sm font-black tracking-wide uppercase text-blue-950">
-                    CHUBB INTERNATIONAL TRAVEL INSURANCE
+                    SAMPLE TRAVEL INSURANCE POLICY
                   </h4>
                   <p className="text-xs font-mono text-slate-500">
                     Policy No: {activeDoc.docNumber}
@@ -521,7 +521,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
                     <span className="text-[10px] text-slate-500 uppercase font-bold">
                       Emergency 24/7 Hotline
                     </span>
-                    <p className="font-mono font-bold text-blue-700">+1-302-777-1234</p>
+                    <p className="font-mono font-bold text-blue-700">On the policy card</p>
                   </div>
                 </div>
 
@@ -552,7 +552,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
         <div className="bg-surface-container px-4 sm:px-6 py-2.5 border-t border-outline-variant/40 flex items-center justify-between text-xs text-on-surface-variant font-roboto">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-green-500" />
-            <span>Digital Hash: SHA256-TK889-{passenger.id.toUpperCase()}</span>
+            <span>Sample document • demo data, not a real record</span>
           </div>
 
           <div className="flex items-center gap-3">

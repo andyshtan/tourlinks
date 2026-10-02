@@ -16,6 +16,11 @@
   --color-tertiary-container: #FFD9E2;
   --color-on-tertiary-container: #3E001D;
 
+  --color-leader: #8B5000;
+  --color-on-leader: #FFFFFF;
+  --color-leader-container: #FFDDB8;
+  --color-on-leader-container: #2C1600;
+
   --color-error: #BA1A1A;
   --color-on-error: #FFFFFF;
   --color-error-container: #FFDAD6;

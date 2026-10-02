@@ -27,7 +27,7 @@ interface TourContextType {
   setSelectedPassenger: (p: Passenger | null) => void;
   openPassengerDetailById: (id: string) => void;
   // Actions
-  advanceCheckpoint: () => void;
+  advanceCheckpoint: (updatedBy?: string) => void;
   updateRollCall: (id: string, status: 'present' | 'missing') => void;
   updateGroupRollCall: (groupId: string, status: 'present' | 'missing') => void;
   passengerClearedCustoms: (id: string) => void;
@@ -36,6 +36,7 @@ interface TourContextType {
   triggerSOS: () => void;
   dismissSOS: () => void;
   approveSettlement: () => void;
+  confirmExtraByLeader: (id: string) => void;
   nudgePassengerWhatsApp: (phone: string, name: string) => void;
   addIncident: (title: string, severity: 'low' | 'medium' | 'high' | 'critical') => void;
   resolveIncident: (id: string) => void;
@@ -48,13 +49,13 @@ const initialTour: TourPackage = {
 
   // Agent (Retail Outbound Package)
   agentPackageCode: 'PKG-JKT-889',
-  agentProductName: '7D6N Tokyo Autumn Wonder & Mt. Fuji Discovery',
+  agentProductName: '6D5N Tokyo Autumn Wonder & Mt. Fuji Discovery',
   agentName: 'Nusantara Odyssey Travel (Jakarta HQ)',
 
   // DMC / Ground Operator (Land Arrangement Service)
-  dmcProductCode: 'TYO-PVT-07D',
-  dmcProductName: 'Kanto Golden Route 7D - Private Coach & Bilingual Guide',
-  dmcProductNameJa: '関東ゴールデンルート7日間 専用車・ガイド手配',
+  dmcProductCode: 'TYO-PVT-06D',
+  dmcProductName: 'Kanto Golden Route 6D - Private Coach & Bilingual Guide',
+  dmcProductNameJa: '関東ゴールデンルート6日間 専用車・ガイド手配',
   operatorName: 'Sakura Nippon DMC & Ground Transport (Tokyo)',
 
   destination: 'Tokyo & Yamanashi, Japan',
@@ -71,10 +72,12 @@ const initialTour: TourPackage = {
     belt: 'Carousel #3',
   },
   staff: {
+    tourLeaderName: 'Rina Hartono',
+    tourLeaderPhone: '+62-812-9000-1188',
+    tourLeaderLanguages: ['Indonesian', 'English', 'Basic Japanese'],
     guideName: 'Yumi Sato',
     guidePhone: '+81-90-5552-3819',
     guideLanguages: ['English', 'Indonesian', 'Japanese'],
-    guidePhoto: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80',
     driverName: 'Kenji Tanaka',
     driverPhone: '+81-80-4412-9901',
     vehicleModel: 'Toyota Coaster Executive Coach #4',
@@ -84,13 +87,13 @@ const initialTour: TourPackage = {
     terminal: 'Narita Terminal 1 (NRT)',
     zone: 'South Wing Arrival Lobby',
     pillar: 'Pillar #17 (Near Starbucks & JR East Desk)',
-    photoUrl: 'https://images.unsplash.com/photo-1542296332-2e4473faf563?auto=format&fit=crop&w=800&q=80',
-    instructions: 'Exit Customs via South Gate, look right for Guide holding "NUSANTARA ODYSSEY" digital board.',
+    mapUrl: '/demo/meeting-point-map.svg',
+    instructions: 'Exit Customs via the South Gate and turn right. Guide Yumi holds a "NUSANTARA ODYSSEY" board at Pillar #17.',
   },
   hotel: {
     name: 'Shinjuku Granbell Hotel Tokyo',
-    address: '2-1-2 Kabukicho, Shinjuku-ku, Tokyo 160-0021',
-    addressJapanese: '東京都新宿区歌舞伎町2-1-2 グランベルホテル新宿',
+    address: '2-14-5 Kabukicho, Shinjuku-ku, Tokyo 160-0021',
+    addressJapanese: '東京都新宿区歌舞伎町2-14-5',
     phone: '+81-3-5155-2666',
     wifiSsid: 'Granbell_Guest_5G',
     wifiPass: 'tokyo2026',
@@ -121,6 +124,7 @@ const initialPassengers: Passenger[] = [
     bookingRef: 'BKG-SAN-881',
     groupRole: 'Lead Guest',
     isGroupLead: true,
+    sellingAgent: 'Nusantara Odyssey (direct)',
   },
   {
     id: 'p2',
@@ -143,6 +147,7 @@ const initialPassengers: Passenger[] = [
     bookingRef: 'BKG-SAN-881',
     groupRole: 'Spouse',
     isGroupLead: false,
+    sellingAgent: 'Nusantara Odyssey (direct)',
   },
 
   // Group 2: Wijaya - Tan Couple (BKG-WIJ-882)
@@ -151,9 +156,9 @@ const initialPassengers: Passenger[] = [
     name: 'Kevin Wijaya',
     gender: 'M',
     passportNumber: 'C1049281',
-    passportExpiry: '2026-11-20', // LESS THAN 6 MONTHS!
+    passportExpiry: '2026-11-20', // under the agency 6-month policy
     isPassportValid: false,
-    visaStatus: 'flagged',
+    visaStatus: 'approved',
     roomType: 'Double',
     roomNumber: '814',
     dietary: 'Standard',
@@ -167,6 +172,7 @@ const initialPassengers: Passenger[] = [
     bookingRef: 'BKG-WIJ-882',
     groupRole: 'Lead Guest',
     isGroupLead: true,
+    sellingAgent: 'Lintas Sakura Tour (Surabaya)',
   },
   {
     id: 'p4',
@@ -190,6 +196,7 @@ const initialPassengers: Passenger[] = [
     bookingRef: 'BKG-WIJ-882',
     groupRole: 'Spouse',
     isGroupLead: false,
+    sellingAgent: 'Lintas Sakura Tour (Surabaya)',
   },
 
   // Group 3: Tan & Salim Duo (BKG-TAN-883)
@@ -214,6 +221,7 @@ const initialPassengers: Passenger[] = [
     bookingRef: 'BKG-TAN-883',
     groupRole: 'Lead Guest',
     isGroupLead: true,
+    sellingAgent: 'Lintas Sakura Tour (Surabaya)',
   },
   {
     id: 'p10',
@@ -237,17 +245,18 @@ const initialPassengers: Passenger[] = [
     bookingRef: 'BKG-TAN-883',
     groupRole: 'Colleague',
     isGroupLead: false,
+    sellingAgent: 'Lintas Sakura Tour (Surabaya)',
   },
 
-  // Group 4: Rahmawati Family (BKG-RAH-884)
+  // Group 4: Rahmawati & Hidayah (BKG-RAH-884)
   {
     id: 'p6',
     name: 'Siti Rahmawati',
     gender: 'F',
     passportNumber: 'A9912033',
-    passportExpiry: '2026-12-05', // ALSO < 6 MONTHS!
+    passportExpiry: '2026-12-05', // under the agency 6-month policy
     isPassportValid: false,
-    visaStatus: 'pending',
+    visaStatus: 'approved',
     roomType: 'Twin',
     roomNumber: '816',
     dietary: 'Halal',
@@ -257,10 +266,11 @@ const initialPassengers: Passenger[] = [
     seatNumber: '17C',
     baggageTag: 'JL-88906',
     groupId: 'grp-4',
-    groupName: 'Rahmawati Family',
+    groupName: 'Rahmawati & Hidayah',
     bookingRef: 'BKG-RAH-884',
     groupRole: 'Lead Guest',
     isGroupLead: true,
+    sellingAgent: 'Danau Biru Travel (Medan)',
   },
   {
     id: 'p7',
@@ -279,10 +289,11 @@ const initialPassengers: Passenger[] = [
     seatNumber: '17D',
     baggageTag: 'JL-88907',
     groupId: 'grp-4',
-    groupName: 'Rahmawati Family',
+    groupName: 'Rahmawati & Hidayah',
     bookingRef: 'BKG-RAH-884',
-    groupRole: 'Spouse',
+    groupRole: 'Friend',
     isGroupLead: false,
+    sellingAgent: 'Danau Biru Travel (Medan)',
   },
 
   // Group 5: Kusuma & Pratama (BKG-KUS-885)
@@ -307,6 +318,7 @@ const initialPassengers: Passenger[] = [
     bookingRef: 'BKG-KUS-885',
     groupRole: 'Lead Guest',
     isGroupLead: true,
+    sellingAgent: 'Nusantara Odyssey (direct)',
   },
   {
     id: 'p9',
@@ -329,6 +341,7 @@ const initialPassengers: Passenger[] = [
     bookingRef: 'BKG-KUS-885',
     groupRole: 'Friend',
     isGroupLead: false,
+    sellingAgent: 'Nusantara Odyssey (direct)',
   },
 
   // Group 6: Kurniawan & Basri (BKG-KUR-886)
@@ -353,6 +366,7 @@ const initialPassengers: Passenger[] = [
     bookingRef: 'BKG-KUR-886',
     groupRole: 'Lead Guest',
     isGroupLead: true,
+    sellingAgent: 'Karang Emas Holiday (Makassar)',
   },
   {
     id: 'p12',
@@ -375,6 +389,7 @@ const initialPassengers: Passenger[] = [
     bookingRef: 'BKG-KUR-886',
     groupRole: 'Friend',
     isGroupLead: false,
+    sellingAgent: 'Karang Emas Holiday (Makassar)',
   },
 
   // Group 7: Wardhana Couple (BKG-WAR-887)
@@ -399,6 +414,7 @@ const initialPassengers: Passenger[] = [
     bookingRef: 'BKG-WAR-887',
     groupRole: 'Lead Guest',
     isGroupLead: true,
+    sellingAgent: 'Danau Biru Travel (Medan)',
   },
   {
     id: 'p14',
@@ -421,6 +437,7 @@ const initialPassengers: Passenger[] = [
     bookingRef: 'BKG-WAR-887',
     groupRole: 'Spouse',
     isGroupLead: false,
+    sellingAgent: 'Danau Biru Travel (Medan)',
   },
 ];
 
@@ -444,7 +461,7 @@ const initialCheckpoints: ArrivalCheckpoint[] = [
     labelKey: 'stepCustoms',
     time: '16:25 JST',
     status: 'in_progress',
-    updatedBy: 'Yumi Sato (Guide)',
+    updatedBy: 'Rina Hartono (Tour Leader)',
   },
   {
     id: 'boarded_enroute',
@@ -475,7 +492,7 @@ const initialItinerary: ItineraryItem[] = [
     title: 'Arrival Handshake & Boarding Coach',
     titleJa: '到着ミーティング＆専用バス乗車',
     location: 'NRT T1 South Wing Pillar #17',
-    description: 'Meet Guide Yumi Sato and board Toyota Coaster #4 driven by Kenji Tanaka.',
+    description: 'Tour leader Rina meets guide Yumi Sato at Pillar #17; the group boards Toyota Coaster #4 driven by Kenji Tanaka.',
     category: 'transfer',
     status: 'current',
     delayMinutes: 10,
@@ -487,7 +504,7 @@ const initialItinerary: ItineraryItem[] = [
     title: 'Hotel Check-in & Room Key Distribution',
     titleJa: 'ホテルチェックイン・ルームキー配布',
     location: 'Shinjuku Granbell Hotel',
-    description: 'Rooms pre-blocked on 8th floor. Handshake room keys, brief breakfast vouchers.',
+    description: 'Rooms pre-blocked on the 8th floor. Tour leader hands out room keys and breakfast vouchers.',
     category: 'hotel',
     status: 'upcoming',
     delayMinutes: 0,
@@ -498,8 +515,8 @@ const initialItinerary: ItineraryItem[] = [
     time: '19:30',
     title: 'Welcome Dinner: Halal & Washoku Banquet',
     titleJa: 'ウェルカムディナー（ハラール対応和食宴会）',
-    location: 'Shinjuku Kappo Nakajima (Private Room)',
-    description: 'Pre-ordered Halal set menus for 8 guests, 1 vegetarian, standard for 5 guests.',
+    location: 'Sakura-tei Halal Washoku, Shinjuku (Private Room)',
+    description: 'Pre-ordered set menus: 6 halal, 1 vegetarian, 1 no-beef, 1 allergy-safe, 5 standard.',
     category: 'meal',
     status: 'upcoming',
     delayMinutes: 0,
@@ -532,15 +549,15 @@ const initialGatheringPin: GatheringPin = {
 const initialIncidents: Incident[] = [
   {
     id: 'INC-101',
-    title: 'Passport Expiry <6mo Warning (Kevin Wijaya)',
+    title: 'Short passport validity: Kevin Wijaya (expires 2026-11-20)',
     passengerName: 'Kevin Wijaya',
     reportedBy: 'Agent',
     severity: 'high',
     status: 'investigating',
     timestamp: '14:20 JST',
     notes: [
-      'Origin Agent alerted of expiry 2026-11-20.',
-      'Agent provided confirmed return ticket JL729 on Oct 7 & hotel voucher to Japanese immigration liaison.',
+      'Flagged before departure: under the agency 6-month policy. Cleared to travel after the agency checked Japan entry rules.',
+      'Tour leader carries his return e-ticket (JL729, Oct 7) and hotel voucher in case immigration asks.',
     ],
   },
   {
@@ -553,13 +570,13 @@ const initialIncidents: Incident[] = [
     timestamp: '14:35 JST',
     notes: [
       'Japanese allergy emergency card translated and issued to guide Yumi Sato.',
-      'Dinner restaurant Kappo Nakajima briefed: zero cross-contamination.',
+      'Dinner restaurant Sakura-tei briefed: no peanut or shellfish, separate preparation.',
     ],
   },
 ];
 
 const initialSettlement: SettlementLedger = {
-  baseNetRate: 1450000, // JPY for 14 pax 6D5N
+  baseNetRate: 1450000, // JPY, land arrangement for 14 pax, 6D5N
   currency: 'JPY',
   extraCharges: [
     {
@@ -567,23 +584,26 @@ const initialSettlement: SettlementLedger = {
       description: 'Highway Toll Narita Sky Access & Shinjuku Ramp Overtime',
       amount: 8600,
       approved: true,
+      leaderConfirmed: true,
     },
     {
       id: 'ex-2',
-      description: 'Halal Certified Bento Supplement (Day 2 Fuji Trip, 8 Pax)',
+      description: 'Halal Certified Bento Supplement (Day 2 Fuji Trip, 6 Pax)',
       amount: 14400,
       approved: false,
+      leaderConfirmed: false,
     },
     {
       id: 'ex-3',
       description: 'Late Night Chauffeur Standby Fee (>21:00)',
       amount: 12000,
       approved: false,
+      leaderConfirmed: false,
     },
   ],
   proofImages: [
-    'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=400&q=80',
-    'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=400&q=80',
+    { src: '/demo/proof-service-sheet.svg', label: 'Signed arrival service sheet' },
+    { src: '/demo/proof-toll-receipt.svg', label: 'Expressway toll receipt' },
   ],
   operatorSignedAt: '2026-10-02 16:15 JST',
   isSettled: false,
@@ -666,18 +686,19 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => clearInterval(interval);
   }, [gatheringPin.isActive]);
 
-  const advanceCheckpoint = () => {
+  const advanceCheckpoint = (updatedBy?: string) => {
     setCheckpoints((prev) => {
-      const next = [...prev];
-      const inProgIdx = next.findIndex((c) => c.status === 'in_progress');
-      if (inProgIdx !== -1) {
-        next[inProgIdx].status = 'completed';
-        if (inProgIdx + 1 < next.length) {
-          next[inProgIdx + 1].status = 'in_progress';
-          next[inProgIdx + 1].time = 'Just now';
+      const inProgIdx = prev.findIndex((c) => c.status === 'in_progress');
+      if (inProgIdx === -1) return prev;
+      return prev.map((c, idx) => {
+        if (idx === inProgIdx) {
+          return { ...c, status: 'completed', updatedBy: updatedBy || c.updatedBy };
         }
-      }
-      return next;
+        if (idx === inProgIdx + 1) {
+          return { ...c, status: 'in_progress', time: 'Just now' };
+        }
+        return c;
+      });
     });
   };
 
@@ -716,9 +737,9 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const triggerSOS = () => {
     setActiveSosAlert({
-      passengerName: 'Kevin Wijaya',
+      passengerName: passengers[0].name,
       time: '16:42 JST',
-      location: 'Narita Terminal 1 Immigration South Gate',
+      location: 'Narita Terminal 1 arrival lobby',
     });
   };
 
@@ -735,9 +756,18 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }));
   };
 
+  const confirmExtraByLeader = (id: string) => {
+    setSettlement((prev) => ({
+      ...prev,
+      extraCharges: prev.extraCharges.map((e) =>
+        e.id === id ? { ...e, leaderConfirmed: true } : e
+      ),
+    }));
+  };
+
   const nudgePassengerWhatsApp = (phone: string, name: string) => {
     const text = encodeURIComponent(
-      `Hello ${name}, this is Nusantara Odyssey Travel. Please ensure your passport has at least 6 months validity before departure to Japan.`
+      `Hello ${name}, this is Nusantara Odyssey Travel. Your passport expires within 6 months of the tour dates. Please contact us about renewing it before departure.`
     );
     window.open(`https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${text}`, '_blank');
   };
@@ -746,11 +776,18 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const newInc: Incident = {
       id: `INC-${Math.floor(100 + Math.random() * 900)}`,
       title,
-      reportedBy: role === 'agent' ? 'Agent' : role === 'operator' ? 'Operator' : 'Traveller',
+      reportedBy:
+        role === 'agent'
+          ? 'Agent'
+          : role === 'leader'
+          ? 'Tour Leader'
+          : role === 'operator'
+          ? 'Operator'
+          : 'Traveller',
       severity,
       status: 'open',
       timestamp: 'Just now',
-      notes: ['Incident logged into tri-party shared log.'],
+      notes: ['Logged to the shared incident log for this departure.'],
     };
     setIncidents((prev) => [newInc, ...prev]);
   };
@@ -787,6 +824,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
         triggerSOS,
         dismissSOS,
         approveSettlement,
+        confirmExtraByLeader,
         nudgePassengerWhatsApp,
         addIncident,
         resolveIncident,

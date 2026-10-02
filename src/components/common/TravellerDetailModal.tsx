@@ -136,7 +136,7 @@ export const TravellerDetailModal: React.FC = () => {
                       : 'bg-[#D4F7DC] text-[#0A6324]'
                   }`}
                 >
-                  {isExpiringSoon ? 'CRITICAL (< 6 Months)' : 'COMPLIANT'}
+                  {isExpiringSoon ? 'UNDER 6 MONTHS' : 'WITHIN POLICY'}
                 </span>
               </div>
 
@@ -164,7 +164,7 @@ export const TravellerDetailModal: React.FC = () => {
                 <div className="mt-2 p-2 rounded-m3-xs bg-error-container text-on-error-container text-[11px] flex items-start gap-1.5 font-medium leading-snug">
                   <M3Icon name="warning" filled size={16} className="text-error shrink-0 mt-0.5" />
                   <span>
-                    Passport expires in less than 6 months from tour departure! Requires return ticket and hotel voucher inspection at Japanese immigration.
+                    Passport expires within 6 months of the tour dates, below agency policy. Check the destination's entry rules and keep the return ticket and hotel voucher at hand.
                   </span>
                 </div>
               )}
@@ -175,10 +175,10 @@ export const TravellerDetailModal: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="font-bold uppercase tracking-wider text-[10px] text-on-surface-variant flex items-center gap-1.5">
                   <M3Icon name="folder_shared" size={16} className="text-primary" />
-                  <span>Real Document Copies & Shareable Links</span>
+                  <span>Document Copies & Shareable Links</span>
                 </span>
                 <span className="text-[10px] text-primary font-bold">
-                  {docs.length} Official Records
+                  {docs.length} Sample Documents
                 </span>
               </div>
 
@@ -267,10 +267,10 @@ export const TravellerDetailModal: React.FC = () => {
               <div className="p-3 rounded-m3-md bg-surface-container border border-outline-variant/40 space-y-1">
                 <span className="text-[10px] uppercase font-bold text-on-surface-variant flex items-center gap-1">
                   <M3Icon name="verified_user" size={14} className="text-secondary" />
-                  <span>Japan e-Visa</span>
+                  <span>Japan Visa Waiver</span>
                 </span>
                 <p className="font-mono font-bold text-xs text-on-surface">
-                  {p.eVisaNumber || `EV-2026-JP-${p.passportNumber.slice(-4)}`}
+                  {p.eVisaNumber || `VW-2026-JKT-${p.passportNumber.slice(-4)}`}
                 </p>
                 <span
                   className={`inline-block px-2 py-0.5 rounded-m3-full text-[10px] font-bold ${
@@ -279,7 +279,7 @@ export const TravellerDetailModal: React.FC = () => {
                       : 'bg-error-container text-on-error-container'
                   }`}
                 >
-                  {p.visaStatus.toUpperCase()}
+                  {p.visaStatus === 'approved' ? 'REGISTERED' : p.visaStatus.toUpperCase()}
                 </span>
               </div>
 
@@ -290,7 +290,7 @@ export const TravellerDetailModal: React.FC = () => {
                   <span>Inbound Seat</span>
                 </span>
                 <p className="font-bold text-xs text-on-surface">
-                  JL720 • {p.seatNumber || `Seat ${Math.floor(12 + Math.random() * 20)}K`}
+                  JL720 • Seat {p.seatNumber || '—'}
                 </p>
                 <p className="text-[10px] text-on-surface-variant font-mono">
                   Baggage: {p.baggageTag || `JL-889${p.id.slice(-2)}`} (Carousel 3)

@@ -38,16 +38,17 @@ export const getPassengerDocuments = (p: Passenger): PassengerDocument[] => {
     {
       id: `${p.id}-visa`,
       type: 'visa',
-      title: 'Japan e-Visa (Electronic Visa Grant)',
-      subtitle: 'Ministry of Foreign Affairs of Japan (MOFA)',
-      fileName: `EVISA_JP_${p.passportNumber}.pdf`,
+      title: 'Japan Visa Waiver Registration',
+      subtitle: 'For Indonesian e-passport holders',
+      fileName: `VISA_WAIVER_JP_${p.passportNumber}.pdf`,
       fileSize: '624 KB PDF',
-      docNumber: p.eVisaNumber || `EV-2026-JP-${p.passportNumber.slice(-4)}`,
+      docNumber: p.eVisaNumber || `VW-2026-JKT-${p.passportNumber.slice(-4)}`,
       status: p.visaStatus === 'approved' ? 'verified' : p.visaStatus === 'flagged' ? 'warning' : 'pending',
-      statusLabel: p.visaStatus === 'approved' ? 'Active Single-Entry Grant' : p.visaStatus === 'flagged' ? 'Border Inspection Flagged' : 'Pending Verification',
-      issuedBy: 'Embassy of Japan in Jakarta',
+      statusLabel: p.visaStatus === 'approved' ? 'Registered' : p.visaStatus === 'flagged' ? 'Needs Review' : 'Pending Registration',
+      issuedBy: 'Embassy of Japan in Indonesia',
       issueDate: '2026-09-15',
-      expiryDate: '2026-12-15',
+      // A waiver registration cannot outlive the passport it is tied to
+      expiryDate: p.passportExpiry < '2029-09-14' ? p.passportExpiry : '2029-09-14',
     },
     {
       id: `${p.id}-eticket`,
@@ -58,7 +59,7 @@ export const getPassengerDocuments = (p: Passenger): PassengerDocument[] => {
       fileSize: '890 KB PDF',
       docNumber: `131-${Math.abs(hashString(p.name)).toString().padStart(10, '0').slice(0, 10)}`,
       status: 'verified',
-      statusLabel: `Confirmed Seat ${p.seatNumber || '14K'}`,
+      statusLabel: p.seatNumber ? `Confirmed Seat ${p.seatNumber}` : 'Confirmed',
       issuedBy: 'Japan Airlines International',
       issueDate: '2026-09-20',
       expiryDate: '2026-10-15',
@@ -66,14 +67,14 @@ export const getPassengerDocuments = (p: Passenger): PassengerDocument[] => {
     {
       id: `${p.id}-insurance`,
       type: 'insurance',
-      title: 'International Travel Protection Policy',
-      subtitle: 'Chubb Overseas Emergency Medical & Trip Coverage',
-      fileName: `CHUBB_POLICY_${p.passportNumber}.pdf`,
+      title: 'Travel Insurance Policy',
+      subtitle: 'Overseas Emergency Medical & Trip Coverage',
+      fileName: `TRAVEL_POLICY_${p.passportNumber}.pdf`,
       fileSize: '1.15 MB PDF',
-      docNumber: `CHB-ID-889-${p.id.toUpperCase()}`,
+      docNumber: `TI-ID-889-${p.id.toUpperCase()}`,
       status: 'verified',
       statusLabel: '$100,000 USD Medical Coverage',
-      issuedBy: 'Chubb Insurance International',
+      issuedBy: 'Sample Insurer',
       issueDate: '2026-09-25',
       expiryDate: '2026-10-25',
     },
@@ -87,7 +88,7 @@ export const getDocumentDirectUrl = (
   const origin =
     typeof window !== 'undefined' && window.location.origin
       ? window.location.origin
-      : 'https://demo.tourlinks.neralab.id';
+      : 'https://demo.tourlinks.co';
 
   return `${origin}/docs?passenger=${passengerId}&type=${docType}`;
 };

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" font-family="Roboto, 'Helvetica Neue', Arial, sans-serif">
+  <rect width="400" height="400" fill="#E9EDF3"/>
+  <path d="M96 24 H304 V360 l-13 14 l-13 -14 l-13 14 l-13 -14 l-13 14 l-13 -14 l-13 14 l-13 -14 l-13 14 l-13 -14 l-13 14 l-13 -14 l-13 14 l-13 -14 l-13 14 l-13 -14 z" fill="#FFFFFF" stroke="#C3C9D4"/>
+  <text x="200" y="64" font-size="22" font-weight="800" fill="#1D1B20" text-anchor="middle">領収書</text>
+  <text x="200" y="86" font-size="12" fill="#6B7280" text-anchor="middle">EXPRESSWAY TOLL RECEIPT</text>
+  <path d="M116 102 H284" stroke="#9CA3AF" stroke-dasharray="4 4"/>
+  <g font-size="13" fill="#1D1B20">
+    <text x="116" y="130" fill="#6B7280" font-size="11">DATE</text><text x="284" y="130" text-anchor="end" font-weight="700">2026-10-02 17:42</text>
+    <text x="116" y="156" fill="#6B7280" font-size="11">FROM</text><text x="284" y="156" text-anchor="end" font-weight="700">Narita IC</text>
+    <text x="116" y="182" fill="#6B7280" font-size="11">TO</text><text x="284" y="182" text-anchor="end" font-weight="700">Shinjuku ramp</text>
+    <text x="116" y="208" fill="#6B7280" font-size="11">VEHICLE</text><text x="284" y="208" text-anchor="end" font-weight="700">品川 200 か 48-12</text>
+    <text x="116" y="234" fill="#6B7280" font-size="11">CLASS</text><text x="284" y="234" text-anchor="end" font-weight="700">Mid-size coach</text>
+  </g>
+  <path d="M116 252 H284" stroke="#9CA3AF" stroke-dasharray="4 4"/>
+  <text x="116" y="290" font-size="13" fill="#6B7280">TOTAL</text>
+  <text x="284" y="294" font-size="30" font-weight="800" fill="#1D1B20" text-anchor="end">¥8,600</text>
+  <text x="200" y="334" font-size="10" fill="#9CA3AF" text-anchor="middle">Sample document · demo data</text>
+</svg>

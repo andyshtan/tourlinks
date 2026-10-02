@@ -6,6 +6,7 @@ import type { StakeholderRole } from './types/tour';
 import { TopAppBar } from './components/layout/TopAppBar';
 import { AgentView } from './components/agent/AgentView';
 import { OperatorView } from './components/operator/OperatorView';
+import { TourLeaderView } from './components/leader/TourLeaderView';
 import { TravellerView } from './components/traveller/TravellerView';
 import { RoleSelectionScreen } from './components/onboarding/RoleSelectionScreen';
 import { MarketingPage } from './components/marketing/MarketingPage';
@@ -68,7 +69,7 @@ const MainContent: React.FC = () => {
 
   const handleBackToMarketing = () => {
     if (typeof window !== 'undefined' && window.location.hostname.startsWith('demo.')) {
-      window.location.href = 'https://tourlinks.neralab.id';
+      window.location.href = `https://${window.location.hostname.replace(/^demo\./, '')}`;
       return;
     }
     setView('marketing');
@@ -147,12 +148,12 @@ const MainContent: React.FC = () => {
     );
   }
 
-  // 2. If on Marketing Website (tourlinks.neralab.id)
+  // 2. If on Marketing Website (tourlinks.co)
   if (view === 'marketing') {
     return <MarketingPage onLaunchDemo={handleLaunchDemoFromMarketing} />;
   }
 
-  // 3. If on Demo App: Welcome Role Selection Screen (demo.tourlinks.neralab.id)
+  // 3. If on Demo App: Welcome Role Selection Screen (demo.tourlinks.co)
   if (screen === 'role_select') {
     return (
       <RoleSelectionScreen
@@ -173,6 +174,7 @@ const MainContent: React.FC = () => {
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
         <div className="animate-in fade-in duration-200">
           {role === 'agent' && <AgentView />}
+          {role === 'leader' && <TourLeaderView />}
           {role === 'operator' && <OperatorView />}
           {role === 'traveller' && (
             <div className="max-w-lg mx-auto">
@@ -190,7 +192,7 @@ const MainContent: React.FC = () => {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
-            <span className="font-semibold text-on-surface">Material Design 3 Engine</span>
+            <span className="font-semibold text-on-surface">Interactive demo • sample data</span>
             <span>•</span>
             <button
               onClick={handleBackToRoleSelect}
@@ -201,9 +203,9 @@ const MainContent: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-4 text-[11px]">
-            <span>Tri-Party Outbound Coordination: Agent ➔ Operator ➔ Traveller</span>
+            <span>Agent ➔ Tour Leader ➔ Ground DMC ➔ Traveller</span>
             <span className="hidden md:inline">•</span>
-            <span className="hidden md:inline font-mono">demo.tourlinks.neralab.id</span>
+            <span className="hidden md:inline font-mono">demo.tourlinks.co</span>
           </div>
         </div>
       </footer>

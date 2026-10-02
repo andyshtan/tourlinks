@@ -7,6 +7,7 @@ import { M3Chip } from '../m3/M3Chip';
 import { M3Badge } from '../m3/M3Badge';
 import { M3Icon } from '../m3/M3Icon';
 import { M3Dialog } from '../m3/M3Dialog';
+import { M3Avatar } from '../m3/M3Avatar';
 import { getDocumentDirectUrl } from '../../utils/documentUtils';
 
 export const AgentView: React.FC = () => {
@@ -47,6 +48,12 @@ export const AgentView: React.FC = () => {
 
   const flaggedCount = passengers.filter((p) => !p.isPassportValid).length;
   const customsClearedCount = passengers.filter((p) => p.hasClearedCustoms).length;
+  const halalCount = passengers.filter((p) => p.dietary === 'Halal').length;
+  const sellingAgents = Array.from(new Set(passengers.map((p) => p.sellingAgent)));
+  const currentStep =
+    checkpoints.filter((c) => c.status === 'completed').length +
+    (checkpoints.some((c) => c.status === 'in_progress') ? 1 : 0);
+  const extrasTotal = settlement.extraCharges.reduce((acc, c) => acc + c.amount, 0);
 
   const handleCreateIncident = () => {
     if (!incidentTitle.trim()) return;
@@ -126,8 +133,11 @@ export const AgentView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-xs font-mono font-bold text-on-surface-variant bg-surface px-3 py-1.5 rounded-m3-full border border-outline-variant/50">
-            {bookingGroups.length} Booking Parties • {passengers.length} Guests
+          <span
+            className="text-xs font-mono font-bold text-on-surface-variant bg-surface px-3 py-1.5 rounded-m3-full border border-outline-variant/50"
+            title={`Consortium departure — sold by: ${sellingAgents.join(', ')}`}
+          >
+            {bookingGroups.length} Booking Parties • {passengers.length} Guests • {sellingAgents.length} Selling Agents
           </span>
         </div>
       </div>
@@ -220,15 +230,11 @@ export const AgentView: React.FC = () => {
 
             <div className="space-y-3 mt-4 text-xs">
               <div className="flex items-center gap-3 p-2.5 rounded-m3-md bg-surface-container-low">
-                <img
-                  src={tour.staff.guidePhoto}
-                  alt={tour.staff.guideName}
-                  className="w-10 h-10 rounded-full object-cover ring-2 ring-secondary/30"
-                />
+                <M3Avatar name={tour.staff.guideName} size={40} />
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-on-surface text-sm">{tour.staff.guideName}</p>
                   <p className="text-on-surface-variant text-[11px]">
-                    Lead Guide ({tour.staff.guideLanguages.join(', ')})
+                    Local Guide ({tour.staff.guideLanguages.join(', ')})
                   </p>
                 </div>
                 <M3Button
@@ -258,8 +264,8 @@ export const AgentView: React.FC = () => {
           </div>
 
           <div className="mt-4 pt-3 border-t border-outline-variant/30 flex items-center justify-between text-xs">
-            <span className="text-on-surface-variant">Hotel Allocation:</span>
-            <span className="font-semibold text-on-surface truncate">{tour.hotel.name}</span>
+            <span className="text-on-surface-variant">Tour Leader (travels with group):</span>
+            <span className="font-semibold text-on-surface truncate">{tour.staff.tourLeaderName}</span>
           </div>
         </M3Card>
 
@@ -278,7 +284,7 @@ export const AgentView: React.FC = () => {
                   <h3 className="font-bold text-base text-on-surface">Live Arrival Handshake</h3>
                 </div>
               </div>
-              <span className="text-xs font-bold text-secondary">Step 3 of 4</span>
+              <span className="text-xs font-bold text-secondary">Step {currentStep} of {checkpoints.length}</span>
             </div>
 
             <div className="space-y-3 mt-3">
@@ -336,11 +342,8 @@ export const AgentView: React.FC = () => {
           </div>
 
           <div className="mt-4 pt-3 border-t border-outline-variant/30 flex items-center justify-between text-xs">
-            <span className="text-on-surface-variant">Auto Sync:</span>
-            <span className="text-primary font-bold inline-flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-ping inline-block" />
-              Real-time Ground Stream
-            </span>
+            <span className="text-on-surface-variant">Updated by:</span>
+            <span className="text-primary font-bold">Tour leader & DMC</span>
           </div>
         </M3Card>
       </div>
@@ -411,7 +414,7 @@ export const AgentView: React.FC = () => {
               className={flaggedCount > 0 ? 'text-error border-error/50' : ''}
             />
             <M3Chip
-              label="Halal (8)"
+              label={`Halal (${halalCount})`}
               selected={filter === 'halal'}
               onClick={() => setFilter('halal')}
             />
@@ -451,6 +454,10 @@ export const AgentView: React.FC = () => {
                         </div>
                         <p className="text-xs text-on-surface-variant mt-0.5">
                           Lead: <strong className="text-on-surface">{leadGuest.name}</strong> • {group.roomNumbers.join(', ')}
+                        </p>
+                        <p className="text-[11px] text-on-surface-variant mt-0.5 flex items-center gap-1">
+                          <M3Icon name="storefront" size={13} className="text-primary" />
+                          <span>Sold by: <strong className="text-on-surface">{leadGuest.sellingAgent}</strong></span>
                         </p>
                       </div>
 
@@ -764,7 +771,7 @@ export const AgentView: React.FC = () => {
                     {t.agent.incidentHub}
                   </h3>
                   <p className="text-xs text-on-surface-variant">
-                    Tri-party shared log between Agent HQ, Overseas DMC & Travellers
+                    One log shared by Agent HQ, the tour leader and the overseas DMC
                   </p>
                 </div>
               </div>
@@ -839,7 +846,7 @@ export const AgentView: React.FC = () => {
           </div>
 
           <p className="text-[11px] text-on-surface-variant mt-4 pt-2 border-t border-outline-variant/30 text-center">
-            Incidents automatically notify all 3 parties in real time to avoid disputes.
+            Everyone on this departure sees the same log, with who reported what and when.
           </p>
         </M3Card>
 
@@ -856,7 +863,7 @@ export const AgentView: React.FC = () => {
                     {t.agent.settlementTitle}
                   </h3>
                   <p className="text-xs text-on-surface-variant">
-                    Agreed contract rates, verified extra hours & proof of service
+                    Agreed land rate, extras confirmed by the tour leader & proof of service
                   </p>
                 </div>
               </div>
@@ -875,7 +882,7 @@ export const AgentView: React.FC = () => {
               <div className="flex justify-between items-center text-xs">
                 <span className="text-on-surface-variant">{t.agent.netRateTotal} (6D5N Coach + Hotels)</span>
                 <span className="font-bold text-sm text-on-surface">
-                  ${settlement.baseNetRate.toLocaleString()} {settlement.currency}
+                  ¥{settlement.baseNetRate.toLocaleString()} {settlement.currency}
                 </span>
               </div>
 
@@ -884,25 +891,29 @@ export const AgentView: React.FC = () => {
                   {t.agent.extraCharges}:
                 </span>
                 {settlement.extraCharges.map((ex) => (
-                  <div key={ex.id} className="flex justify-between text-xs text-on-surface">
-                    <span className="text-on-surface-variant flex items-center gap-1">
-                      <M3Icon name="check" size={14} className="text-primary" />
-                      {ex.description}
+                  <div key={ex.id} className="flex justify-between gap-2 text-xs text-on-surface">
+                    <span className="text-on-surface-variant flex items-start gap-1">
+                      <M3Icon
+                        name={ex.leaderConfirmed ? 'check_circle' : 'pending'}
+                        size={14}
+                        className={ex.leaderConfirmed ? 'text-green-700 mt-0.5' : 'text-on-surface-variant mt-0.5'}
+                      />
+                      <span>
+                        {ex.description}
+                        <span className={`block text-[10px] font-bold ${ex.leaderConfirmed ? 'text-green-700' : 'text-on-surface-variant'}`}>
+                          {ex.leaderConfirmed ? 'Confirmed by tour leader' : 'Waiting for tour leader to confirm'}
+                        </span>
+                      </span>
                     </span>
-                    <span className="font-mono font-medium">+${ex.amount}</span>
+                    <span className="font-mono font-medium shrink-0">+¥{ex.amount.toLocaleString()}</span>
                   </div>
                 ))}
               </div>
 
               <div className="pt-2 border-t border-outline-variant/30 flex justify-between items-center">
-                <span className="font-bold text-sm text-on-surface">Total Authorized Payout:</span>
+                <span className="font-bold text-sm text-on-surface">Total to Settle:</span>
                 <span className="font-extrabold text-base text-primary font-mono">
-                  $
-                  {(
-                    settlement.baseNetRate +
-                    settlement.extraCharges.reduce((acc, c) => acc + c.amount, 0)
-                  ).toLocaleString()}{' '}
-                  {settlement.currency}
+                  ¥{(settlement.baseNetRate + extrasTotal).toLocaleString()} {settlement.currency}
                 </span>
               </div>
             </div>
@@ -913,17 +924,17 @@ export const AgentView: React.FC = () => {
                 Operator Service Proof & Receipts
               </span>
               <div className="flex gap-2">
-                {settlement.proofImages.map((img, idx) => (
-                  <img
-                    key={idx}
-                    src={img}
-                    alt="Proof"
-                    className="w-16 h-16 rounded-m3-sm object-cover border border-outline-variant cursor-pointer hover:opacity-90"
-                    title="Click to inspect arrival proof"
-                  />
+                {settlement.proofImages.map((img) => (
+                  <a key={img.src} href={img.src} target="_blank" rel="noreferrer" title={`Open: ${img.label}`}>
+                    <img
+                      src={img.src}
+                      alt={img.label}
+                      className="w-16 h-16 rounded-m3-sm object-cover border border-outline-variant hover:opacity-90"
+                    />
+                  </a>
                 ))}
                 <div className="flex-1 p-2 rounded-m3-sm bg-surface-container flex flex-col justify-center text-[10px] text-on-surface-variant">
-                  <span className="font-bold text-on-surface">Digitally Certified:</span>
+                  <span className="font-bold text-on-surface">Signed by operator:</span>
                   <span>{settlement.operatorSignedAt}</span>
                 </div>
               </div>
@@ -956,7 +967,7 @@ export const AgentView: React.FC = () => {
         onClose={() => setIncidentModalOpen(false)}
         icon="report_problem"
         headline="Log Shared Outbound Incident"
-        supportingText="This ticket will be immediately visible to both the Tokyo Ground DMC and Agent HQ."
+        supportingText="This ticket goes into the log shared with the tour leader and the Tokyo ground DMC."
         actions={
           <>
             <M3Button variant="text" onClick={() => setIncidentModalOpen(false)}>
