@@ -3,17 +3,14 @@ import { useTour } from '../../context/TourContext';
 import { useTranslation } from '../../i18n/LanguageContext';
 import type { SupportedLanguage } from '../../i18n/translations';
 import type { StakeholderRole } from '../../types/tour';
-import { M3Button } from '../m3/M3Button';
 import { M3Icon } from '../m3/M3Icon';
 
 interface RoleSelectionScreenProps {
   onEnterDashboard: (selectedRole: StakeholderRole, selectedLang: SupportedLanguage) => void;
-  onEnterSplitView: (selectedLang: SupportedLanguage) => void;
 }
 
 export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
   onEnterDashboard,
-  onEnterSplitView,
 }) => {
   const { tour } = useTour();
   const { language, setLanguage, t } = useTranslation();
@@ -280,28 +277,6 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
               </div>
             );
           })}
-        </div>
-
-        {/* Compare All 3 Side-by-Side (Split View) */}
-        <div className="max-w-2xl mx-auto text-center p-5 rounded-m3-xl bg-surface-container border border-outline-variant/60 shadow-xs space-y-3">
-          <div className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider text-on-surface-variant">
-            <M3Icon name="splitscreen" size={18} className="text-primary" />
-            <span>{t.roleSelection.orCompare}</span>
-          </div>
-
-          <p className="text-xs text-on-surface-variant max-w-lg mx-auto leading-relaxed">
-            See the Agent command center, the Ground DMC live operations, and the Traveller mobile pass live on a single synchronized screen.
-          </p>
-
-          <M3Button
-            variant="tonal"
-            size="md"
-            icon="compare_arrows"
-            onClick={() => onEnterSplitView(selectedLang)}
-            className="shadow-xs"
-          >
-            {t.roleSelection.launchSplitBtn}
-          </M3Button>
         </div>
       </div>
 

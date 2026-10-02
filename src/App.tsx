@@ -26,12 +26,6 @@ const MainContent: React.FC = () => {
     setScreen('dashboard');
   };
 
-  const handleEnterSplitView = (selectedLang: SupportedLanguage) => {
-    setLanguage(selectedLang);
-    setSplitView(true);
-    setScreen('dashboard');
-  };
-
   const handleBackToRoleSelect = () => {
     setScreen('role_select');
   };
@@ -41,7 +35,6 @@ const MainContent: React.FC = () => {
     return (
       <RoleSelectionScreen
         onEnterDashboard={handleEnterDashboard}
-        onEnterSplitView={handleEnterSplitView}
       />
     );
   }
