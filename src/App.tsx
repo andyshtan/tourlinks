@@ -7,7 +7,6 @@ import { TopAppBar } from './components/layout/TopAppBar';
 import { AgentView } from './components/agent/AgentView';
 import { OperatorView } from './components/operator/OperatorView';
 import { TravellerView } from './components/traveller/TravellerView';
-import { SplitView } from './components/layout/SplitView';
 import { RoleSelectionScreen } from './components/onboarding/RoleSelectionScreen';
 import { MarketingPage } from './components/marketing/MarketingPage';
 import { TravellerDetailModal } from './components/common/TravellerDetailModal';
@@ -35,7 +34,6 @@ const MainContent: React.FC = () => {
 
   const [view, setView] = useState<'marketing' | 'demo'>(detectInitialView);
   const [screen, setScreen] = useState<'role_select' | 'dashboard'>('role_select');
-  const [splitView, setSplitView] = useState(false);
 
   // Sync browser URL or popstate if needed
   useEffect(() => {
@@ -71,7 +69,6 @@ const MainContent: React.FC = () => {
   const handleEnterDashboard = (selectedRole: StakeholderRole, selectedLang: SupportedLanguage) => {
     setRole(selectedRole);
     setLanguage(selectedLang);
-    setSplitView(false);
     setScreen('dashboard');
   };
 
@@ -99,26 +96,20 @@ const MainContent: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-surface animate-in fade-in duration-200">
       <TopAppBar
-        splitView={splitView}
-        onToggleSplitView={() => setSplitView(!splitView)}
         onBackToRoleSelect={handleBackToRoleSelect}
         onBackToMarketing={handleBackToMarketing}
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-        {splitView ? (
-          <SplitView />
-        ) : (
-          <div className="animate-in fade-in duration-200">
-            {role === 'agent' && <AgentView />}
-            {role === 'operator' && <OperatorView />}
-            {role === 'traveller' && (
-              <div className="max-w-lg mx-auto">
-                <TravellerView />
-              </div>
-            )}
-          </div>
-        )}
+        <div className="animate-in fade-in duration-200">
+          {role === 'agent' && <AgentView />}
+          {role === 'operator' && <OperatorView />}
+          {role === 'traveller' && (
+            <div className="max-w-lg mx-auto">
+              <TravellerView />
+            </div>
+          )}
+        </div>
       </main>
 
       {/* Universal 1-Click Traveler Detail Inspection Modal */}
