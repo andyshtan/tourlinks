@@ -113,7 +113,7 @@ const MainContent: React.FC = () => {
             }}
             className="font-black text-2xl tracking-tighter text-on-surface hover:opacity-80 transition-opacity cursor-pointer flex items-center gap-2"
           >
-            <span>Travelflow</span>
+            <span>Travelflows</span>
             <span className="text-xs font-mono font-normal text-on-surface-variant">
               / Document Archive
             </span>
@@ -129,7 +129,7 @@ const MainContent: React.FC = () => {
             }}
             className="px-4 py-2 rounded-m3-full bg-primary text-on-primary text-xs font-bold hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
           >
-            ← Back to Travelflow Operations
+            ← Back to Travelflows Operations
           </button>
         </header>
 

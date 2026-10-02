@@ -28,7 +28,7 @@ export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) =>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
           <div className="flex items-center">
             <span className="font-black text-2xl sm:text-3xl tracking-tighter text-on-surface select-none">
-              Travelflow
+              Travelflows
             </span>
           </div>
 
@@ -58,7 +58,7 @@ export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) =>
           </h1>
 
           <p className="text-base sm:text-xl text-on-surface-variant max-w-3xl mx-auto leading-relaxed">
-            TravelFlow unifies <strong>Origin Travel Agents</strong>, <strong>Destination Ground DMCs</strong>, and <strong>International Travelers</strong> into a single synchronized operating system.
+            Travelflows unifies <strong>Origin Travel Agents</strong>, <strong>Destination Ground DMCs</strong>, and <strong>International Travelers</strong> into a single synchronized operating system.
             Zero immigration delays. Zero missing passport validity. Instant arrival handshakes.
           </p>
 
@@ -369,7 +369,7 @@ export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) =>
               Built Multi-Lingual from Day One
             </h2>
             <p className="text-sm sm:text-base text-on-surface-variant leading-relaxed">
-              In international outbound travel, the Jakarta agency speaks Indonesian, the Tokyo DMC operates in Japanese, and the traveler uses English or Indonesian. TravelFlow translates every milestone, status, and alert dynamically so no party is left in the dark.
+              In international outbound travel, the Jakarta agency speaks Indonesian, the Tokyo DMC operates in Japanese, and the traveler uses English or Indonesian. Travelflows translates every milestone, status, and alert dynamically so no party is left in the dark.
             </p>
           </div>
 
@@ -446,7 +446,7 @@ export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) =>
       <footer className="py-8 bg-surface-container border-t border-outline-variant/30 text-xs text-on-surface-variant">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="font-black text-base text-on-surface">Travelflow</span>
+            <span className="font-black text-base text-on-surface">Travelflows</span>
             <span>•</span>
             <span>Tri-Party Outbound Tour Workflow</span>
           </div>

@@ -65,9 +65,9 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
           <button
             onClick={onBackToMarketing || onBackToRoleSelect}
             className="font-black text-2xl tracking-tighter text-on-surface hover:opacity-80 transition-opacity cursor-pointer shrink-0"
-            title="Return to Travelflow"
+            title="Return to Travelflows"
           >
-            Travelflow
+            Travelflows
           </button>
 
           <span className="text-outline-variant font-light text-lg">/</span>

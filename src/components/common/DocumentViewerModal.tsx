@@ -188,7 +188,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerProps> = ({
               {/* Security Watermark Background */}
               <div className="absolute inset-0 pointer-events-none opacity-5 flex items-center justify-center -rotate-12 select-none">
                 <span className="text-5xl font-black tracking-widest text-stone-900 uppercase">
-                  VERIFIED PASSPORT ARCHIVE • TRAVELFLOW
+                  VERIFIED PASSPORT ARCHIVE • TRAVELFLOWS
                 </span>
               </div>
 

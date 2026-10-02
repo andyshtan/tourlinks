@@ -135,11 +135,11 @@ export interface TranslationDictionary {
 export const translations: Record<SupportedLanguage, TranslationDictionary> = {
   // 1. English
   en: {
-    appName: 'Travelflow',
+    appName: 'Travelflows',
     tagline: 'Collaborative Tri-Party Outbound Tour Workflow',
     roleSelection: {
       heroTitle: 'Select Your Perspective & Language',
-      heroSubtitle: 'Travelflow synchronizes the 3 parties of outbound travel in real time. Choose a role and language to enter the dedicated dashboard.',
+      heroSubtitle: 'Travelflows synchronizes the 3 parties of outbound travel in real time. Choose a role and language to enter the dedicated dashboard.',
       selectPrompt: '1. Select Your Role',
       languagePrompt: '2. Select Experience Language',
       launchBtn: 'Enter Dashboard as',
@@ -268,11 +268,11 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
 
   // 2. Bahasa Indonesia
   id: {
-    appName: 'Travelflow',
+    appName: 'Travelflows',
     tagline: 'Alur Kerja Kolaboratif 3 Pihak untuk Tur Outbound',
     roleSelection: {
       heroTitle: 'Pilih Peran & Bahasa Demo Anda',
-      heroSubtitle: 'Travelflow menyinkronkan 3 pihak tur outbound secara real-time. Pilih peran dan bahasa untuk masuk ke dashboard khusus.',
+      heroSubtitle: 'Travelflows menyinkronkan 3 pihak tur outbound secara real-time. Pilih peran dan bahasa untuk masuk ke dashboard khusus.',
       selectPrompt: '1. Pilih Peran Anda',
       languagePrompt: '2. Pilih Bahasa Pengalaman',
       launchBtn: 'Masuk Dashboard sebagai',
@@ -401,11 +401,11 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
 
   // 3. Japanese (日本語)
   ja: {
-    appName: 'Travelflow',
+    appName: 'Travelflows',
     tagline: 'アウトバウンド旅行 3者間リアルタイム協調運用システム',
     roleSelection: {
       heroTitle: 'デモの役割と表示言語を選択',
-      heroSubtitle: 'Travelflowは、送り出し旅行会社・現地ランドオペレーター(DMC)・旅行者の3者をリアルタイムに連携します。役割を選択してダッシュボードに入室してください。',
+      heroSubtitle: 'Travelflowsは、送り出し旅行会社・現地ランドオペレーター(DMC)・旅行者の3者をリアルタイムに連携します。役割を選択してダッシュボードに入室してください。',
       selectPrompt: '1. 役割を選択',
       languagePrompt: '2. 体験言語を選択',
       launchBtn: 'この役割でダッシュボードを開始',
@@ -534,11 +534,11 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
 
   // 4. Thai (ไทย)
   th: {
-    appName: 'Travelflow',
+    appName: 'Travelflows',
     tagline: 'เวิร์กโฟลว์การจัดการทัวร์เอาต์บาวด์ 3 ฝ่ายแบบเรียลไทม์',
     roleSelection: {
       heroTitle: 'เลือกมุมมองบทบาทและภาษาของคุณ',
-      heroSubtitle: 'Travelflow ซิงค์ทั้ง 3 ฝ่ายของการเดินทางเอาต์บาวด์แบบเรียลไทม์ เลือกบทบาทและภาษาเพื่อเข้าสู่แดชบอร์ดเฉพาะ',
+      heroSubtitle: 'Travelflows ซิงค์ทั้ง 3 ฝ่ายของการเดินทางเอาต์บาวด์แบบเรียลไทม์ เลือกบทบาทและภาษาเพื่อเข้าสู่แดชบอร์ดเฉพาะ',
       selectPrompt: '1. เลือกบทบาทของคุณ',
       languagePrompt: '2. เลือกภาษาสำหรับการใช้งาน',
       launchBtn: 'เข้าสู่แดชบอร์ดในฐานะ',
@@ -667,11 +667,11 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
 
   // 5. Chinese (简体中文)
   zh: {
-    appName: 'Travelflow',
+    appName: 'Travelflows',
     tagline: '出境游三方协同实时全流程操作系统',
     roleSelection: {
       heroTitle: '选择您的角色视角与语言',
-      heroSubtitle: 'Travelflow 实时同步出境游三方角色：组团社、地接社与游客。选择角色与语言进入专属控制台。',
+      heroSubtitle: 'Travelflows 实时同步出境游三方角色：组团社、地接社与游客。选择角色与语言进入专属控制台。',
       selectPrompt: '1. 选择您的身份',
       languagePrompt: '2. 选择界面语言',
       launchBtn: '以此身份进入控制台',
@@ -800,11 +800,11 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
 
   // 6. Korean (한국어)
   ko: {
-    appName: 'Travelflow',
+    appName: 'Travelflows',
     tagline: '아웃바운드 투어 삼자 협업 실시간 운영체제',
     roleSelection: {
       heroTitle: '역할 관점 및 언어를 선택하세요',
-      heroSubtitle: 'Travelflow는 송출 여행사, 현지 랜드사(DMC), 여행자를 실시간으로 동기화합니다. 역할과 언어를 선택하여 대시보드로 이동하세요.',
+      heroSubtitle: 'Travelflows는 송출 여행사, 현지 랜드사(DMC), 여행자를 실시간으로 동기화합니다. 역할과 언어를 선택하여 대시보드로 이동하세요.',
       selectPrompt: '1. 역할 선택',
       languagePrompt: '2. 사용 언어 선택',
       launchBtn: '해당 역할로 대시보드 입장',
@@ -933,11 +933,11 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
 
   // 7. Spanish (Español)
   es: {
-    appName: 'Travelflow',
+    appName: 'Travelflows',
     tagline: 'Flujo de trabajo colaborativo tripartito para turismo emisivo',
     roleSelection: {
       heroTitle: 'Seleccione su perspectiva e idioma',
-      heroSubtitle: 'Travelflow sincroniza en tiempo real a las 3 partes del viaje emisivo: Agencias, Operadores Receptivos y Viajeros.',
+      heroSubtitle: 'Travelflows sincroniza en tiempo real a las 3 partes del viaje emisivo: Agencias, Operadores Receptivos y Viajeros.',
       selectPrompt: '1. Seleccione su rol',
       languagePrompt: '2. Seleccione el idioma de experiencia',
       launchBtn: 'Entrar al panel como',
@@ -1066,11 +1066,11 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
 
   // 8. Indian / Hindi (हिन्दी)
   hi: {
-    appName: 'Travelflow',
+    appName: 'Travelflows',
     tagline: 'आउटबाउंड टूर के लिए वास्तविक समय त्रिपक्षीय कार्यप्रवाह',
     roleSelection: {
       heroTitle: 'अपनी भूमिका और भाषा चुनें',
-      heroSubtitle: 'Travelflow आउटबाउंड यात्रा के तीनों पक्षों को वास्तविक समय में सिंक करता है: एजेंट, ऑपरेटर और यात्री।',
+      heroSubtitle: 'Travelflows आउटबाउंड यात्रा के तीनों पक्षों को वास्तविक समय में सिंक करता है: एजेंट, ऑपरेटर और यात्री।',
       selectPrompt: '1. अपनी भूमिका चुनें',
       languagePrompt: '2. अनुभव की भाषा चुनें',
       launchBtn: 'डैशबोर्ड में प्रवेश करें',
@@ -1199,11 +1199,11 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
 
   // 9. Arabic (العربية)
   ar: {
-    appName: 'Travelflow',
+    appName: 'Travelflows',
     tagline: 'نظام تشغيل متكامل ومنسق ثلاثي الأطراف للرحلات السياحية الخارجية',
     roleSelection: {
       heroTitle: 'اختر دورك واللغة المناسبة',
-      heroSubtitle: 'يقوم Travelflow بمزامنة الأطراف الثلاثة للسياحة الخارجية في الوقت الفعلي: وكيل المصدر، المشغل الميداني، والمسافر.',
+      heroSubtitle: 'يقوم Travelflows بمزامنة الأطراف الثلاثة للسياحة الخارجية في الوقت الفعلي: وكيل المصدر، المشغل الميداني، والمسافر.',
       selectPrompt: '1. حدد دورك',
       languagePrompt: '2. اختر لغة العرض',
       launchBtn: 'الدخول إلى لوحة التحكم بصفتك',

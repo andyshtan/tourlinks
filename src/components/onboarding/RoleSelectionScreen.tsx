@@ -283,7 +283,7 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
             className="inline-flex items-center gap-2 px-4 py-2 rounded-m3-full bg-surface-container border border-outline-variant/60 text-xs font-bold text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
           >
             <M3Icon name="arrow_back" size={16} />
-            <span className="font-black text-sm">Travelflow</span>
+            <span className="font-black text-sm">Travelflows</span>
           </a>
 
           <span className="text-[11px] font-mono font-bold text-primary px-3 py-1 rounded-m3-full bg-primary-container text-on-primary-container hidden sm:inline">
@@ -482,7 +482,7 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
 
       {/* Footer */}
       <footer className="text-center pt-8 text-xs text-on-surface-variant">
-        <span>Google Material Design 3 • Multi-Lingual Architecture (9 Languages Supported) • Travelflow OS</span>
+        <span>Google Material Design 3 • Multi-Lingual Architecture (9 Languages Supported) • Travelflows OS</span>
       </footer>
     </div>
   );
