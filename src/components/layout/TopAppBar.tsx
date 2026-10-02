@@ -10,12 +10,14 @@ interface TopAppBarProps {
   splitView: boolean;
   onToggleSplitView: () => void;
   onBackToRoleSelect: () => void;
+  onBackToMarketing?: () => void;
 }
 
 export const TopAppBar: React.FC<TopAppBarProps> = ({
   splitView,
   onToggleSplitView,
   onBackToRoleSelect,
+  onBackToMarketing,
 }) => {
   const { role, setRole, tour, activeSosAlert, dismissSOS } = useTour();
   const { language, setLanguage, t } = useTranslation();
@@ -70,6 +72,15 @@ export const TopAppBar: React.FC<TopAppBarProps> = ({
                 <M3Icon name="swap_horiz" size={12} />
                 <span>{t.roleSelection.changeRoleBtn}</span>
               </button>
+              {onBackToMarketing && (
+                <button
+                  onClick={onBackToMarketing}
+                  className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-m3-full text-[10px] font-bold uppercase bg-surface-container-high text-primary hover:bg-primary-container transition-colors cursor-pointer"
+                >
+                  <M3Icon name="arrow_back" size={12} />
+                  <span>Website</span>
+                </button>
+              )}
             </div>
             <div className="flex items-center gap-1.5 text-xs text-on-surface-variant truncate">
               <span className="font-mono font-extrabold text-[11px] px-1.5 py-0.5 rounded-m3-xs bg-primary-container text-on-primary-container">

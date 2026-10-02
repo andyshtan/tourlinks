@@ -8,15 +8,22 @@ import { M3Icon } from '../m3/M3Icon';
 
 interface RoleSelectionScreenProps {
   onEnterDashboard: (selectedRole: StakeholderRole, selectedLang: SupportedLanguage) => void;
+  onBackToMarketing?: () => void;
 }
 
 export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
   onEnterDashboard,
+  onBackToMarketing,
 }) => {
   const { tour } = useTour();
   const { setLanguage, t } = useTranslation();
 
   const [selectedRole, setSelectedRole] = useState<StakeholderRole>('agent');
+
+  // Guarantee Welcome Page is in English by default
+  React.useEffect(() => {
+    setLanguage('en');
+  }, []);
 
   // Each card strictly configured with its respected language
   const roleConfigs: {
@@ -113,6 +120,31 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
   return (
     <div className="min-h-screen bg-surface flex flex-col justify-between p-4 sm:p-6 lg:p-10 select-none animate-in fade-in duration-300">
       <div className="max-w-6xl w-full mx-auto space-y-8">
+        {/* Top Bar with Return to Marketing Website */}
+        <div className="flex items-center justify-between">
+          <a
+            href={
+              typeof window !== 'undefined' && window.location.hostname.includes('travelflow.neralab.id')
+                ? 'https://travelflow.neralab.id'
+                : '/'
+            }
+            onClick={(e) => {
+              if (onBackToMarketing) {
+                e.preventDefault();
+                onBackToMarketing();
+              }
+            }}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-m3-full bg-surface-container border border-outline-variant/60 text-xs font-bold text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
+          >
+            <M3Icon name="arrow_back" size={16} />
+            <span>TravelFlow Marketing Website</span>
+          </a>
+
+          <span className="text-[11px] font-mono font-semibold text-primary px-2.5 py-0.5 rounded-m3-full bg-primary-container text-on-primary-container hidden sm:inline">
+            demo.travelflow.neralab.id
+          </span>
+        </div>
+
         {/* Brand & Hero Banner */}
         <div className="text-center space-y-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-m3-full bg-primary-container text-on-primary-container text-xs font-bold tracking-wide uppercase shadow-xs">

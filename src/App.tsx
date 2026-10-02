@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TourProvider, useTour } from './context/TourContext';
 import { LanguageProvider, useTranslation } from './i18n/LanguageContext';
 import type { SupportedLanguage } from './i18n/translations';
@@ -9,16 +9,64 @@ import { OperatorView } from './components/operator/OperatorView';
 import { TravellerView } from './components/traveller/TravellerView';
 import { SplitView } from './components/layout/SplitView';
 import { RoleSelectionScreen } from './components/onboarding/RoleSelectionScreen';
+import { MarketingPage } from './components/marketing/MarketingPage';
+
+const detectInitialView = (): 'marketing' | 'demo' => {
+  if (typeof window === 'undefined') return 'marketing';
+  const hostname = window.location.hostname;
+  const pathname = window.location.pathname;
+  const search = window.location.search;
+
+  // If on demo subdomain, /demo path, or ?view=demo
+  if (
+    hostname.startsWith('demo.') ||
+    pathname.startsWith('/demo') ||
+    search.includes('view=demo')
+  ) {
+    return 'demo';
+  }
+  return 'marketing';
+};
 
 const MainContent: React.FC = () => {
   const { role, setRole } = useTour();
   const { setLanguage } = useTranslation();
 
-  // Screen navigation state: 'role_select' | 'dashboard'
+  const [view, setView] = useState<'marketing' | 'demo'>(detectInitialView);
   const [screen, setScreen] = useState<'role_select' | 'dashboard'>('role_select');
   const [splitView, setSplitView] = useState(false);
 
+  // Sync browser URL or popstate if needed
+  useEffect(() => {
+    const handlePopState = () => {
+      setView(detectInitialView());
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   // Flow handlers
+  const handleLaunchDemoFromMarketing = () => {
+    setView('demo');
+    setScreen('role_select');
+    // Ensure English default on welcome screen
+    setLanguage('en');
+    if (window.history && window.history.pushState) {
+      window.history.pushState({}, '', '/demo');
+    }
+  };
+
+  const handleBackToMarketing = () => {
+    if (typeof window !== 'undefined' && window.location.hostname.startsWith('demo.')) {
+      window.location.href = 'https://travelflow.neralab.id';
+      return;
+    }
+    setView('marketing');
+    if (window.history && window.history.pushState) {
+      window.history.pushState({}, '', '/');
+    }
+  };
+
   const handleEnterDashboard = (selectedRole: StakeholderRole, selectedLang: SupportedLanguage) => {
     setRole(selectedRole);
     setLanguage(selectedLang);
@@ -28,24 +76,32 @@ const MainContent: React.FC = () => {
 
   const handleBackToRoleSelect = () => {
     setScreen('role_select');
+    setLanguage('en');
   };
 
-  // If in Role Decider screen
+  // 1. If on Marketing Website (travelflow.neralab.id)
+  if (view === 'marketing') {
+    return <MarketingPage onLaunchDemo={handleLaunchDemoFromMarketing} />;
+  }
+
+  // 2. If on Demo App: Welcome Role Selection Screen (demo.travelflow.neralab.id)
   if (screen === 'role_select') {
     return (
       <RoleSelectionScreen
         onEnterDashboard={handleEnterDashboard}
+        onBackToMarketing={handleBackToMarketing}
       />
     );
   }
 
-  // Dashboard Screen
+  // 3. If on Demo App: Role-Specific Dashboard Screen
   return (
     <div className="min-h-screen flex flex-col bg-surface animate-in fade-in duration-200">
       <TopAppBar
         splitView={splitView}
         onToggleSplitView={() => setSplitView(!splitView)}
         onBackToRoleSelect={handleBackToRoleSelect}
+        onBackToMarketing={handleBackToMarketing}
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
@@ -82,7 +138,7 @@ const MainContent: React.FC = () => {
           <div className="flex items-center gap-4 text-[11px]">
             <span>Tri-Party Outbound Coordination: Agent ➔ Operator ➔ Traveller</span>
             <span className="hidden md:inline">•</span>
-            <span className="hidden md:inline font-mono">v1.0.0-release</span>
+            <span className="hidden md:inline font-mono">demo.travelflow.neralab.id</span>
           </div>
         </div>
       </footer>
