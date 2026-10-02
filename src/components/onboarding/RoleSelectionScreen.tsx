@@ -272,8 +272,6 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
             href={
               typeof window !== 'undefined' && window.location.hostname.includes('tourlinks.neralab.id')
                 ? 'https://tourlinks.neralab.id'
-                : typeof window !== 'undefined' && window.location.hostname.includes('travelflow.neralab.id')
-                ? 'https://travelflow.neralab.id'
                 : '/'
             }
             onClick={(e) => {
@@ -289,7 +287,7 @@ export const RoleSelectionScreen: React.FC<RoleSelectionScreenProps> = ({
           </a>
 
           <span className="text-[11px] font-mono font-bold text-primary px-3 py-1 rounded-m3-full bg-primary-container text-on-primary-container hidden sm:inline">
-            {typeof window !== 'undefined' && window.location.hostname.includes('travelflow') ? 'demo.travelflow.neralab.id' : 'demo.tourlinks.neralab.id'}
+            demo.tourlinks.neralab.id
           </span>
         </div>
 

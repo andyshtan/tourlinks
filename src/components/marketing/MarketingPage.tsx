@@ -8,16 +8,11 @@ interface MarketingPageProps {
 
 export const MarketingPage: React.FC<MarketingPageProps> = ({ onLaunchDemo }) => {
   const isTourlinksDomain = typeof window !== 'undefined' && window.location.hostname.includes('tourlinks.neralab.id');
-  const isTravelflowDomain = typeof window !== 'undefined' && window.location.hostname.includes('travelflow.neralab.id');
 
-  const demoUrl = isTourlinksDomain
-    ? 'https://demo.tourlinks.neralab.id'
-    : isTravelflowDomain
-    ? 'https://demo.travelflow.neralab.id'
-    : '/demo';
+  const demoUrl = isTourlinksDomain ? 'https://demo.tourlinks.neralab.id' : '/demo';
 
   const handleDemoClick = (e: React.MouseEvent) => {
-    if (typeof window !== 'undefined' && (window.location.hostname.startsWith('tourlinks.') || window.location.hostname.startsWith('travelflow.'))) {
+    if (typeof window !== 'undefined' && window.location.hostname.startsWith('tourlinks.')) {
       // Allow default navigation to demo subdomain
       return;
     }

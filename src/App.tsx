@@ -68,7 +68,7 @@ const MainContent: React.FC = () => {
 
   const handleBackToMarketing = () => {
     if (typeof window !== 'undefined' && window.location.hostname.startsWith('demo.')) {
-      window.location.href = window.location.hostname.includes('travelflow') ? 'https://travelflow.neralab.id' : 'https://tourlinks.neralab.id';
+      window.location.href = 'https://tourlinks.neralab.id';
       return;
     }
     setView('marketing');
@@ -147,12 +147,12 @@ const MainContent: React.FC = () => {
     );
   }
 
-  // 2. If on Marketing Website (travelflow.neralab.id)
+  // 2. If on Marketing Website (tourlinks.neralab.id)
   if (view === 'marketing') {
     return <MarketingPage onLaunchDemo={handleLaunchDemoFromMarketing} />;
   }
 
-  // 3. If on Demo App: Welcome Role Selection Screen (demo.travelflow.neralab.id)
+  // 3. If on Demo App: Welcome Role Selection Screen (demo.tourlinks.neralab.id)
   if (screen === 'role_select') {
     return (
       <RoleSelectionScreen
@@ -203,9 +203,7 @@ const MainContent: React.FC = () => {
           <div className="flex items-center gap-4 text-[11px]">
             <span>Tri-Party Outbound Coordination: Agent ➔ Operator ➔ Traveller</span>
             <span className="hidden md:inline">•</span>
-            <span className="hidden md:inline font-mono">
-              {typeof window !== 'undefined' && window.location.hostname.includes('travelflow') ? 'demo.travelflow.neralab.id' : 'demo.tourlinks.neralab.id'}
-            </span>
+            <span className="hidden md:inline font-mono">demo.tourlinks.neralab.id</span>
           </div>
         </div>
       </footer>
